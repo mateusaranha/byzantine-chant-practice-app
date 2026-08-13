@@ -2,6 +2,12 @@ name: Deploy publisher service
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - "publisher-worker/**"
+      - ".github/workflows/deploy-publisher.yml"
 
 jobs:
   test-and-deploy:
