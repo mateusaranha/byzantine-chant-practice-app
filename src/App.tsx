@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import CloudLibrary from "./CloudLibrary";
 
 type Highlight = { start: number; end: number; color: string };
 type Melisma = { start: number; end: number; kind: "simple" | "complex" };
@@ -11,7 +12,7 @@ type YouTubePlayer = {
   seekTo: (seconds: number, allowSeekAhead: boolean) => void;
 };
 
-type Hymn = {
+export type Hymn = {
   id: string;
   title: string;
   mode: string;
@@ -54,6 +55,8 @@ const COLORS = [
   { name: "Wheat", value: "wheat" },
   { name: "Lavender", value: "lavender" },
 ];
+
+const PUBLISHER_API_URL = String(import.meta.env.VITE_PUBLISHER_API_URL || "").replace(/\/$/, "");
 
 const SAMPLE = `Ἀγγελικαὶ δυνάμεις ἐπὶ τὸ μνῆμά σου,
 καὶ οἱ φυλάσσοντες ἀπενεκρώθησαν·
@@ -645,6 +648,7 @@ export default function Home() {
   const [hymns, setHymns] = useState<Hymn[]>([FIRST_HYMN]);
   const [hydrated, setHydrated] = useState(false);
   const [printRequest, setPrintRequest] = useState(0);
+  const [cloudOpen, setCloudOpen] = useState(false);
   const backupInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -741,6 +745,11 @@ export default function Home() {
         </div>
         <div className="header-note">Listen · Read · Repeat</div>
         <div className="header-actions">
+          {PUBLISHER_API_URL && (
+            <button className="backup-button cloud-trigger" onClick={() => setCloudOpen((open) => !open)}>
+              Biblioteca online
+            </button>
+          )}
           <button className="backup-button" onClick={exportBackup} title="Save all hymns and annotations">
             Export backup
           </button>
@@ -765,6 +774,18 @@ export default function Home() {
           </button>
         </div>
       </header>
+
+      {PUBLISHER_API_URL && cloudOpen && (
+        <CloudLibrary
+          apiBase={PUBLISHER_API_URL}
+          hymns={hymns}
+          onClose={() => setCloudOpen(false)}
+          onLoad={(savedHymns, title) => {
+            setHymns(savedHymns.map((hymn, index) => normalizeHymn(hymn, `hymn-${index}`)));
+            document.title = `${title} · Psaltikon`;
+          }}
+        />
+      )}
 
       <div className="hymn-list">
         {hymns.map((hymn, index) => (

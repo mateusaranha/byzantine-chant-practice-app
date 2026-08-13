@@ -1,0 +1,45 @@
+name: Deploy publisher service
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test-and-deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: publisher-worker
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: publisher-worker/package-lock.json
+      - name: Install dependencies
+        run: npm ci
+      - name: Test publisher service
+        run: npm test
+      - name: Deploy publisher service
+        id: deploy
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: publisher-worker
+          secrets: |
+            GITHUB_APP_ID
+            GITHUB_CLIENT_ID
+            GITHUB_INSTALLATION_ID
+            GITHUB_CLIENT_SECRET
+            GITHUB_PRIVATE_KEY
+            SESSION_SECRET
+        env:
+          GITHUB_APP_ID: ${{ secrets.GITHUB_APP_ID }}
+          GITHUB_CLIENT_ID: ${{ secrets.GITHUB_CLIENT_ID }}
+          GITHUB_INSTALLATION_ID: ${{ secrets.GITHUB_INSTALLATION_ID }}
+          GITHUB_CLIENT_SECRET: ${{ secrets.GITHUB_CLIENT_SECRET }}
+          GITHUB_PRIVATE_KEY: ${{ secrets.GITHUB_PRIVATE_KEY }}
+          SESSION_SECRET: ${{ secrets.SESSION_SECRET }}

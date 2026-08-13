@@ -16,5 +16,8 @@ test("the production build contains the app shell and migration features", async
   assert.match(javascript, /Export backup/);
   assert.match(javascript, /Clear colours/);
   assert.match(javascript, /Clear melismas/);
+  assert.match(javascript, /Biblioteca online/);
+  assert.match(javascript, /Solicitar permissão para publicar/);
+  assert.match(javascript, /Salvar conjunto no GitHub/);
   assert.match(javascript, /Ἀγγελικαὶ δυνάμεις/);
 });

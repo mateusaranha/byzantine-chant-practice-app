@@ -1,0 +1,15 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "psaltikon-publisher",
+  "main": "src/index.js",
+  "compatibility_date": "2026-08-13",
+  "observability": {
+    "enabled": true
+  },
+  "vars": {
+    "GITHUB_OWNER": "mateusaranha",
+    "GITHUB_REPO": "byzantine-chant-practice-app",
+    "ADMIN_LOGIN": "mateusaranha",
+    "FRONTEND_URL": "https://mateusaranha.github.io/byzantine-chant-practice-app/"
+  }
+}
