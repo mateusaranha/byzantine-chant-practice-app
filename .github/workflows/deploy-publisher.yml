@@ -9,6 +9,9 @@ on:
       - "publisher-worker/**"
       - ".github/workflows/deploy-publisher.yml"
 
+permissions:
+  contents: read
+
 jobs:
   test-and-deploy:
     runs-on: ubuntu-latest
