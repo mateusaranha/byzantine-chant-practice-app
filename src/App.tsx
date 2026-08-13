@@ -452,11 +452,25 @@ function HymnWorkspace({
                 className="tool-button clear"
                 onClick={() => {
                   remember();
-                  onChange({ ...hymn, highlights: [], melismas: [] });
+                  onChange({ ...hymn, highlights: [] });
                 }}
-                disabled={!hymn.highlights.length && !hymn.melismas.length}
+                disabled={!hymn.highlights.length}
+                aria-label="Clear all colour markings from this hymn"
+                title="Keep melismas and remove only phrase colours"
               >
-                Clear
+                Clear colours
+              </button>
+              <button
+                className="tool-button clear-melismas"
+                onClick={() => {
+                  remember();
+                  onChange({ ...hymn, melismas: [] });
+                }}
+                disabled={!hymn.melismas.length}
+                aria-label="Clear all melisma markings from this hymn"
+                title="Keep phrase colours and remove only melisma underlines"
+              >
+                Clear melismas
               </button>
             </div>
           )}

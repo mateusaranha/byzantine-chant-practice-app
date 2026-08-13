@@ -14,5 +14,7 @@ test("the production build contains the app shell and migration features", async
   const javascript = await readFile(new URL(`../dist/assets/${javascriptName}`, import.meta.url), "utf8");
   assert.match(javascript, /psaltikon-backup-/);
   assert.match(javascript, /Export backup/);
+  assert.match(javascript, /Clear colours/);
+  assert.match(javascript, /Clear melismas/);
   assert.match(javascript, /Ἀγγελικαὶ δυνάμεις/);
 });

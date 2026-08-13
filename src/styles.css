@@ -68,6 +68,7 @@ button,input,textarea { font:inherit; } button { cursor:pointer; }
 .tool-button { border:1px solid #cdbfae; border-radius:3px; background:#fffdf8; color:#675b50; padding:6px 9px; font:11px Arial,sans-serif; }
 .tool-button:hover:not(:disabled),.tool-button.active { border-color:#927f6e; background:#eee6d9; color:#3c332d; }
 .tool-button.clear { margin-left:auto; color:#8d302d; }
+.tool-button.clear-melismas { color:#8d302d; }
 .tool-button:disabled { opacity:.38; cursor:default; }
 .annotation-divider { width:1px; height:22px; margin:0 2px; background:#d6c8b5; }
 .melisma-tool { min-height:29px; display:flex; align-items:center; gap:6px; border:1px solid #cdbfae; border-radius:3px; background:#fffdf8; color:#675b50; padding:4px 8px; font:11px Arial,sans-serif; }
