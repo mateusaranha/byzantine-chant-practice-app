@@ -30,7 +30,7 @@ jobs:
       - name: Build site
         run: npm run build
         env:
-          VITE_PUBLISHER_API_URL: ${{ vars.PUBLISHER_API_URL }}
+          VITE_PUBLISHER_API_URL: https://psaltikon-publisher.m-aranha-martins.workers.dev
       - name: Configure Pages
         uses: actions/configure-pages@v5
         with:
