@@ -8,6 +8,10 @@ const MAX_HYMNS = 80;
 let installationTokenCache = null;
 let approvedUsersCache = null;
 
+function sessionSigningSecret(env) {
+  return `psaltikon-session-v1:${env.GITHUB_CLIENT_SECRET}`;
+}
+
 export function normalizeLogin(value) {
   return String(value || "").trim().toLowerCase();
 }
@@ -276,7 +280,7 @@ function bearer(request) {
 }
 
 async function currentUser(request, env) {
-  const payload = await verifySession(bearer(request), env.SESSION_SECRET);
+  const payload = await verifySession(bearer(request), sessionSigningSecret(env));
   return {
     login: normalizeLogin(payload.login),
     id: payload.id,
@@ -311,7 +315,7 @@ async function beginLogin(request, env) {
   const nonce = crypto.randomUUID();
   const state = await signSession(
     { kind: "oauth", nonce, exp: Math.floor(Date.now() / 1000) + 10 * 60 },
-    env.SESSION_SECRET,
+    sessionSigningSecret(env),
   );
   const callback = `${new URL(request.url).origin}/auth/callback`;
   const url = new URL("https://github.com/login/oauth/authorize");
@@ -329,7 +333,7 @@ async function beginLogin(request, env) {
 
 async function finishLogin(request, env) {
   const url = new URL(request.url);
-  const state = await verifySession(url.searchParams.get("state"), env.SESSION_SECRET, "oauth");
+  const state = await verifySession(url.searchParams.get("state"), sessionSigningSecret(env), "oauth");
   if (!state.nonce || state.nonce !== cookieValue(request, "psaltikon_oauth")) {
     throw new HttpError(400, "A tentativa de login expirou. Tente novamente.");
   }
@@ -359,7 +363,7 @@ async function finishLogin(request, env) {
       avatarUrl: profile.avatar_url || "",
       exp: Math.floor(Date.now() / 1000) + SESSION_SECONDS,
     },
-    env.SESSION_SECRET,
+    sessionSigningSecret(env),
   );
   const destination = `${env.FRONTEND_URL.replace(/\/$/, "")}/#psaltikon_token=${encodeURIComponent(session)}`;
   return new Response(null, {

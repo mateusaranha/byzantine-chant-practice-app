@@ -19,15 +19,15 @@ download a private key. Never commit the secret or private key.
 
 ## Worker configuration
 
-Add these as GitHub Actions repository secrets. The deployment workflow copies
-them into encrypted Cloudflare Worker secrets:
+Add these as GitHub Actions repository secrets. The `PSALTIKON_` prefix avoids
+GitHub's reserved secret-name prefix. The deployment workflow maps them into
+encrypted Cloudflare Worker secrets:
 
-- `GITHUB_APP_ID`
-- `GITHUB_CLIENT_ID`
-- `GITHUB_INSTALLATION_ID`
-- `GITHUB_CLIENT_SECRET`
-- `GITHUB_PRIVATE_KEY`
-- `SESSION_SECRET`
+- `PSALTIKON_APP_ID`
+- `PSALTIKON_CLIENT_ID`
+- `PSALTIKON_INSTALLATION_ID`
+- `PSALTIKON_CLIENT_SECRET`
+- `PSALTIKON_PRIVATE_KEY`
 
 Also add `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`. The Cloudflare API
 token only needs permission to edit Workers Scripts in the selected account.

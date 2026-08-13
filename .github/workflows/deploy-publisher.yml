@@ -35,11 +35,9 @@ jobs:
             GITHUB_INSTALLATION_ID
             GITHUB_CLIENT_SECRET
             GITHUB_PRIVATE_KEY
-            SESSION_SECRET
         env:
-          GITHUB_APP_ID: ${{ secrets.GITHUB_APP_ID }}
-          GITHUB_CLIENT_ID: ${{ secrets.GITHUB_CLIENT_ID }}
-          GITHUB_INSTALLATION_ID: ${{ secrets.GITHUB_INSTALLATION_ID }}
-          GITHUB_CLIENT_SECRET: ${{ secrets.GITHUB_CLIENT_SECRET }}
-          GITHUB_PRIVATE_KEY: ${{ secrets.GITHUB_PRIVATE_KEY }}
-          SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
+          GITHUB_APP_ID: ${{ secrets.PSALTIKON_APP_ID }}
+          GITHUB_CLIENT_ID: ${{ secrets.PSALTIKON_CLIENT_ID }}
+          GITHUB_INSTALLATION_ID: ${{ secrets.PSALTIKON_INSTALLATION_ID }}
+          GITHUB_CLIENT_SECRET: ${{ secrets.PSALTIKON_CLIENT_SECRET }}
+          GITHUB_PRIVATE_KEY: ${{ secrets.PSALTIKON_PRIVATE_KEY }}
