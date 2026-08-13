@@ -649,7 +649,10 @@ export default function Home() {
   const [hydrated, setHydrated] = useState(false);
   const [printRequest, setPrintRequest] = useState(0);
   const [cloudOpen, setCloudOpen] = useState(false);
+  const [aboutOpen, setAboutOpen] = useState(false);
   const backupInputRef = useRef<HTMLInputElement>(null);
+  const aboutButtonRef = useRef<HTMLButtonElement>(null);
+  const aboutCloseRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     const saved = localStorage.getItem("psaltikon-practice");
@@ -681,6 +684,22 @@ export default function Home() {
     if (!hydrated) return;
     localStorage.setItem("psaltikon-practice", JSON.stringify({ version: 3, hymns }));
   }, [hymns, hydrated]);
+
+  useEffect(() => {
+    if (!aboutOpen) return;
+    const previousOverflow = document.body.style.overflow;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setAboutOpen(false);
+    };
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", closeOnEscape);
+    window.requestAnimationFrame(() => aboutCloseRef.current?.focus());
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", closeOnEscape);
+      aboutButtonRef.current?.focus();
+    };
+  }, [aboutOpen]);
 
   function updateHymn(updated: Hymn) {
     setHymns((current) => current.map((hymn) => (hymn.id === updated.id ? updated : hymn)));
@@ -806,7 +825,67 @@ export default function Home() {
         Add another hymn
       </button>
 
-      <footer>Ἄσωμεν τῷ Κυρίῳ · A quiet place for daily practice</footer>
+      <footer>
+        <span>Ἄσωμεν τῷ Κυρίῳ · A quiet place for daily practice</span>
+        <button
+          ref={aboutButtonRef}
+          className="about-link"
+          onClick={() => setAboutOpen(true)}
+          aria-haspopup="dialog"
+          aria-expanded={aboutOpen}
+        >
+          Sobre
+        </button>
+      </footer>
+
+      {aboutOpen && (
+        <div
+          className="about-modal"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) setAboutOpen(false);
+          }}
+        >
+          <section
+            className="about-dialog"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="about-title"
+            onKeyDown={(event) => {
+              if (event.key === "Tab") {
+                event.preventDefault();
+                aboutCloseRef.current?.focus();
+              }
+            }}
+          >
+            <button
+              ref={aboutCloseRef}
+              className="about-close"
+              onClick={() => setAboutOpen(false)}
+              aria-label="Fechar janela Sobre"
+            >
+              ×
+            </button>
+            <p className="eyebrow">Auxílio de estudo</p>
+            <h2 id="about-title">Sobre o Psaltikon</h2>
+            <div className="about-copy">
+              <p>
+                Aprender a notação musical bizantina continua sendo o caminho ideal para estudar este canto.
+                O Psaltikon serve como uma ponte para quem ainda não lê essa notação com fluência suficiente
+                para os hinos que precisa aprender.
+              </p>
+              <p>
+                As cores dividem a letra em pequenos trechos melódicos. Os sublinhados simples e duplos marcam
+                sílabas com ornamentação mais breve ou mais pronunciada, ajudando a relacionar o texto àquilo
+                que se ouve na gravação.
+              </p>
+              <p>
+                Assim, a ferramenta auxilia a escuta, a prática e a memorização dos hinos, mas não pretende
+                substituir o aprendizado da notação bizantina propriamente dita.
+              </p>
+            </div>
+          </section>
+        </div>
+      )}
     </main>
   );
 }
