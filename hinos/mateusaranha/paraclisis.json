@@ -1,0 +1,192 @@
+{
+  "version": 1,
+  "title": "Paráclisis",
+  "owner": {
+    "login": "mateusaranha",
+    "name": "Mateus Aranha Martins",
+    "avatarUrl": "https://avatars.githubusercontent.com/u/91752012?v=4"
+  },
+  "updatedAt": "2026-08-17T15:18:24.553Z",
+  "hymns": [
+    {
+      "id": "primary-hymn",
+      "title": "Dimitrios Papagiannopoulos",
+      "mode": "3:54",
+      "lyrics": "Τῇ πολυσόφῳ καὶ κλυτῇ Ἀθληφόρῳ,\nΑἰκατερίνῃ τῇ τοῦ Κτίσαντος νύμφη,\nπροσέλθωμεν οἱ πάσχοντες βοῶντες\nἐκ ψυχῆς· Μάρτυς ἀξιάγαστε, ἐξελοῦ\nτοὺς σοὺς δούλους, τῆς παρούσης\nθλίψεως, καὶ μελλούσης ἀνάγκης· σὺ\nγὰρ μεγίστην ἔχεις πρὸς Χριστόν, καὶ\nπαῤῥησίαν, σεμνὴ καὶ οἰκείωσιν.",
+      "videoInput": "https://www.youtube.com/watch?v=Rxu9RjmTLqM",
+      "videoId": "Rxu9RjmTLqM",
+      "targetSpeed": 1,
+      "repeatMode": "off",
+      "fontSize": 27,
+      "lineHeight": 1.9,
+      "highlights": [
+        {
+          "start": 0,
+          "end": 30,
+          "color": "sage"
+        },
+        {
+          "start": 32,
+          "end": 65,
+          "color": "sky"
+        },
+        {
+          "start": 67,
+          "end": 108,
+          "color": "rose"
+        },
+        {
+          "start": 110,
+          "end": 126,
+          "color": "sage"
+        },
+        {
+          "start": 128,
+          "end": 152,
+          "color": "sky"
+        },
+        {
+          "start": 154,
+          "end": 174,
+          "color": "rose"
+        },
+        {
+          "start": 176,
+          "end": 197,
+          "color": "sage"
+        },
+        {
+          "start": 199,
+          "end": 233,
+          "color": "sky"
+        },
+        {
+          "start": 235,
+          "end": 248,
+          "color": "rose"
+        },
+        {
+          "start": 250,
+          "end": 269,
+          "color": "sage"
+        }
+      ],
+      "melismas": []
+    },
+    {
+      "id": "hymn-1786976189306-hmlg1",
+      "title": "Nun Christina - Oceanitissa",
+      "mode": "2:43",
+      "lyrics": "Τῇ πολυσόφῳ καὶ κλυτῇ Ἀθληφόρῳ,\nΑἰκατερίνῃ τῇ τοῦ Κτίσαντος νύμφη,\nπροσέλθωμεν οἱ πάσχοντες βοῶντες\nἐκ ψυχῆς· Μάρτυς ἀξιάγαστε, ἐξελοῦ\nτοὺς σοὺς δούλους, τῆς παρούσης\nθλίψεως, καὶ μελλούσης ἀνάγκης· σὺ\nγὰρ μεγίστην ἔχεις πρὸς Χριστόν, καὶ\nπαῤῥησίαν, σεμνὴ καὶ οἰκείωσιν.",
+      "videoInput": "https://www.youtube.com/watch?v=_JczouCMHLk",
+      "videoId": "_JczouCMHLk",
+      "targetSpeed": 1,
+      "repeatMode": "off",
+      "fontSize": 27,
+      "lineHeight": 1.9,
+      "highlights": [
+        {
+          "start": 0,
+          "end": 30,
+          "color": "sage"
+        },
+        {
+          "start": 32,
+          "end": 65,
+          "color": "sky"
+        },
+        {
+          "start": 67,
+          "end": 108,
+          "color": "rose"
+        },
+        {
+          "start": 110,
+          "end": 152,
+          "color": "sage"
+        },
+        {
+          "start": 154,
+          "end": 197,
+          "color": "sky"
+        },
+        {
+          "start": 199,
+          "end": 233,
+          "color": "rose"
+        },
+        {
+          "start": 235,
+          "end": 269,
+          "color": "sage"
+        }
+      ],
+      "melismas": []
+    },
+    {
+      "id": "hymn-1786976259410-p5l7y",
+      "title": "Styliani Almp",
+      "mode": "2:47",
+      "lyrics": "Τῇ πολυσόφῳ καὶ κλυτῇ Ἀθληφόρῳ,\nΑἰκατερίνῃ τῇ τοῦ Κτίσαντος νύμφη,\nπροσέλθωμεν οἱ πάσχοντες βοῶντες\nἐκ ψυχῆς· Μάρτυς ἀξιάγαστε, ἐξελοῦ\nτοὺς σοὺς δούλους, τῆς παρούσης\nθλίψεως, καὶ μελλούσης ἀνάγκης· σὺ\nγὰρ μεγίστην ἔχεις πρὸς Χριστόν, καὶ\nπαῤῥησίαν, σεμνὴ καὶ οἰκείωσιν.",
+      "videoInput": "https://www.youtube.com/watch?v=vETOCizlIbo",
+      "videoId": "vETOCizlIbo",
+      "targetSpeed": 1,
+      "repeatMode": "off",
+      "fontSize": 27,
+      "lineHeight": 1.9,
+      "highlights": [
+        {
+          "start": 0,
+          "end": 30,
+          "color": "sage"
+        },
+        {
+          "start": 32,
+          "end": 65,
+          "color": "sky"
+        },
+        {
+          "start": 67,
+          "end": 93,
+          "color": "rose"
+        },
+        {
+          "start": 93,
+          "end": 108,
+          "color": "rose"
+        },
+        {
+          "start": 110,
+          "end": 126,
+          "color": "sage"
+        },
+        {
+          "start": 128,
+          "end": 152,
+          "color": "sky"
+        },
+        {
+          "start": 154,
+          "end": 174,
+          "color": "rose"
+        },
+        {
+          "start": 176,
+          "end": 197,
+          "color": "sage"
+        },
+        {
+          "start": 199,
+          "end": 233,
+          "color": "sky"
+        },
+        {
+          "start": 235,
+          "end": 269,
+          "color": "rose"
+        }
+      ],
+      "melismas": []
+    }
+  ]
+}
