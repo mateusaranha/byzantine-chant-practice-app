@@ -4,6 +4,7 @@ import test from "node:test";
 
 test("the production build contains the app shell and migration features", async () => {
   const html = await readFile(new URL("../dist/index.html", import.meta.url), "utf8");
+  const source = await readFile(new URL("../src/App.tsx", import.meta.url), "utf8");
   assert.match(html, /Psaltikon/);
   assert.match(html, /manifest\.webmanifest/);
 
@@ -19,6 +20,10 @@ test("the production build contains the app shell and migration features", async
   assert.match(javascript, /Export backup/);
   assert.match(javascript, /Clear colours/);
   assert.match(javascript, /Clear melismas/);
+  assert.match(javascript, /No annotation tool/);
+  assert.match(javascript, /Cursor mode/);
+  assert.match(javascript, /Hide tools/);
+  assert.match(javascript, /Show tools/);
   assert.match(javascript, /Biblioteca online/);
   assert.match(javascript, /Solicitar permissão para publicar/);
   assert.match(javascript, /Salvar conjunto no GitHub/);
@@ -26,6 +31,12 @@ test("the production build contains the app shell and migration features", async
   assert.match(javascript, /não pretende substituir o aprendizado da notação bizantina/);
   assert.match(javascript, /Ἀγγελικαὶ δυνάμεις/);
   assert.match(stylesheet, /\.about-modal/);
+  assert.match(stylesheet, /\.tools-panel/);
+  assert.match(stylesheet, /\.selection-neutral/);
   assert.match(stylesheet, /@media \(width<=520px\)/);
   assert.match(stylesheet, /max-height:calc\(100vh\s*-\s*20px\)/);
+  assert.match(source, /useState<ActiveTool>\(null\)/);
+  assert.match(source, /if \(!activeTool\) return;/);
+  assert.match(source, /if \(toolsOpen\) setActiveTool\(null\)/);
+  assert.match(source, /aria-expanded=\{toolsOpen\}/);
 });
