@@ -48,14 +48,17 @@ Observar no notebook e no celular:
 
 Estas propostas precisam de desenho e teste antes de implementação:
 
-- **Modo neutro/cursor:** permitir que nenhuma ferramenta fique ativa; hoje cada hino começa com a cor `sage`, o que pode causar marcação acidental.
-- **Barra de ferramentas recolhível:** liberar espaço sem esconder controles essenciais ou dificultar a edição.
 - **Textos didáticos mais econômicos:** avaliar se as dicas permanentes sob texto e vídeo podem ser resumidas, recolhidas ou movidas para ajuda contextual.
 - **Estado inicial neutro:** avaliar substituir o hino demonstrativo automático por “Novo hino”, sem perder uma boa apresentação de primeiro uso.
 - **Modo de treino:** explorar ocultar e revelar cores e melismas em etapas; o comportamento ainda não está definido.
 - **Velocidade:** verificar em uso real se o botão de `+` muda de posição ou provoca toque acidental quando `Reset` aparece/desaparece; não há falha confirmada no código.
 
 A borracha e os comandos independentes **Clear colours** e **Clear melismas** já existem. Melhorias futuras devem evitar duplicar esses comportamentos.
+
+Concluído nesta etapa:
+
+- **Modo neutro/cursor:** cada hino pode ficar sem ferramenta de marcação ativa, evitando alterações acidentais.
+- **Painel de ferramentas recolhível:** fonte, espaçamento e ferramentas de anotação podem ser ocultados durante a prática; recolher o painel ativa o modo neutro.
 
 ## Ajuda e demonstração
 

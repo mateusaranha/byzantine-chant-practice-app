@@ -4,7 +4,16 @@ import CloudLibrary from "./CloudLibrary";
 type Highlight = { start: number; end: number; color: string };
 type Melisma = { start: number; end: number; kind: "simple" | "complex" };
 type RepeatMode = "off" | "once" | "three" | "continuous";
-type ActiveTool = string | "melisma-simple" | "melisma-complex" | "eraser";
+type ActiveTool =
+  | "sage"
+  | "sky"
+  | "rose"
+  | "wheat"
+  | "lavender"
+  | "melisma-simple"
+  | "melisma-complex"
+  | "eraser"
+  | null;
 type PlayerStateEvent = { data: number };
 type YouTubePlayer = {
   destroy: () => void;
@@ -54,7 +63,7 @@ const COLORS = [
   { name: "Rose", value: "rose" },
   { name: "Wheat", value: "wheat" },
   { name: "Lavender", value: "lavender" },
-];
+] as const;
 
 const PUBLISHER_API_URL = String(import.meta.env.VITE_PUBLISHER_API_URL || "").replace(/\/$/, "");
 
@@ -188,12 +197,14 @@ function HymnWorkspace({
 }) {
   const [editing, setEditing] = useState(!hymn.lyrics);
   const [history, setHistory] = useState<HistoryEntry[]>([]);
-  const [activeTool, setActiveTool] = useState<ActiveTool>("sage");
+  const [activeTool, setActiveTool] = useState<ActiveTool>(null);
+  const [toolsOpen, setToolsOpen] = useState(true);
   const lyricsRef = useRef<HTMLDivElement>(null);
   const playerHostRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<YouTubePlayer | null>(null);
   const repeatModeRef = useRef<RepeatMode>(hymn.repeatMode);
   const repeatsDoneRef = useRef(0);
+  const toolsId = `hymn-tools-${hymn.id}`;
 
   useEffect(() => {
     if (printRequest > 0) setEditing(false);
@@ -272,6 +283,7 @@ function HymnWorkspace({
   }
 
   function markSelection() {
+    if (!activeTool) return;
     const selection = window.getSelection();
     const container = lyricsRef.current;
     if (!selection || selection.isCollapsed || !selection.rangeCount || !container) return;
@@ -326,6 +338,11 @@ function HymnWorkspace({
   function changeTargetSpeed(amount: number) {
     const next = Math.min(2, Math.max(0.25, Math.round((hymn.targetSpeed + amount) * 20) / 20));
     onChange({ ...hymn, targetSpeed: next });
+  }
+
+  function toggleTools() {
+    if (toolsOpen) setActiveTool(null);
+    setToolsOpen(!toolsOpen);
   }
 
   return (
@@ -384,99 +401,136 @@ function HymnWorkspace({
             </button>
           </div>
 
-          <div className="type-controls" aria-label={`Text display settings for hymn ${index + 1}`}>
-            <label>
-              Text size
-              <input
-                type="range"
-                min="20"
-                max="40"
-                value={hymn.fontSize}
-                onChange={(event) => onChange({ ...hymn, fontSize: +event.target.value })}
-              />
-            </label>
-            <label>
-              Spacing
-              <input
-                type="range"
-                min="1.4"
-                max="2.4"
-                step="0.1"
-                value={hymn.lineHeight}
-                onChange={(event) => onChange({ ...hymn, lineHeight: +event.target.value })}
-              />
-            </label>
-          </div>
-
-          {!editing && (
-            <div className="highlighter-bar" aria-label={`Annotations for hymn ${index + 1}`}>
-              <span className="tool-label">Phrase</span>
-              <div className="swatches">
-                {COLORS.map((color) => (
-                  <button
-                    key={color.value}
-                    className={`swatch swatch-${color.value} ${activeTool === color.value ? "active" : ""}`}
-                    onClick={() => setActiveTool(color.value)}
-                    aria-label={`${color.name} highlighter`}
-                    title={color.name}
-                  />
-                ))}
-              </div>
-              <span className="annotation-divider" aria-hidden="true" />
-              <span className="tool-label">Melisma</span>
+          <div className={`tools-panel ${toolsOpen ? "" : "collapsed"}`}>
+            <div className="tools-panel-heading">
+              <span className="tool-label">
+                Text tools{toolsOpen ? "" : " · Cursor mode"}
+              </span>
               <button
-                className={`melisma-tool ${activeTool === "melisma-simple" ? "active" : ""}`}
-                onClick={() => setActiveTool("melisma-simple")}
-                aria-label="Short melisma"
-                title="Short melisma"
+                className="tools-toggle"
+                onClick={toggleTools}
+                aria-expanded={toolsOpen}
+                aria-controls={toolsId}
               >
-                <span className="melisma-sample simple">μ</span> Short
-              </button>
-              <button
-                className={`melisma-tool ${activeTool === "melisma-complex" ? "active" : ""}`}
-                onClick={() => setActiveTool("melisma-complex")}
-                aria-label="Long melisma"
-                title="Long or complex melisma"
-              >
-                <span className="melisma-sample complex">μ</span> Long
-              </button>
-              <span className="annotation-divider" aria-hidden="true" />
-              <button
-                className={`tool-button ${activeTool === "eraser" ? "active" : ""}`}
-                onClick={() => setActiveTool("eraser")}
-                aria-label="Eraser"
-              >
-                Eraser
-              </button>
-              <button className="tool-button" onClick={undo} disabled={!history.length}>
-                Undo
-              </button>
-              <button
-                className="tool-button clear"
-                onClick={() => {
-                  remember();
-                  onChange({ ...hymn, highlights: [] });
-                }}
-                disabled={!hymn.highlights.length}
-                aria-label="Clear all colour markings from this hymn"
-                title="Keep melismas and remove only phrase colours"
-              >
-                Clear colours
-              </button>
-              <button
-                className="tool-button clear-melismas"
-                onClick={() => {
-                  remember();
-                  onChange({ ...hymn, melismas: [] });
-                }}
-                disabled={!hymn.melismas.length}
-                aria-label="Clear all melisma markings from this hymn"
-                title="Keep phrase colours and remove only melisma underlines"
-              >
-                Clear melismas
+                {toolsOpen ? "Hide tools" : "Show tools"}
+                <span className="tools-toggle-icon" aria-hidden="true">
+                  {toolsOpen ? "⌃" : "⌄"}
+                </span>
               </button>
             </div>
-          )}
+
+            {toolsOpen && (
+              <div id={toolsId} className="tools-panel-content">
+                <div className="type-controls" aria-label={`Text display settings for hymn ${index + 1}`}>
+                  <label>
+                    Text size
+                    <input
+                      type="range"
+                      min="20"
+                      max="40"
+                      value={hymn.fontSize}
+                      onChange={(event) => onChange({ ...hymn, fontSize: +event.target.value })}
+                    />
+                  </label>
+                  <label>
+                    Spacing
+                    <input
+                      type="range"
+                      min="1.4"
+                      max="2.4"
+                      step="0.1"
+                      value={hymn.lineHeight}
+                      onChange={(event) => onChange({ ...hymn, lineHeight: +event.target.value })}
+                    />
+                  </label>
+                </div>
+
+                {!editing && (
+                  <div className="highlighter-bar" aria-label={`Annotations for hymn ${index + 1}`}>
+                    <button
+                      className={`tool-button cursor-tool ${activeTool === null ? "active" : ""}`}
+                      onClick={() => setActiveTool(null)}
+                      aria-label="No annotation tool"
+                      aria-pressed={activeTool === null}
+                      title="Select text without changing annotations"
+                    >
+                      <span aria-hidden="true">↖</span> Cursor
+                    </button>
+                    <span className="annotation-divider" aria-hidden="true" />
+                    <span className="tool-label">Phrase</span>
+                    <div className="swatches">
+                      {COLORS.map((color) => (
+                        <button
+                          key={color.value}
+                          className={`swatch swatch-${color.value} ${activeTool === color.value ? "active" : ""}`}
+                          onClick={() => setActiveTool(color.value)}
+                          aria-label={`${color.name} highlighter`}
+                          aria-pressed={activeTool === color.value}
+                          title={color.name}
+                        />
+                      ))}
+                    </div>
+                    <span className="annotation-divider" aria-hidden="true" />
+                    <span className="tool-label">Melisma</span>
+                    <button
+                      className={`melisma-tool ${activeTool === "melisma-simple" ? "active" : ""}`}
+                      onClick={() => setActiveTool("melisma-simple")}
+                      aria-label="Short melisma"
+                      aria-pressed={activeTool === "melisma-simple"}
+                      title="Short melisma"
+                    >
+                      <span className="melisma-sample simple">μ</span> Short
+                    </button>
+                    <button
+                      className={`melisma-tool ${activeTool === "melisma-complex" ? "active" : ""}`}
+                      onClick={() => setActiveTool("melisma-complex")}
+                      aria-label="Long melisma"
+                      aria-pressed={activeTool === "melisma-complex"}
+                      title="Long or complex melisma"
+                    >
+                      <span className="melisma-sample complex">μ</span> Long
+                    </button>
+                    <span className="annotation-divider" aria-hidden="true" />
+                    <button
+                      className={`tool-button ${activeTool === "eraser" ? "active" : ""}`}
+                      onClick={() => setActiveTool("eraser")}
+                      aria-label="Eraser"
+                      aria-pressed={activeTool === "eraser"}
+                    >
+                      Eraser
+                    </button>
+                    <button className="tool-button" onClick={undo} disabled={!history.length}>
+                      Undo
+                    </button>
+                    <button
+                      className="tool-button clear"
+                      onClick={() => {
+                        remember();
+                        onChange({ ...hymn, highlights: [] });
+                      }}
+                      disabled={!hymn.highlights.length}
+                      aria-label="Clear all colour markings from this hymn"
+                      title="Keep melismas and remove only phrase colours"
+                    >
+                      Clear colours
+                    </button>
+                    <button
+                      className="tool-button clear-melismas"
+                      onClick={() => {
+                        remember();
+                        onChange({ ...hymn, melismas: [] });
+                      }}
+                      disabled={!hymn.melismas.length}
+                      aria-label="Clear all melisma markings from this hymn"
+                      title="Keep phrase colours and remove only melisma underlines"
+                    >
+                      Clear melismas
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
 
           {editing ? (
             <textarea
@@ -498,7 +552,7 @@ function HymnWorkspace({
           ) : hymn.lyrics ? (
             <div
               ref={lyricsRef}
-              className={`lyrics selection-${activeTool}`}
+              className={`lyrics ${activeTool ? `selection-${activeTool}` : "selection-neutral"}`}
               lang="grc"
               style={{ fontSize: hymn.fontSize, lineHeight: hymn.lineHeight }}
               onMouseUp={markSelection}
