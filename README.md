@@ -1,77 +1,82 @@
 # Psaltikon
 
-O **Psaltikon** é uma ferramenta gratuita para auxiliar o estudo e a prática do canto bizantino. Ele coloca a letra do hino e uma gravação de referência lado a lado, permitindo transformar aquilo que se ouve em marcações visuais simples.
+O **Psaltikon** é uma ferramenta gratuita para preparar, marcar, organizar e praticar hinos de canto bizantino. A letra e uma gravação do YouTube ficam lado a lado; cores dividem frases melódicas e sublinhados simples ou duplos indicam melismas.
 
 **Aplicativo:** <https://mateusaranha.github.io/byzantine-chant-practice-app/>
 
-O caminho ideal continua sendo aprender a própria notação musical bizantina. O Psaltikon não pretende substituí-la: funciona como uma ferramenta intermediária para quem ainda não lê a partitura com fluência suficiente para os hinos que precisa aprender.
+O Psaltikon é um auxílio intermediário de escuta e memorização. Ele não substitui o aprendizado da notação musical bizantina, a formação musical ou a orientação de um professor.
 
-## Como as marcações ajudam
+## O que existe hoje
 
-- As **cores suaves** dividem a letra em pequenos trechos melódicos.
-- O **sublinhado simples** identifica sílabas com ornamentação mais breve.
-- O **sublinhado duplo** identifica sílabas com ornamentação mais pronunciada ou prolongada.
-- A **velocidade-alvo** registra em qual velocidade a gravação deve ser praticada.
+- vários hinos no mesmo espaço de trabalho;
+- texto grego politônico com fonte local incorporada;
+- cinco cores de marcação, melisma simples e melisma complexo;
+- borracha, desfazer e limpeza independente de cores e melismas;
+- vídeo do YouTube, velocidade-alvo e repetição 1x, 3x ou contínua;
+- ajustes de tamanho e espaçamento do texto;
+- impressão/PDF em formato vertical, iniciando cada hino em nova página;
+- backup e restauração do espaço de trabalho em JSON;
+- biblioteca pública de conjuntos, com publicação restrita a usuários aprovados;
+- interface responsiva, instalável como PWA e com o shell disponível offline após ser carregado.
 
-Essas indicações aproximam texto e escuta, ajudando a visualizar a estrutura da melodia e a memorizar o hino. Elas são um recurso prático de estudo, não uma transcrição da notação bizantina.
+Recursos online — YouTube, login e biblioteca — continuam dependendo de conexão.
 
-## Principais recursos
+## Fluxo principal de uso
 
-- número livre de hinos em uma mesma sessão;
-- texto grego politônico com fonte incorporada;
-- marca-textos para trechos melódicos;
-- sublinhados simples e duplos para melismas;
-- controles independentes para apagar cores ou melismas de cada hino;
-- vídeo do YouTube ao lado da letra;
-- indicação de velocidade-alvo e opções de repetição da gravação;
-- ajuste do tamanho e do espaçamento do texto;
-- PDF vertical, com um hino por página, otimizado para leitura no celular;
-- backup e restauração de todo o espaço de estudo em JSON;
-- biblioteca online de conjuntos compartilhados pelo GitHub;
-- interface instalável no celular e disponível offline após o primeiro carregamento.
+1. Edite título, modo e texto do hino em **Edit text**.
+2. Cole uma URL do YouTube e carregue a gravação.
+3. Selecione trechos do texto com uma cor, melisma ou borracha ativa.
+4. Registre a velocidade-alvo e, se necessário, configure a repetição do vídeo.
+5. Acrescente outros hinos e ajuste a apresentação de cada um.
+6. Mantenha o trabalho no dispositivo, exporte backup/PDF ou publique o conjunto na biblioteca.
 
-## Uso básico
+## Arquitetura atual
 
-1. Abra **Edit text** e informe o título, o modo e a letra do hino.
-2. Cole o endereço da gravação do YouTube e pressione **Load**.
-3. Se necessário, registre a velocidade-alvo da prática.
-4. Selecione uma cor e marque cada trecho melódico na letra.
-5. Use **Short** ou **Long** para sublinhar sílabas com ornamentação.
-6. Acrescente outros hinos com **Add another hymn**.
-7. Exporte um PDF para a liturgia ou um backup para guardar uma cópia completa.
+| Parte | Tecnologia | Responsabilidade |
+|---|---|---|
+| Interface | React 19, TypeScript e Vite | Edição, marcações, vídeo, backup, impressão e biblioteca |
+| Hospedagem | GitHub Pages | Entrega do site estático gerado em `dist/` |
+| Persistência local | `localStorage` | Espaço de trabalho e sessão do publicador no navegador |
+| Biblioteca | Arquivos JSON neste repositório | Conjuntos públicos versionados em `hinos/<login>/` |
+| Serviço de publicação | Cloudflare Worker | OAuth, autorização e operações de leitura/gravação no GitHub |
+| Acesso ao repositório | GitHub App do Psaltikon | Permissões limitadas a Contents e Issues neste repositório |
 
-O link **Sobre**, no rodapé do aplicativo, apresenta uma explicação curta do propósito pedagógico da ferramenta.
+Não há servidor da interface, banco de dados próprio, contas próprias do Psaltikon nem agente de IA em execução. O Worker é um intermediário sem armazenamento de hinos: recebe uma requisição, aplica regras e usa a GitHub App para operar no repositório.
 
-## Armazenamento e compartilhamento
+### Fluxos de dados
 
-O espaço de trabalho é salvo automaticamente no `localStorage` do navegador. Isso mantém letras, vídeos e marcações naquele navegador e dispositivo, mesmo depois de fechar a página. Limpar os dados do site remove essa cópia local.
+**Trabalho local:** a interface carrega `psaltikon-practice` do `localStorage`, normaliza dados antigos e salva automaticamente `{ version: 3, hymns }` após alterações. O backup exportado usa a versão 4 e inclui data de exportação. Importar ou abrir um conjunto substitui o espaço atual após confirmação.
 
-Há duas formas de transferir ou compartilhar o conteúdo:
+**Leitura da biblioteca:** qualquer visitante pode listar e abrir os JSONs de `hinos/` pelo Worker, sem login. O conjunto carregado passa a ser uma cópia local editável.
 
-- **Export backup / Import backup:** cria e restaura um arquivo local com todos os hinos e marcações.
-- **Biblioteca online:** conjuntos publicados ficam em `hinos/<usuario-do-github>/` neste repositório e podem ser abertos em qualquer dispositivo. Qualquer visitante pode ler; somente usuários aprovados podem publicar ou excluir conteúdo autorizado.
+**Publicação:** o login ocorre no GitHub por OAuth. O Worker devolve uma sessão assinada, válida por oito horas, que a interface guarda em `psaltikon-publisher-session`. Para salvar, a conta precisa constar em `config/approved-users.json`. Cada publicador grava somente em `hinos/<seu-login>/`; o administrador também pode excluir conjuntos de outros autores.
 
-Os conjuntos da biblioteca e o histórico do repositório são públicos. Não publique informações privadas nas letras, títulos ou links.
+**Solicitação de acesso:** o Worker cria uma Issue com o prefixo `[Psaltikon access]`. O administrador aprova ou recusa pela interface; a aprovação atualiza `config/approved-users.json` e fecha a Issue.
 
-## Visão técnica
+Cada conjunto publicado:
 
-O projeto tem duas partes:
+- é um JSON público com título, autor, data e hinos;
+- recebe um slug de até 72 caracteres;
+- aceita de 1 a 80 hinos e até 1,5 MB de dados de hinos;
+- é gravado diretamente na branch `main`, gerando um commit e preservando histórico.
 
-- **Interface:** React, TypeScript e Vite, publicada como site estático no GitHub Pages.
-- **Serviço de publicação:** Cloudflare Worker responsável pela autenticação com GitHub e pelas operações da biblioteca.
+Não publique informações privadas em títulos, letras ou links.
 
-O Worker não mantém um banco de dados próprio para os hinos. Ele lê e grava arquivos JSON no repositório por meio de uma GitHub App instalada somente neste projeto. As configurações sensíveis ficam nos mecanismos protegidos do GitHub Actions e da Cloudflare e nunca devem ser incluídas no código-fonte.
-
-### Estrutura relevante
+## Estrutura relevante
 
 ```text
-src/                    interface React
-public/                 ícones, manifesto e suporte offline
-hinos/                  conjuntos publicados, separados por usuário
-config/                 lista de publicadores aprovados
-publisher-worker/       serviço de autenticação e publicação
-.github/workflows/      publicação automática do site e do Worker
-tests/                  verificações do build da interface
+src/App.tsx                     espaço de trabalho e persistência local
+src/CloudLibrary.tsx            interface da biblioteca e administração
+src/styles.css                  layout responsivo e impressão
+public/                         manifesto, ícones e service worker
+hinos/<login>/                  conjuntos públicos versionados
+config/approved-users.json      administrador e publicadores aprovados
+publisher-worker/src/index.js   OAuth, autorização e API da biblioteca
+publisher-worker/wrangler.jsonc valores públicos do Worker
+.github/workflows/              testes e deploys automáticos
+tests/                          teste do build da interface
+ROADMAP.md                      prioridades, ideias e adiamentos
+AGENTS.md                       instruções para futuros agentes
 ```
 
 ## Desenvolvimento local
@@ -83,37 +88,71 @@ npm ci
 npm run dev
 ```
 
-Para gerar e verificar a versão de produção:
+Para compilar e testar a interface:
 
 ```bash
 npm test
 ```
 
-O serviço em `publisher-worker/` possui instalação e testes próprios:
+`npm test` fornece uma URL fictícia ao build para também verificar a presença da biblioteca. Para testar manualmente contra outro serviço:
+
+```bash
+VITE_PUBLISHER_API_URL=https://worker.example npm run dev
+```
+
+O Worker tem instalação independente:
 
 ```bash
 cd publisher-worker
 npm ci
 npm test
+npm run dev
 ```
 
-Não crie arquivos locais com credenciais a partir dos exemplos sem confirmar que eles permanecem ignorados pelo Git. Nunca registre credenciais, tokens, chaves privadas ou valores de autenticação no repositório.
+Para desenvolvimento local do Worker, use `publisher-worker/.dev.vars.example` como referência e mantenha o arquivo real em `.dev.vars`, que já está ignorado pelo Git. Nunca registre tokens, client secrets ou chaves privadas.
 
-## Publicação e manutenção
+## API do Worker
 
-- Alterações na branch `main` acionam a publicação automática do GitHub Pages.
-- Alterações em `publisher-worker/` acionam os testes e a publicação do Worker.
-- Os hinos publicados são arquivos JSON comuns e permanecem versionados no histórico do GitHub.
-- Antes de atualizar dependências, execute os testes da interface e do Worker e confira o funcionamento do fluxo de login, leitura e publicação.
-- Ao alterar o endereço público do site ou do Worker, revise também os endereços de retorno e as origens permitidas da autenticação.
+- públicos: `GET /health`, `GET /auth/login`, `GET /auth/callback`, `GET /api/library` e `GET /api/library/item`;
+- com sessão: `GET /api/session` e `POST /api/access/request`;
+- publicador aprovado: `POST /api/sets` e `DELETE /api/sets`;
+- administrador: `POST /api/admin/approve|reject|add|revoke`.
 
-## Privacidade e segurança
+O CORS aceita somente a origem definida em `FRONTEND_URL`. Os valores públicos de repositório, administrador e frontend ficam em `publisher-worker/wrangler.jsonc`; credenciais ficam como secrets do GitHub Actions e do Cloudflare.
 
-- O login acontece na página oficial do GitHub; o Psaltikon não recebe a senha do usuário.
-- O aplicativo usa somente GitHub, Cloudflare e YouTube para suas funções online.
-- A leitura da biblioteca não exige login.
-- A publicação exige autenticação e aprovação do administrador.
-- Cada publicador grava em sua própria pasta; ações administrativas permanecem restritas ao administrador.
-- O código do projeto é público e pode ser auditado neste repositório.
+## Deploy
 
-O Psaltikon é uma ferramenta auxiliar de estudo e memorização pela escuta. Ele não substitui formação musical, orientação de um professor ou o aprendizado da notação bizantina.
+### Interface no GitHub Pages
+
+Qualquer push na `main` aciona `.github/workflows/deploy-pages.yml`:
+
+1. instala dependências;
+2. compila e testa tipos;
+3. injeta `VITE_PUBLISHER_API_URL` com a URL atual do Worker;
+4. publica `dist/` no GitHub Pages.
+
+Como os conjuntos também são gravados na `main`, salvar ou excluir um conjunto atualmente aciona esse workflow, embora não altere o código da interface.
+
+### Worker na Cloudflare
+
+Mudanças em `publisher-worker/**` ou no próprio workflow acionam `.github/workflows/deploy-publisher.yml`, que testa e publica com Wrangler. O workflow precisa destes secrets:
+
+- `CLOUDFLARE_API_TOKEN` e `CLOUDFLARE_ACCOUNT_ID`;
+- `PSALTIKON_APP_ID`, `PSALTIKON_CLIENT_ID` e `PSALTIKON_INSTALLATION_ID`;
+- `PSALTIKON_CLIENT_SECRET` e `PSALTIKON_PRIVATE_KEY`.
+
+O workflow os mapeia para secrets criptografados do Worker. Veja `publisher-worker/README.md` para o provisionamento da GitHub App.
+
+Ao mudar nome do repositório, URLs públicas ou domínios, revise em conjunto o workflow do Pages, `wrangler.jsonc`, a GitHub App, o callback OAuth, CORS, manifesto e documentação.
+
+## Segurança e manutenção
+
+- os workflows declaram permissões mínimas para o `GITHUB_TOKEN`;
+- Actions externas estão fixadas por hashes imutáveis, com a versão legível em comentário;
+- a GitHub App deve continuar instalada somente neste repositório, com Contents e Issues em leitura/escrita;
+- a leitura é pública, mas gravação, exclusão e administração são validadas no Worker;
+- o caminho de gravação é limitado à pasta do publicador, salvo o poder adicional de exclusão do administrador;
+- tokens de instalação e lista de aprovados têm cache curto em memória; os hinos não são armazenados no Worker;
+- CodeQL, Dependabot e outras proteções configuradas na interface do GitHub não aparecem necessariamente nos arquivos do checkout e devem ser conferidas nas configurações do repositório.
+
+Antes de mudanças relevantes, leia também `ROADMAP.md` e `AGENTS.md`.

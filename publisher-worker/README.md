@@ -34,6 +34,9 @@ token only needs permission to edit Workers Scripts in the selected account.
 
 The non-secret repository and frontend values live in `wrangler.jsonc`.
 
-After deployment, set the GitHub repository variable `PUBLISHER_API_URL` to the
-Worker URL. The Pages workflow passes it to Vite and reveals the online library
-only after the service is available.
+The Pages workflow currently passes the deployed Worker URL directly to Vite as
+`VITE_PUBLISHER_API_URL`. The online library is omitted from builds where that
+environment variable is empty. If the Worker URL changes, update the Pages
+workflow and the GitHub App callback. If the frontend URL changes, update the
+GitHub App homepage and `FRONTEND_URL`, which also controls CORS and the OAuth
+return destination.
