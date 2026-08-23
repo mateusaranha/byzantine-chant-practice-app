@@ -6,20 +6,66 @@
     "name": "Mateus Aranha Martins",
     "avatarUrl": "https://avatars.githubusercontent.com/u/91752012?v=4"
   },
-  "updatedAt": "2026-08-23T19:21:43.422Z",
+  "updatedAt": "2026-08-23T20:36:48.710Z",
   "hymns": [
     {
       "id": "primary-hymn",
       "title": "Τοῦ Προδρόμου",
       "mode": "Ἦχος βʹ",
       "lyrics": "Μνήμη Δικαίου μετʼ ἐγκωμίων· σοὶ δὲ ἀρκέσει ἡ μαρτυρία τοῦ Κυρίου Πρόδρομε· ἀνεδείχθης γὰρ ὄντως καὶ Προφητῶν σεβασμιώτερος, ὅτι καὶ ἐν ῥείθροις βαπτίσαι κατηξιώθης τὸν κηρυττόμενον. Ὅθεν τῆς ἀληθείας ὑπεραθλήσας, χαίρων εὐηγγελίσω καὶ τοῖς ἐν ᾍδῃ, Θεὸν φανερωθέντα ἐν σαρκί, τὸν αἴροντα τὴν ἁμαρτίαν τοῦ κόσμου, καὶ παρέχοντα ἡμῖν τὸ μέγα ἔλεος.",
-      "videoInput": "",
-      "videoId": "",
+      "videoInput": "https://www.youtube.com/watch?v=JRwFV7_ShGQ",
+      "videoId": "JRwFV7_ShGQ",
       "targetSpeed": 1,
       "repeatMode": "off",
       "fontSize": 27,
       "lineHeight": 1.9,
-      "highlights": [],
+      "highlights": [
+        {
+          "start": 0,
+          "end": 27,
+          "color": "sage"
+        },
+        {
+          "start": 29,
+          "end": 74,
+          "color": "sky"
+        },
+        {
+          "start": 76,
+          "end": 123,
+          "color": "rose"
+        },
+        {
+          "start": 125,
+          "end": 181,
+          "color": "sage"
+        },
+        {
+          "start": 183,
+          "end": 212,
+          "color": "sky"
+        },
+        {
+          "start": 214,
+          "end": 247,
+          "color": "rose"
+        },
+        {
+          "start": 249,
+          "end": 274,
+          "color": "sage"
+        },
+        {
+          "start": 276,
+          "end": 311,
+          "color": "sky"
+        },
+        {
+          "start": 313,
+          "end": 346,
+          "color": "rose"
+        }
+      ],
       "melismas": []
     },
     {
