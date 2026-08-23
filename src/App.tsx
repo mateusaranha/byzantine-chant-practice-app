@@ -1,9 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import CloudLibrary from "./CloudLibrary";
+import { newHymn, normalizeHymn, restoreHymns } from "./hymnState";
+import type { Highlight, Hymn, Melisma, RepeatMode } from "./hymnState";
 
-type Highlight = { start: number; end: number; color: string };
-type Melisma = { start: number; end: number; kind: "simple" | "complex" };
-type RepeatMode = "off" | "once" | "three" | "continuous";
 type ActiveTool =
   | "sage"
   | "sky"
@@ -19,21 +18,6 @@ type YouTubePlayer = {
   destroy: () => void;
   playVideo: () => void;
   seekTo: (seconds: number, allowSeekAhead: boolean) => void;
-};
-
-export type Hymn = {
-  id: string;
-  title: string;
-  mode: string;
-  lyrics: string;
-  videoInput: string;
-  videoId: string;
-  targetSpeed: number;
-  repeatMode: RepeatMode;
-  fontSize: number;
-  lineHeight: number;
-  highlights: Highlight[];
-  melismas: Melisma[];
 };
 
 type HistoryEntry = {
@@ -58,42 +42,14 @@ declare global {
 }
 
 const COLORS = [
-  { name: "Sage", value: "sage" },
-  { name: "Sky", value: "sky" },
-  { name: "Rose", value: "rose" },
-  { name: "Wheat", value: "wheat" },
-  { name: "Lavender", value: "lavender" },
+  { name: "Verde-sálvia", value: "sage" },
+  { name: "Azul-celeste", value: "sky" },
+  { name: "Rosa", value: "rose" },
+  { name: "Trigo", value: "wheat" },
+  { name: "Lavanda", value: "lavender" },
 ] as const;
 
 const PUBLISHER_API_URL = String(import.meta.env.VITE_PUBLISHER_API_URL || "").replace(/\/$/, "");
-
-const SAMPLE = `Ἀγγελικαὶ δυνάμεις ἐπὶ τὸ μνῆμά σου,
-καὶ οἱ φυλάσσοντες ἀπενεκρώθησαν·
-καὶ ἵστατο Μαρία ἐν τῷ τάφῳ,
-ζητοῦσα τὸ ἄχραντόν σου σῶμα.
-
-Ἐσκύλευσας τὸν ᾅδην,
-μὴ πειρασθεὶς ὑπ᾿ αὐτοῦ·
-ὑπήντησας τῇ Παρθένῳ,
-δωρούμενος τὴν ζωήν.
-
-Ὁ ἀναστὰς ἐκ τῶν νεκρῶν,
-Κύριε, δόξα σοι.`;
-
-const FIRST_HYMN: Hymn = {
-  id: "primary-hymn",
-  title: "Ἀγγελικαὶ δυνάμεις",
-  mode: "Ἦχος πλάγιος τοῦ δευτέρου",
-  lyrics: SAMPLE,
-  videoInput: "",
-  videoId: "",
-  targetSpeed: 1,
-  repeatMode: "off",
-  fontSize: 27,
-  lineHeight: 1.9,
-  highlights: [],
-  melismas: [],
-};
 
 let youtubeApiPromise: Promise<void> | null = null;
 
@@ -127,41 +83,6 @@ function youtubeId(value: string) {
   } catch {
     return "";
   }
-}
-
-function newHymn(): Hymn {
-  return {
-    ...FIRST_HYMN,
-    id: `hymn-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
-    title: "New hymn",
-    mode: "",
-    lyrics: "",
-    videoInput: "",
-    videoId: "",
-    highlights: [],
-    melismas: [],
-  };
-}
-
-function normalizeHymn(value: Partial<Hymn>, fallbackId: string): Hymn {
-  const savedSpeed =
-    typeof value.targetSpeed === "number" && Number.isFinite(value.targetSpeed)
-      ? value.targetSpeed
-      : 1;
-  return {
-    ...FIRST_HYMN,
-    ...value,
-    id: typeof value.id === "string" ? value.id : fallbackId,
-    title: typeof value.title === "string" ? value.title : "New hymn",
-    mode: typeof value.mode === "string" ? value.mode : "",
-    lyrics: typeof value.lyrics === "string" ? value.lyrics : "",
-    highlights: Array.isArray(value.highlights) ? value.highlights : [],
-    melismas: Array.isArray(value.melismas) ? value.melismas : [],
-    targetSpeed: Math.min(2, Math.max(0.25, Math.round(savedSpeed * 20) / 20)),
-    repeatMode: ["off", "once", "three", "continuous"].includes(value.repeatMode || "")
-      ? (value.repeatMode as RepeatMode)
-      : "off",
-  };
 }
 
 function subtractRange<T extends { start: number; end: number }>(
@@ -349,18 +270,18 @@ function HymnWorkspace({
     <section
       className={`hymn-block ${hymn.lyrics ? "printable-hymn" : "empty-hymn-block"}`}
       id={hymn.id}
-      aria-label={`Hymn ${index + 1}`}
+      aria-label={`Hino ${index + 1}`}
     >
       <div className="hymn-strip">
-        <span>Hymn {String(index + 1).padStart(2, "0")}</span>
+        <span>Hino {String(index + 1).padStart(2, "0")}</span>
         {canDelete && (
           <button
             className="delete-hymn"
             onClick={() => {
-              if (window.confirm("Remove this hymn and all its annotations?")) onDelete();
+              if (window.confirm("Remover este hino e todas as suas marcações?")) onDelete();
             }}
-            aria-label={`Remove hymn ${index + 1}`}
-            title="Remove hymn"
+            aria-label={`Remover hino ${index + 1}`}
+            title="Remover hino"
           >
             ×
           </button>
@@ -378,33 +299,33 @@ function HymnWorkspace({
                     className="title-editor"
                     value={hymn.title}
                     onChange={(event) => onChange({ ...hymn, title: event.target.value })}
-                    aria-label={`Title for hymn ${index + 1}`}
-                    placeholder="Hymn title"
+                    aria-label={`Título do hino ${index + 1}`}
+                    placeholder="Título do hino"
                   />
                   <input
                     className="mode-editor"
                     value={hymn.mode}
                     onChange={(event) => onChange({ ...hymn, mode: event.target.value })}
-                    aria-label={`Mode for hymn ${index + 1}`}
-                    placeholder="Mode or note (optional)"
+                    aria-label={`Modo ou observação do hino ${index + 1}`}
+                    placeholder="Modo ou observação (opcional)"
                   />
                 </>
               ) : (
                 <>
-                  <h2>{hymn.title || "Untitled hymn"}</h2>
+                  <h2>{hymn.title || "Hino sem título"}</h2>
                   {hymn.mode && <p className="mode">{hymn.mode}</p>}
                 </>
               )}
             </div>
             <button className="text-button" onClick={() => setEditing(!editing)}>
-              {editing ? "Done" : "Edit text"}
+              {editing ? "Concluir" : "Editar texto"}
             </button>
           </div>
 
           <div className={`tools-panel ${toolsOpen ? "" : "collapsed"}`}>
             <div className="tools-panel-heading">
               <span className="tool-label">
-                Text tools{toolsOpen ? "" : " · Cursor mode"}
+                Ferramentas de texto{toolsOpen ? "" : " · Modo cursor"}
               </span>
               <button
                 className="tools-toggle"
@@ -412,7 +333,7 @@ function HymnWorkspace({
                 aria-expanded={toolsOpen}
                 aria-controls={toolsId}
               >
-                {toolsOpen ? "Hide tools" : "Show tools"}
+                {toolsOpen ? "Recolher" : "Mostrar"}
                 <span className="tools-toggle-icon" aria-hidden="true">
                   {toolsOpen ? "⌃" : "⌄"}
                 </span>
@@ -421,9 +342,9 @@ function HymnWorkspace({
 
             {toolsOpen && (
               <div id={toolsId} className="tools-panel-content">
-                <div className="type-controls" aria-label={`Text display settings for hymn ${index + 1}`}>
+                <div className="type-controls" aria-label={`Configurações de exibição do hino ${index + 1}`}>
                   <label>
-                    Text size
+                    Tamanho do texto
                     <input
                       type="range"
                       min="20"
@@ -433,7 +354,7 @@ function HymnWorkspace({
                     />
                   </label>
                   <label>
-                    Spacing
+                    Espaçamento
                     <input
                       type="range"
                       min="1.4"
@@ -446,25 +367,25 @@ function HymnWorkspace({
                 </div>
 
                 {!editing && (
-                  <div className="highlighter-bar" aria-label={`Annotations for hymn ${index + 1}`}>
+                  <div className="highlighter-bar" aria-label={`Ferramentas de marcação do hino ${index + 1}`}>
                     <button
                       className={`tool-button cursor-tool ${activeTool === null ? "active" : ""}`}
                       onClick={() => setActiveTool(null)}
-                      aria-label="No annotation tool"
+                      aria-label="Nenhuma ferramenta de marcação"
                       aria-pressed={activeTool === null}
-                      title="Select text without changing annotations"
+                      title="Selecionar texto sem alterar marcações"
                     >
                       <span aria-hidden="true">↖</span> Cursor
                     </button>
                     <span className="annotation-divider" aria-hidden="true" />
-                    <span className="tool-label">Phrase</span>
+                    <span className="tool-label">Frase</span>
                     <div className="swatches">
                       {COLORS.map((color) => (
                         <button
                           key={color.value}
                           className={`swatch swatch-${color.value} ${activeTool === color.value ? "active" : ""}`}
                           onClick={() => setActiveTool(color.value)}
-                          aria-label={`${color.name} highlighter`}
+                          aria-label={`Marcador ${color.name.toLowerCase()}`}
                           aria-pressed={activeTool === color.value}
                           title={color.name}
                         />
@@ -475,32 +396,32 @@ function HymnWorkspace({
                     <button
                       className={`melisma-tool ${activeTool === "melisma-simple" ? "active" : ""}`}
                       onClick={() => setActiveTool("melisma-simple")}
-                      aria-label="Short melisma"
+                      aria-label="Melisma simples"
                       aria-pressed={activeTool === "melisma-simple"}
-                      title="Short melisma"
+                      title="Melisma simples"
                     >
-                      <span className="melisma-sample simple">μ</span> Short
+                      <span className="melisma-sample simple">μ</span> Simples
                     </button>
                     <button
                       className={`melisma-tool ${activeTool === "melisma-complex" ? "active" : ""}`}
                       onClick={() => setActiveTool("melisma-complex")}
-                      aria-label="Long melisma"
+                      aria-label="Melisma complexo"
                       aria-pressed={activeTool === "melisma-complex"}
-                      title="Long or complex melisma"
+                      title="Melisma longo ou complexo"
                     >
-                      <span className="melisma-sample complex">μ</span> Long
+                      <span className="melisma-sample complex">μ</span> Complexo
                     </button>
                     <span className="annotation-divider" aria-hidden="true" />
                     <button
                       className={`tool-button ${activeTool === "eraser" ? "active" : ""}`}
                       onClick={() => setActiveTool("eraser")}
-                      aria-label="Eraser"
+                      aria-label="Borracha"
                       aria-pressed={activeTool === "eraser"}
                     >
-                      Eraser
+                      Borracha
                     </button>
                     <button className="tool-button" onClick={undo} disabled={!history.length}>
-                      Undo
+                      Desfazer
                     </button>
                     <button
                       className="tool-button clear"
@@ -509,10 +430,10 @@ function HymnWorkspace({
                         onChange({ ...hymn, highlights: [] });
                       }}
                       disabled={!hymn.highlights.length}
-                      aria-label="Clear all colour markings from this hymn"
-                      title="Keep melismas and remove only phrase colours"
+                      aria-label="Limpar todas as cores deste hino"
+                      title="Manter os melismas e remover somente as cores das frases"
                     >
-                      Clear colours
+                      Limpar cores
                     </button>
                     <button
                       className="tool-button clear-melismas"
@@ -521,10 +442,10 @@ function HymnWorkspace({
                         onChange({ ...hymn, melismas: [] });
                       }}
                       disabled={!hymn.melismas.length}
-                      aria-label="Clear all melisma markings from this hymn"
-                      title="Keep phrase colours and remove only melisma underlines"
+                      aria-label="Limpar todos os melismas deste hino"
+                      title="Manter as cores das frases e remover somente os sublinhados de melisma"
                     >
-                      Clear melismas
+                      Limpar melismas
                     </button>
                   </div>
                 )}
@@ -545,8 +466,8 @@ function HymnWorkspace({
                   melismas: [],
                 });
               }}
-              aria-label={`Greek lyrics for hymn ${index + 1}`}
-              placeholder="Paste or type the Greek text here…"
+              aria-label={`Texto grego do hino ${index + 1}`}
+              placeholder="Cole ou digite o texto grego aqui…"
               spellCheck={false}
             />
           ) : hymn.lyrics ? (
@@ -574,14 +495,14 @@ function HymnWorkspace({
             </div>
           ) : (
             <button className="empty-lyrics" onClick={() => setEditing(true)}>
-              Add the Greek lyrics
+              Adicionar texto grego
             </button>
           )}
           <p className="practice-hint">
-            Colours divide melodic phrases; a single or double underline marks the melismatic syllables.
+            As cores dividem frases melódicas; um sublinhado simples ou duplo marca as sílabas melismáticas.
           </p>
           {hymn.targetSpeed !== 1 && (
-            <p className="print-meta">Practice speed: {hymn.targetSpeed.toFixed(2)}×</p>
+            <p className="print-meta">Velocidade de treino: {hymn.targetSpeed.toFixed(2)}×</p>
           )}
         </article>
 
@@ -589,10 +510,10 @@ function HymnWorkspace({
           <div className="panel-heading compact">
             <div>
               <p className="section-label">Ἄκουσμα</p>
-              <h2>Reference recording</h2>
+              <h2>Gravação de referência</h2>
             </div>
-            <div className="speed-badge" aria-label={`Practice at ${hymn.targetSpeed.toFixed(2)} times speed`}>
-              <span>Practice at</span>
+            <div className="speed-badge" aria-label={`Praticar a ${hymn.targetSpeed.toFixed(2)} vezes a velocidade normal`}>
+              <span>Praticar a</span>
               <strong>{hymn.targetSpeed.toFixed(2)}×</strong>
             </div>
           </div>
@@ -601,27 +522,27 @@ function HymnWorkspace({
               <div
                 ref={playerHostRef}
                 className="youtube-player"
-                aria-label={`Reference recording for hymn ${index + 1}`}
+                aria-label={`Gravação de referência do hino ${index + 1}`}
               />
             ) : (
               <div className="video-empty">
                 <div className="play-icon" aria-hidden="true">▶</div>
-                <h3>Add your recording</h3>
-                <p>Paste a YouTube link below to keep the chant and its text side by side.</p>
+                <h3>Adicione sua gravação</h3>
+                <p>Cole abaixo um link do YouTube para manter o canto e o texto lado a lado.</p>
               </div>
             )}
           </div>
 
-          <div className="speed-control" aria-label={`Target practice speed for hymn ${index + 1}`}>
+          <div className="speed-control" aria-label={`Velocidade de treino desejada para o hino ${index + 1}`}>
             <div className="speed-copy">
-              <span>Target practice speed</span>
-              <p>Set the YouTube player to this value before practising.</p>
+              <span>Velocidade de treino desejada</span>
+              <p>Ajuste o vídeo do YouTube para este valor antes de praticar.</p>
             </div>
             <div className="speed-stepper">
               <button
                 onClick={() => changeTargetSpeed(-0.05)}
                 disabled={hymn.targetSpeed <= 0.25}
-                aria-label="Decrease target speed by 0.05"
+                aria-label="Diminuir a velocidade de treino em 0,05"
               >
                 −
               </button>
@@ -629,7 +550,7 @@ function HymnWorkspace({
               <button
                 onClick={() => changeTargetSpeed(0.05)}
                 disabled={hymn.targetSpeed >= 2}
-                aria-label="Increase target speed by 0.05"
+                aria-label="Aumentar a velocidade de treino em 0,05"
               >
                 +
               </button>
@@ -637,23 +558,23 @@ function HymnWorkspace({
                 <button
                   className="speed-reset"
                   onClick={() => onChange({ ...hymn, targetSpeed: 1 })}
-                  aria-label="Reset target speed to original"
+                  aria-label="Restaurar a velocidade de treino original"
                 >
-                  Reset
+                  Restaurar
                 </button>
               )}
             </div>
           </div>
 
           {hymn.videoId && (
-            <div className="repeat-controls" aria-label={`Video repetition for hymn ${index + 1}`}>
-              <span>Repeat video</span>
+            <div className="repeat-controls" aria-label={`Repetição do vídeo do hino ${index + 1}`}>
+              <span>Repetir vídeo</span>
               <div className="repeat-options">
                 {([
-                  ["off", "No repeat"],
-                  ["once", "Repeat once"],
-                  ["three", "Repeat 3×"],
-                  ["continuous", "Continuous"],
+                  ["off", "Sem repetição"],
+                  ["once", "Repetir 1×"],
+                  ["three", "Repetir 3×"],
+                  ["continuous", "Contínuo"],
                 ] as [RepeatMode, string][]).map(([value, label]) => (
                   <button
                     key={value}
@@ -669,7 +590,7 @@ function HymnWorkspace({
           )}
 
           <div className="video-input">
-            <label htmlFor={`youtube-url-${hymn.id}`}>YouTube link</label>
+            <label htmlFor={`youtube-url-${hymn.id}`}>Link do YouTube</label>
             <div className="input-row">
               <input
                 id={`youtube-url-${hymn.id}`}
@@ -678,18 +599,18 @@ function HymnWorkspace({
                 onKeyDown={(event) => event.key === "Enter" && loadVideo()}
                 placeholder="https://youtube.com/watch?v=…"
               />
-              <button onClick={loadVideo}>Load</button>
+              <button onClick={loadVideo}>Carregar</button>
             </div>
             {hymn.videoInput && !youtubeId(hymn.videoInput) && (
-              <p className="error">Please enter a valid YouTube link.</p>
+              <p className="error">Informe um link válido do YouTube.</p>
             )}
           </div>
 
           <div className="practice-card">
             <span className="ornament" aria-hidden="true">✣</span>
             <div>
-              <h3>Practice method</h3>
-              <p>Listen to one phrase, pause, sing it back, then follow the full recording without stopping.</p>
+              <h3>Método de treino</h3>
+              <p>Ouça uma frase, pause, cante-a de volta e depois acompanhe a gravação inteira sem parar.</p>
             </div>
           </div>
         </aside>
@@ -699,7 +620,7 @@ function HymnWorkspace({
 }
 
 export default function Home() {
-  const [hymns, setHymns] = useState<Hymn[]>([FIRST_HYMN]);
+  const [hymns, setHymns] = useState<Hymn[]>(() => [newHymn()]);
   const [hydrated, setHydrated] = useState(false);
   const [printRequest, setPrintRequest] = useState(0);
   const [cloudOpen, setCloudOpen] = useState(false);
@@ -712,23 +633,8 @@ export default function Home() {
     const saved = localStorage.getItem("psaltikon-practice");
     if (saved) {
       try {
-        const data = JSON.parse(saved);
-        if (Array.isArray(data.hymns) && data.hymns.length) {
-          setHymns(data.hymns.map((hymn: Partial<Hymn>, index: number) => normalizeHymn(hymn, `hymn-${index}`)));
-        } else {
-          setHymns([
-            normalizeHymn(
-              {
-                ...data,
-                id: "primary-hymn",
-                title: "Ἀγγελικαὶ δυνάμεις",
-                mode: "Ἦχος πλάγιος τοῦ δευτέρου",
-                melismas: [],
-              },
-              "primary-hymn",
-            ),
-          ]);
-        }
+        const restored = restoreHymns(JSON.parse(saved));
+        if (restored) setHymns(restored);
       } catch {}
     }
     setHydrated(true);
@@ -784,7 +690,7 @@ export default function Home() {
     const url = URL.createObjectURL(new Blob([backup], { type: "application/json" }));
     const link = document.createElement("a");
     link.href = url;
-    link.download = `psaltikon-backup-${new Date().toISOString().slice(0, 10)}.json`;
+    link.download = `psaltikon-copia-seguranca-${new Date().toISOString().slice(0, 10)}.json`;
     link.click();
     URL.revokeObjectURL(url);
   }
@@ -794,15 +700,15 @@ export default function Home() {
     if (!file) return;
     try {
       const data = JSON.parse(await file.text());
-      if (!Array.isArray(data.hymns) || !data.hymns.length) throw new Error("Invalid backup");
+      if (!Array.isArray(data.hymns) || !data.hymns.length) throw new Error("Cópia de segurança inválida");
       setHymns(
         data.hymns.map((hymn: Partial<Hymn>, index: number) =>
           normalizeHymn(hymn, `hymn-${index}`),
         ),
       );
-      window.alert("Backup imported successfully.");
+      window.alert("Cópia de segurança importada com sucesso.");
     } catch {
-      window.alert("This file is not a valid Psaltikon backup.");
+      window.alert("Este arquivo não é uma cópia de segurança válida do Psaltikon.");
     } finally {
       event.target.value = "";
     }
@@ -816,18 +722,18 @@ export default function Home() {
           <p className="eyebrow">Μελέτη Ψαλτικής</p>
           <h1>Psaltikon</h1>
         </div>
-        <div className="header-note">Listen · Read · Repeat</div>
+        <div className="header-note">Escute · Leia · Repita</div>
         <div className="header-actions">
           {PUBLISHER_API_URL && (
             <button className="backup-button cloud-trigger" onClick={() => setCloudOpen((open) => !open)}>
               Biblioteca online
             </button>
           )}
-          <button className="backup-button" onClick={exportBackup} title="Save all hymns and annotations">
-            Export backup
+          <button className="backup-button" onClick={exportBackup} title="Salvar todos os hinos e marcações em um arquivo">
+            Exportar cópia de segurança
           </button>
           <button className="backup-button" onClick={() => backupInputRef.current?.click()}>
-            Import backup
+            Importar cópia de segurança
           </button>
           <input
             ref={backupInputRef}
@@ -835,15 +741,15 @@ export default function Home() {
             type="file"
             accept="application/json,.json"
             onChange={importBackup}
-            aria-label="Import Psaltikon backup"
+            aria-label="Importar cópia de segurança do Psaltikon"
           />
           <button
             className="export-pdf"
             onClick={exportLyricsPdf}
-            title="Portrait PDF sized for comfortable reading on a phone"
+            title="PDF em formato vertical para leitura confortável no celular"
           >
             <span aria-hidden="true">↓</span>
-            Export mobile PDF
+            Exportar PDF para celular
           </button>
         </div>
       </header>
@@ -876,11 +782,11 @@ export default function Home() {
 
       <button className="add-hymn" onClick={addHymn}>
         <span aria-hidden="true">+</span>
-        Add another hymn
+        Adicionar outro hino
       </button>
 
       <footer>
-        <span>Ἄσωμεν τῷ Κυρίῳ · A quiet place for daily practice</span>
+        <span>Ἄσωμεν τῷ Κυρίῳ · Um espaço tranquilo para a prática diária</span>
         <button
           ref={aboutButtonRef}
           className="about-link"

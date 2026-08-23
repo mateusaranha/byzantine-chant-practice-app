@@ -28,9 +28,9 @@ Testar login, biblioteca, os dois deploys e redirecionamentos. Não tratar o red
 
 Substituir os sliders por controles de menos/valor/mais, com alvos confortáveis para toque e boa apresentação no notebook. Considerar restaurar o padrão sem acrescentar ruído visual.
 
-### 3. Padronizar e internacionalizar a interface
+### 3. Avaliar internacionalização da interface
 
-Eliminar a mistura atual de português e inglês. Estruturar os textos da interface em um catálogo central, permitindo trocar o idioma inteiro e lembrar a escolha no navegador.
+A interface atual foi padronizada em português brasileiro. Se o uso real justificar outros idiomas, estruturar futuramente os textos em um catálogo central, permitindo trocar o idioma inteiro e lembrar a escolha no navegador.
 
 Português brasileiro e inglês são os candidatos naturais iniciais, mas os idiomas suportados ainda devem ser decididos. Grego ou outros idiomas só devem ser acrescentados com revisão linguística adequada. O seletor traduz a interface, não o texto dos hinos.
 
@@ -49,9 +49,8 @@ Observar no notebook e no celular:
 Estas propostas precisam de desenho e teste antes de implementação:
 
 - **Textos didáticos mais econômicos:** avaliar se as dicas permanentes sob texto e vídeo podem ser resumidas, recolhidas ou movidas para ajuda contextual.
-- **Estado inicial neutro:** avaliar substituir o hino demonstrativo automático por “Novo hino”, sem perder uma boa apresentação de primeiro uso.
 - **Modo de treino:** explorar ocultar e revelar cores e melismas em etapas; o comportamento ainda não está definido.
-- **Velocidade:** verificar em uso real se o botão de `+` muda de posição ou provoca toque acidental quando `Reset` aparece/desaparece; não há falha confirmada no código.
+- **Velocidade:** verificar em uso real se o botão de `+` muda de posição ou provoca toque acidental quando `Restaurar` aparece/desaparece; não há falha confirmada no código.
 
 A borracha e os comandos independentes **Clear colours** e **Clear melismas** já existem. Melhorias futuras devem evitar duplicar esses comportamentos.
 
@@ -59,6 +58,8 @@ Concluído nesta etapa:
 
 - **Modo neutro/cursor:** cada hino pode ficar sem ferramenta de marcação ativa, evitando alterações acidentais.
 - **Painel de ferramentas recolhível:** fonte, espaçamento e ferramentas de anotação podem ser ocultados durante a prática; recolher o painel ativa o modo neutro.
+- **Primeiro acesso vazio:** na ausência de trabalho local válido, o aplicativo começa com o mesmo “Novo hino” vazio usado pelo comando de adicionar hino, sem substituir sessões existentes.
+- **Interface em português:** os textos visíveis e de acessibilidade foram padronizados em português brasileiro; grego litúrgico, nomes próprios e termos técnicos necessários foram preservados.
 
 ## Ajuda e demonstração
 

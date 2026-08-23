@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import type { Hymn } from "./App";
+import type { Hymn } from "./hymnState";
 
 type GitHubUser = {
   login: string;
@@ -372,7 +372,7 @@ export default function CloudLibrary({
                 </div>
               ))}
               <div className="admin-add">
-                <input value={newPublisher} onChange={(event) => setNewPublisher(event.target.value)} placeholder="login do GitHub" />
+                <input value={newPublisher} onChange={(event) => setNewPublisher(event.target.value)} placeholder="nome de usuário do GitHub" />
                 <button onClick={() => adminAction("add", { login: newPublisher })} disabled={!newPublisher.trim()}>Adicionar</button>
               </div>
             </div>
