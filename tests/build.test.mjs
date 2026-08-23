@@ -1,10 +1,72 @@
 import assert from "node:assert/strict";
 import { readFile, readdir } from "node:fs/promises";
 import test from "node:test";
+import ts from "typescript";
+
+async function loadHymnState() {
+  const source = await readFile(new URL("../src/hymnState.ts", import.meta.url), "utf8");
+  const javascript = ts.transpileModule(source, {
+    compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 },
+  }).outputText;
+  return import(`data:text/javascript;base64,${Buffer.from(javascript).toString("base64")}`);
+}
+
+test("a new workspace starts with the same empty hymn used by the add command", async () => {
+  const { newHymn, restoreHymns } = await loadHymnState();
+  const hymn = newHymn();
+  assert.equal(hymn.title, "Novo hino");
+  assert.equal(hymn.mode, "");
+  assert.equal(hymn.lyrics, "");
+  assert.equal(hymn.videoInput, "");
+  assert.equal(hymn.videoId, "");
+  assert.equal(hymn.targetSpeed, 1);
+  assert.equal(hymn.repeatMode, "off");
+  assert.deepEqual(hymn.highlights, []);
+  assert.deepEqual(hymn.melismas, []);
+  assert.equal(restoreHymns(null), null);
+  assert.equal(restoreHymns({}), null);
+  assert.equal(restoreHymns({ version: 3, hymns: [] }), null);
+  assert.equal(restoreHymns({ version: 3, hymns: [null, "inválido"] }), null);
+});
+
+test("saved and legacy workspaces are restored without replacing their content", async () => {
+  const { restoreHymns } = await loadHymnState();
+  const saved = restoreHymns({
+    version: 3,
+    hymns: [
+      {
+        id: "saved-hymn",
+        title: "Hino salvo",
+        mode: "Modo salvo",
+        lyrics: "κείμενον",
+        videoInput: "https://youtu.be/abcdefghijk",
+        videoId: "abcdefghijk",
+        targetSpeed: 0.85,
+        repeatMode: "three",
+        fontSize: 31,
+        lineHeight: 2.1,
+        highlights: [{ start: 0, end: 3, color: "sage" }],
+        melismas: [{ start: 3, end: 6, kind: "simple" }],
+      },
+    ],
+  });
+  assert.equal(saved?.[0].title, "Hino salvo");
+  assert.equal(saved?.[0].lyrics, "κείμενον");
+  assert.equal(saved?.[0].targetSpeed, 0.85);
+  assert.equal(saved?.[0].repeatMode, "three");
+  assert.deepEqual(saved?.[0].highlights, [{ start: 0, end: 3, color: "sage" }]);
+  assert.deepEqual(saved?.[0].melismas, [{ start: 3, end: 6, kind: "simple" }]);
+
+  const legacy = restoreHymns({ lyrics: "παλαιόν", highlights: [] });
+  assert.equal(legacy?.[0].title, "Ἀγγελικαὶ δυνάμεις");
+  assert.equal(legacy?.[0].lyrics, "παλαιόν");
+});
 
 test("the production build contains the app shell and migration features", async () => {
   const html = await readFile(new URL("../dist/index.html", import.meta.url), "utf8");
   const source = await readFile(new URL("../src/App.tsx", import.meta.url), "utf8");
+  const stateSource = await readFile(new URL("../src/hymnState.ts", import.meta.url), "utf8");
+  const librarySource = await readFile(new URL("../src/CloudLibrary.tsx", import.meta.url), "utf8");
   assert.match(html, /Psaltikon/);
   assert.match(html, /manifest\.webmanifest/);
 
@@ -16,20 +78,20 @@ test("the production build contains the app shell and migration features", async
 
   const javascript = await readFile(new URL(`../dist/assets/${javascriptName}`, import.meta.url), "utf8");
   const stylesheet = await readFile(new URL(`../dist/assets/${stylesheetName}`, import.meta.url), "utf8");
-  assert.match(javascript, /psaltikon-backup-/);
-  assert.match(javascript, /Export backup/);
-  assert.match(javascript, /Clear colours/);
-  assert.match(javascript, /Clear melismas/);
-  assert.match(javascript, /No annotation tool/);
-  assert.match(javascript, /Cursor mode/);
-  assert.match(javascript, /Hide tools/);
-  assert.match(javascript, /Show tools/);
+  assert.match(javascript, /psaltikon-copia-seguranca-/);
+  assert.match(javascript, /Exportar cópia de segurança/);
+  assert.match(javascript, /Limpar cores/);
+  assert.match(javascript, /Limpar melismas/);
+  assert.match(javascript, /Nenhuma ferramenta de marcação/);
+  assert.match(javascript, /Modo cursor/);
+  assert.match(javascript, /Recolher/);
+  assert.match(javascript, /Mostrar/);
+  assert.match(javascript, /Novo hino/);
   assert.match(javascript, /Biblioteca online/);
   assert.match(javascript, /Solicitar permissão para publicar/);
   assert.match(javascript, /Salvar conjunto no GitHub/);
   assert.match(javascript, /Sobre o Psaltikon/);
   assert.match(javascript, /não pretende substituir o aprendizado da notação bizantina/);
-  assert.match(javascript, /Ἀγγελικαὶ δυνάμεις/);
   assert.match(stylesheet, /\.about-modal/);
   assert.match(stylesheet, /\.tools-panel/);
   assert.match(stylesheet, /\.selection-neutral/);
@@ -39,4 +101,49 @@ test("the production build contains the app shell and migration features", async
   assert.match(source, /if \(!activeTool\) return;/);
   assert.match(source, /if \(toolsOpen\) setActiveTool\(null\)/);
   assert.match(source, /aria-expanded=\{toolsOpen\}/);
+  assert.match(source, /useState<Hymn\[\]>\(\(\) => \[newHymn\(\)\]\)/);
+  assert.match(source, /function addHymn\(\) \{\s+const hymn = newHymn\(\)/);
+  assert.match(source, /const restored = restoreHymns\(JSON\.parse\(saved\)\)/);
+  assert.match(source, /if \(restored\) setHymns\(restored\)/);
+  assert.doesNotMatch(`${source}\n${stateSource}`, /const FIRST_HYMN|const SAMPLE/);
+
+  const visibleSource = `${source}\n${librarySource}`;
+  for (const untranslated of [
+    "Add another hymn",
+    "Add the Greek lyrics",
+    "Add your recording",
+    "A quiet place for daily practice",
+    "Clear colours",
+    "Clear melismas",
+    "Colours divide melodic phrases",
+    "Cursor mode",
+    "Eraser",
+    "Edit text",
+    "Export backup",
+    "Export mobile PDF",
+    "Greek lyrics for hymn",
+    "Hide tools",
+    "Hymn title",
+    "Import backup",
+    "Listen · Read · Repeat",
+    "Long melisma",
+    "Mode or note (optional)",
+    "No repeat",
+    "No annotation tool",
+    "Paste or type the Greek text",
+    "Please enter a valid YouTube link",
+    "Practice method",
+    "Practice speed",
+    "Reference recording",
+    "Repeat video",
+    "Short melisma",
+    "Show tools",
+    "Target practice speed",
+    "Text size",
+    "Text tools",
+    "Untitled hymn",
+    "YouTube link",
+  ]) {
+    assert.equal(visibleSource.includes(untranslated), false, `untranslated interface text: ${untranslated}`);
+  }
 });
