@@ -6,7 +6,7 @@
     "name": "Mateus Aranha Martins",
     "avatarUrl": "https://avatars.githubusercontent.com/u/91752012?v=4"
   },
-  "updatedAt": "2026-08-23T20:36:58.621Z",
+  "updatedAt": "2026-08-24T16:40:16.413Z",
   "hymns": [
     {
       "id": "primary-hymn",
@@ -47,6 +47,16 @@
         },
         {
           "start": 214,
+          "end": 215,
+          "color": "rose"
+        },
+        {
+          "start": 215,
+          "end": 217,
+          "color": "rose"
+        },
+        {
+          "start": 217,
           "end": 247,
           "color": "rose"
         },
@@ -66,7 +76,63 @@
           "color": "rose"
         }
       ],
-      "melismas": []
+      "melismas": [
+        {
+          "start": 2,
+          "end": 3,
+          "kind": "complex"
+        },
+        {
+          "start": 9,
+          "end": 10,
+          "kind": "complex"
+        },
+        {
+          "start": 24,
+          "end": 25,
+          "kind": "complex"
+        },
+        {
+          "start": 68,
+          "end": 69,
+          "kind": "complex"
+        },
+        {
+          "start": 117,
+          "end": 118,
+          "kind": "complex"
+        },
+        {
+          "start": 175,
+          "end": 176,
+          "kind": "complex"
+        },
+        {
+          "start": 208,
+          "end": 209,
+          "kind": "complex"
+        },
+        {
+          "start": 215,
+          "end": 216,
+          "kind": "complex"
+        },
+        {
+          "start": 228,
+          "end": 229,
+          "kind": "complex"
+        },
+        {
+          "start": 244,
+          "end": 245,
+          "kind": "complex"
+        },
+        {
+          "start": 306,
+          "end": 307,
+          "kind": "complex"
+        }
+      ]
     },
     {
       "id": "hymn-1786976189306-hmlg1",
