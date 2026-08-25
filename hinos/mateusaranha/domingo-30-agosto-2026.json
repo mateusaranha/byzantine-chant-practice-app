@@ -6,7 +6,7 @@
     "name": "Mateus Aranha Martins",
     "avatarUrl": "https://avatars.githubusercontent.com/u/91752012?v=4"
   },
-  "updatedAt": "2026-08-25T13:36:46.592Z",
+  "updatedAt": "2026-08-25T23:57:47.160Z",
   "hymns": [
     {
       "id": "primary-hymn",
@@ -215,14 +215,96 @@
       "title": "Κοντάκιον",
       "mode": "Ἦχος δʹ",
       "lyrics": "Ἰωακεὶμ καὶ Ἄννα ὀνειδισμοῦ ἀτεκνίας, καὶ Ἀδὰμ καὶ Εὔα, ἐκ τῆς φθορᾶς τοῦ θανάτου, ἠλευθερώθησαν Ἄχραντε, ἐν τῇ ἁγίᾳ γεννήσει σου· αὐτὴν ἑορτάζει καὶ ὁ λαός σου, ἐνοχῆς τῶν πταισμάτων, λυτρωθεὶς ἐν τῷ κράζειν σοι· Ἡ στεῖρα τίκτει τὴν Θεοτόκον, καὶ τροφὸν τῆς ζωῆς ἡμῶν.",
-      "videoInput": "",
-      "videoId": "",
+      "videoInput": "https://www.youtube.com/watch?v=PNHXrsegI4M",
+      "videoId": "PNHXrsegI4M",
       "targetSpeed": 1,
       "repeatMode": "off",
       "fontSize": 27,
       "lineHeight": 1.9,
-      "highlights": [],
-      "melismas": []
+      "highlights": [
+        {
+          "start": 0,
+          "end": 36,
+          "color": "sage"
+        },
+        {
+          "start": 38,
+          "end": 81,
+          "color": "sky"
+        },
+        {
+          "start": 83,
+          "end": 104,
+          "color": "rose"
+        },
+        {
+          "start": 106,
+          "end": 129,
+          "color": "sage"
+        },
+        {
+          "start": 131,
+          "end": 160,
+          "color": "sky"
+        },
+        {
+          "start": 162,
+          "end": 212,
+          "color": "rose"
+        },
+        {
+          "start": 214,
+          "end": 242,
+          "color": "sage"
+        },
+        {
+          "start": 244,
+          "end": 269,
+          "color": "sky"
+        }
+      ],
+      "melismas": [
+        {
+          "start": 33,
+          "end": 34,
+          "kind": "complex"
+        },
+        {
+          "start": 77,
+          "end": 78,
+          "kind": "complex"
+        },
+        {
+          "start": 97,
+          "end": 98,
+          "kind": "complex"
+        },
+        {
+          "start": 121,
+          "end": 122,
+          "kind": "complex"
+        },
+        {
+          "start": 154,
+          "end": 155,
+          "kind": "complex"
+        },
+        {
+          "start": 203,
+          "end": 204,
+          "kind": "complex"
+        },
+        {
+          "start": 238,
+          "end": 239,
+          "kind": "complex"
+        },
+        {
+          "start": 266,
+          "end": 267,
+          "kind": "complex"
+        }
+      ]
     }
   ]
 }
