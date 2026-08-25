@@ -49,13 +49,13 @@ Observar no notebook e no celular:
 Estas propostas precisam de desenho e teste antes de implementação:
 
 - **Textos didáticos mais econômicos:** avaliar se as dicas permanentes sob texto e vídeo podem ser resumidas, recolhidas ou movidas para ajuda contextual.
-- **Modo de treino:** explorar ocultar e revelar cores e melismas em etapas; o comportamento ainda não está definido.
 - **Velocidade:** verificar em uso real se o botão de `+` muda de posição ou provoca toque acidental quando `Restaurar` aparece/desaparece; não há falha confirmada no código.
 
-A borracha e os comandos independentes **Clear colours** e **Clear melismas** já existem. Melhorias futuras devem evitar duplicar esses comportamentos.
+A borracha e os comandos independentes **Limpar cores** e **Limpar melismas** já existem. Melhorias futuras devem evitar duplicar esses comportamentos.
 
 Concluído nesta etapa:
 
+- **Modo de treino:** cada hino possui controles independentes para ocultar temporariamente cores e sublinhados sem alterar marcações, backup, biblioteca ou PDF; ferramentas incompatíveis ficam indisponíveis enquanto a categoria está invisível.
 - **Modo neutro/cursor:** cada hino pode ficar sem ferramenta de marcação ativa, evitando alterações acidentais.
 - **Painel de ferramentas recolhível:** fonte, espaçamento e ferramentas de anotação podem ser ocultados durante a prática; recolher o painel ativa o modo neutro.
 - **Primeiro acesso vazio:** na ausência de trabalho local válido, o aplicativo começa com o mesmo “Novo hino” vazio usado pelo comando de adicionar hino, sem substituir sessões existentes.

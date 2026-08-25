@@ -101,11 +101,16 @@ button,input,textarea { font:inherit; } button { cursor:pointer; }
 .type-controls { position:relative; z-index:1; display:flex; gap:24px; padding:6px 0 12px; }
 .type-controls label { display:flex; align-items:center; gap:9px; color:var(--muted); font:11px Arial,sans-serif; text-transform:uppercase; letter-spacing:.08em; }
 .type-controls input { width:86px; accent-color:var(--red); }
+.training-controls { display:flex; align-items:center; flex-wrap:wrap; gap:8px; padding:2px 0 10px; }
+.training-toggle { min-height:34px; display:flex; align-items:center; gap:6px; }
+.training-toggle > span { min-width:16px; color:var(--red); text-align:center; font:16px/1 var(--font-noto-serif),"Noto Serif",serif; }
+.tool-button.training-toggle.active { border-color:#8d302d; background:#8d302d; color:#fff; }
+.tool-button.training-toggle.active > span { color:#fff; }
 .highlighter-bar { position:relative; z-index:2; display:flex; align-items:center; flex-wrap:wrap; gap:8px; padding:10px 12px; border:1px solid #d8cbb8; border-radius:4px; background:rgba(255,253,248,.72); }
 .tool-label { margin-right:3px; color:var(--muted); font:600 10px Arial,sans-serif; text-transform:uppercase; letter-spacing:.1em; }
 .swatches { display:flex; gap:6px; }
 .swatch { width:26px; height:26px; border:1px solid rgba(63,50,40,.18); border-radius:50%; box-shadow:inset 0 0 0 3px rgba(255,255,255,.4); transition:transform .15s ease,box-shadow .15s ease; }
-.swatch:hover { transform:translateY(-1px); }
+.swatch:hover:not(:disabled) { transform:translateY(-1px); }
 .swatch.active { box-shadow:0 0 0 2px var(--paper),0 0 0 4px #66574b; transform:scale(.92); }
 .swatch-sage,.mark-sage { background:#d9e3cc; } .swatch-sky,.mark-sky { background:#d4e4e8; }
 .swatch-rose,.mark-rose { background:#edd6d2; } .swatch-wheat,.mark-wheat { background:#eee0b8; }
@@ -116,10 +121,10 @@ button,input,textarea { font:inherit; } button { cursor:pointer; }
 .cursor-tool > span { color:var(--red); font:16px/1 Arial,sans-serif; }
 .tool-button.clear { margin-left:auto; color:#8d302d; }
 .tool-button.clear-melismas { color:#8d302d; }
-.tool-button:disabled { opacity:.38; cursor:default; }
+.tool-button:disabled,.melisma-tool:disabled,.swatch:disabled { opacity:.38; cursor:default; }
 .annotation-divider { width:1px; height:22px; margin:0 2px; background:#d6c8b5; }
 .melisma-tool { min-height:29px; display:flex; align-items:center; gap:6px; border:1px solid #cdbfae; border-radius:3px; background:#fffdf8; color:#675b50; padding:4px 8px; font:11px Arial,sans-serif; }
-.melisma-tool:hover,.melisma-tool.active { border-color:#7c6a5b; background:#eee6d9; color:#302823; }
+.melisma-tool:hover:not(:disabled),.melisma-tool.active { border-color:#7c6a5b; background:#eee6d9; color:#302823; }
 .melisma-sample { display:inline-block; min-width:15px; color:#302823; font:600 17px var(--font-noto-serif),"Noto Serif",serif; text-align:center; text-decoration-line:underline; text-underline-offset:.18em; text-decoration-skip-ink:none; }
 .melisma-sample.simple { text-decoration-style:solid; text-decoration-thickness:1.5px; }
 .melisma-sample.complex { text-decoration-style:double; text-decoration-thickness:1.5px; }
@@ -131,6 +136,10 @@ button,input,textarea { font:inherit; } button { cursor:pointer; }
 .lyrics::selection,.lyrics *::selection { color:#1f1915; background:rgba(141,48,45,.2); }
 .selection-neutral { cursor:text; }
 .selection-eraser { cursor:crosshair; }
+@media screen {
+  .lyrics.training-hide-colours span[class*="mark-"] { background:transparent; }
+  .lyrics.training-hide-melismas .melisma-simple,.lyrics.training-hide-melismas .melisma-complex { text-decoration-color:transparent; }
+}
 .lyrics-editor { position:relative; z-index:1; width:100%; min-height:520px; margin-top:22px; resize:vertical; border:1px solid #cdbda6; border-radius:3px; background:rgba(255,255,255,.55); color:var(--ink); padding:20px; font-family:var(--font-noto-serif),"Noto Serif","Palatino Linotype",serif; font-size:23px; line-height:1.75; text-align:center; outline:none; }
 .lyrics-editor:focus { border-color:var(--gold); box-shadow:0 0 0 3px rgba(180,139,71,.13); }
 .empty-lyrics { position:relative; z-index:1; width:100%; min-height:260px; margin-top:20px; border:1px dashed #c9b99f; border-radius:4px; background:rgba(255,255,255,.22); color:#8c7c6d; font:italic 15px var(--font-noto-serif),"Noto Serif",serif; }
@@ -183,6 +192,7 @@ footer { max-width:1500px; margin:15px auto 0; display:flex; align-items:center;
 @media (max-width:1100px) { .header-note { display:none; } }
 @media (max-width:900px) { .workspace,.cloud-library-grid { grid-template-columns:1fr; } .lyrics-panel,.video-panel { padding:24px; } .topbar { flex-wrap:wrap; } .header-actions { width:100%; } }
 @media (max-width:520px) { .app-shell { padding:16px 10px; } .header-actions { display:grid; grid-template-columns:1fr 1fr; } .cloud-trigger { grid-column:1/-1; } .export-pdf { grid-column:1/-1; width:100%; justify-content:center; } .backup-button { width:100%; } .cloud-library { padding:16px 12px; } .cloud-library-heading h2 { font-size:23px; } .cloud-card-title { flex-direction:column; } .admin-columns { grid-template-columns:1fr; } .admin-add { flex-direction:column; } .panel-heading { flex-direction:column; gap:9px; } .panel-heading.compact { align-items:flex-start; } .speed-badge { position:absolute; right:0; top:0; } .text-button { align-self:flex-end; } .tools-toggle { min-height:44px; } .cursor-tool { min-height:40px; } .type-controls { flex-direction:column; gap:10px; } .highlighter-bar { gap:10px; } .tool-label { width:100%; } .tools-panel-heading .tool-label { width:auto; } .annotation-divider { display:none; } .tool-button.clear { margin-left:0; } .lyrics { padding-inline:0; } .speed-control { align-items:flex-start; flex-direction:column; } .repeat-options { grid-template-columns:1fr 1fr; } .input-row { flex-direction:column; } .input-row button { padding:13px; } .about-modal { padding:10px; align-items:end; } .about-dialog { width:100%; max-height:calc(100vh - 20px); padding:30px 22px 25px; } .about-copy { font-size:14px; line-height:1.65; } .about-close { top:16px; right:16px; } }
+@media (max-width:520px) { .training-toggle { min-height:42px; } }
 @media (prefers-reduced-motion:reduce) { * { scroll-behavior:auto!important; transition:none!important; } }
 
 /* A narrow, tall page mirrors a modern phone in portrait orientation. At the
