@@ -49,6 +49,14 @@ const COLORS = [
   { name: "Lavanda", value: "lavender" },
 ] as const;
 
+function isColourTool(tool: ActiveTool) {
+  return COLORS.some((color) => color.value === tool);
+}
+
+function isMelismaTool(tool: ActiveTool) {
+  return tool === "melisma-simple" || tool === "melisma-complex";
+}
+
 const PUBLISHER_API_URL = String(import.meta.env.VITE_PUBLISHER_API_URL || "").replace(/\/$/, "");
 
 let youtubeApiPromise: Promise<void> | null = null;
@@ -120,6 +128,8 @@ function HymnWorkspace({
   const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [activeTool, setActiveTool] = useState<ActiveTool>(null);
   const [toolsOpen, setToolsOpen] = useState(true);
+  const [coloursVisible, setColoursVisible] = useState(true);
+  const [melismasVisible, setMelismasVisible] = useState(true);
   const lyricsRef = useRef<HTMLDivElement>(null);
   const playerHostRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<YouTubePlayer | null>(null);
@@ -205,6 +215,8 @@ function HymnWorkspace({
 
   function markSelection() {
     if (!activeTool) return;
+    if (!coloursVisible && (isColourTool(activeTool) || activeTool === "eraser")) return;
+    if (!melismasVisible && (isMelismaTool(activeTool) || activeTool === "eraser")) return;
     const selection = window.getSelection();
     const container = lyricsRef.current;
     if (!selection || selection.isCollapsed || !selection.rangeCount || !container) return;
@@ -264,6 +276,20 @@ function HymnWorkspace({
   function toggleTools() {
     if (toolsOpen) setActiveTool(null);
     setToolsOpen(!toolsOpen);
+  }
+
+  function toggleColours() {
+    if (coloursVisible && (isColourTool(activeTool) || activeTool === "eraser")) {
+      setActiveTool(null);
+    }
+    setColoursVisible((visible) => !visible);
+  }
+
+  function toggleMelismas() {
+    if (melismasVisible && (isMelismaTool(activeTool) || activeTool === "eraser")) {
+      setActiveTool(null);
+    }
+    setMelismasVisible((visible) => !visible);
   }
 
   return (
@@ -367,16 +393,41 @@ function HymnWorkspace({
                 </div>
 
                 {!editing && (
-                  <div className="highlighter-bar" aria-label={`Ferramentas de marcação do hino ${index + 1}`}>
-                    <button
-                      className={`tool-button cursor-tool ${activeTool === null ? "active" : ""}`}
-                      onClick={() => setActiveTool(null)}
-                      aria-label="Nenhuma ferramenta de marcação"
-                      aria-pressed={activeTool === null}
-                      title="Selecionar texto sem alterar marcações"
-                    >
-                      <span aria-hidden="true">↖</span> Cursor
-                    </button>
+                  <>
+                    <div className="training-controls" aria-label={`Recursos de treino do hino ${index + 1}`}>
+                      <span className="tool-label">Treino</span>
+                      <button
+                        className={`tool-button training-toggle ${coloursVisible ? "" : "active"}`}
+                        onClick={toggleColours}
+                        aria-pressed={!coloursVisible}
+                        aria-label={coloursVisible ? "Ocultar cores" : "Mostrar cores"}
+                        title={coloursVisible ? "Ocultar cores durante o treino" : "Mostrar novamente as cores"}
+                      >
+                        <span aria-hidden="true">{coloursVisible ? "◉" : "○"}</span>
+                        {coloursVisible ? "Ocultar cores" : "Mostrar cores"}
+                      </button>
+                      <button
+                        className={`tool-button training-toggle ${melismasVisible ? "" : "active"}`}
+                        onClick={toggleMelismas}
+                        aria-pressed={!melismasVisible}
+                        aria-label={melismasVisible ? "Ocultar sublinhados" : "Mostrar sublinhados"}
+                        title={melismasVisible ? "Ocultar sublinhados durante o treino" : "Mostrar novamente os sublinhados"}
+                      >
+                        <span aria-hidden="true">{melismasVisible ? "μ̲" : "μ"}</span>
+                        {melismasVisible ? "Ocultar sublinhados" : "Mostrar sublinhados"}
+                      </button>
+                    </div>
+
+                    <div className="highlighter-bar" aria-label={`Ferramentas de marcação do hino ${index + 1}`}>
+                      <button
+                        className={`tool-button cursor-tool ${activeTool === null ? "active" : ""}`}
+                        onClick={() => setActiveTool(null)}
+                        aria-label="Nenhuma ferramenta de marcação"
+                        aria-pressed={activeTool === null}
+                        title="Selecionar texto sem alterar marcações"
+                      >
+                        <span aria-hidden="true">↖</span> Cursor
+                      </button>
                     <span className="annotation-divider" aria-hidden="true" />
                     <span className="tool-label">Frase</span>
                     <div className="swatches">
@@ -385,6 +436,7 @@ function HymnWorkspace({
                           key={color.value}
                           className={`swatch swatch-${color.value} ${activeTool === color.value ? "active" : ""}`}
                           onClick={() => setActiveTool(color.value)}
+                          disabled={!coloursVisible}
                           aria-label={`Marcador ${color.name.toLowerCase()}`}
                           aria-pressed={activeTool === color.value}
                           title={color.name}
@@ -396,6 +448,7 @@ function HymnWorkspace({
                     <button
                       className={`melisma-tool ${activeTool === "melisma-simple" ? "active" : ""}`}
                       onClick={() => setActiveTool("melisma-simple")}
+                      disabled={!melismasVisible}
                       aria-label="Melisma simples"
                       aria-pressed={activeTool === "melisma-simple"}
                       title="Melisma simples"
@@ -405,6 +458,7 @@ function HymnWorkspace({
                     <button
                       className={`melisma-tool ${activeTool === "melisma-complex" ? "active" : ""}`}
                       onClick={() => setActiveTool("melisma-complex")}
+                      disabled={!melismasVisible}
                       aria-label="Melisma complexo"
                       aria-pressed={activeTool === "melisma-complex"}
                       title="Melisma longo ou complexo"
@@ -415,12 +469,17 @@ function HymnWorkspace({
                     <button
                       className={`tool-button ${activeTool === "eraser" ? "active" : ""}`}
                       onClick={() => setActiveTool("eraser")}
+                      disabled={!coloursVisible || !melismasVisible}
                       aria-label="Borracha"
                       aria-pressed={activeTool === "eraser"}
                     >
                       Borracha
                     </button>
-                    <button className="tool-button" onClick={undo} disabled={!history.length}>
+                    <button
+                      className="tool-button"
+                      onClick={undo}
+                      disabled={!history.length || !coloursVisible || !melismasVisible}
+                    >
                       Desfazer
                     </button>
                     <button
@@ -429,7 +488,7 @@ function HymnWorkspace({
                         remember();
                         onChange({ ...hymn, highlights: [] });
                       }}
-                      disabled={!hymn.highlights.length}
+                      disabled={!coloursVisible || !hymn.highlights.length}
                       aria-label="Limpar todas as cores deste hino"
                       title="Manter os melismas e remover somente as cores das frases"
                     >
@@ -441,13 +500,14 @@ function HymnWorkspace({
                         remember();
                         onChange({ ...hymn, melismas: [] });
                       }}
-                      disabled={!hymn.melismas.length}
+                      disabled={!melismasVisible || !hymn.melismas.length}
                       aria-label="Limpar todos os melismas deste hino"
                       title="Manter as cores das frases e remover somente os sublinhados de melisma"
                     >
                       Limpar melismas
                     </button>
-                  </div>
+                    </div>
+                  </>
                 )}
               </div>
             )}
@@ -473,7 +533,14 @@ function HymnWorkspace({
           ) : hymn.lyrics ? (
             <div
               ref={lyricsRef}
-              className={`lyrics ${activeTool ? `selection-${activeTool}` : "selection-neutral"}`}
+              className={[
+                "lyrics",
+                activeTool ? `selection-${activeTool}` : "selection-neutral",
+                coloursVisible ? "" : "training-hide-colours",
+                melismasVisible ? "" : "training-hide-melismas",
+              ]
+                .filter(Boolean)
+                .join(" ")}
               lang="grc"
               style={{ fontSize: hymn.fontSize, lineHeight: hymn.lineHeight }}
               onMouseUp={markSelection}

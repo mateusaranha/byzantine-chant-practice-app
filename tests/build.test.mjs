@@ -66,6 +66,7 @@ test("the production build contains the app shell and migration features", async
   const html = await readFile(new URL("../dist/index.html", import.meta.url), "utf8");
   const source = await readFile(new URL("../src/App.tsx", import.meta.url), "utf8");
   const stateSource = await readFile(new URL("../src/hymnState.ts", import.meta.url), "utf8");
+  const stylesSource = await readFile(new URL("../src/styles.css", import.meta.url), "utf8");
   const librarySource = await readFile(new URL("../src/CloudLibrary.tsx", import.meta.url), "utf8");
   assert.match(html, /Psaltikon/);
   assert.match(html, /manifest\.webmanifest/);
@@ -86,6 +87,10 @@ test("the production build contains the app shell and migration features", async
   assert.match(javascript, /Modo cursor/);
   assert.match(javascript, /Recolher/);
   assert.match(javascript, /Mostrar/);
+  assert.match(javascript, /Ocultar cores/);
+  assert.match(javascript, /Mostrar cores/);
+  assert.match(javascript, /Ocultar sublinhados/);
+  assert.match(javascript, /Mostrar sublinhados/);
   assert.match(javascript, /Novo hino/);
   assert.match(javascript, /Biblioteca online/);
   assert.match(javascript, /Solicitar permissão para publicar/);
@@ -95,17 +100,31 @@ test("the production build contains the app shell and migration features", async
   assert.match(stylesheet, /\.about-modal/);
   assert.match(stylesheet, /\.tools-panel/);
   assert.match(stylesheet, /\.selection-neutral/);
+  assert.match(stylesheet, /\.training-hide-colours/);
+  assert.match(stylesheet, /\.training-hide-melismas/);
+  assert.match(stylesSource, /@media screen \{[\s\S]*\.lyrics\.training-hide-colours/);
+  assert.match(stylesSource, /@media print \{[\s\S]*\.mark-sage \{ background:#d9e3cc!important; \}/);
+  assert.match(stylesSource, /@media print \{[\s\S]*text-decoration-color:#3f3731!important/);
   assert.match(stylesheet, /@media \(width<=520px\)/);
   assert.match(stylesheet, /max-height:calc\(100vh\s*-\s*20px\)/);
   assert.match(source, /useState<ActiveTool>\(null\)/);
   assert.match(source, /if \(!activeTool\) return;/);
+  assert.match(source, /if \(!coloursVisible && \(isColourTool\(activeTool\) \|\| activeTool === "eraser"\)\) return;/);
+  assert.match(source, /if \(!melismasVisible && \(isMelismaTool\(activeTool\) \|\| activeTool === "eraser"\)\) return;/);
   assert.match(source, /if \(toolsOpen\) setActiveTool\(null\)/);
+  assert.match(source, /const \[coloursVisible, setColoursVisible\] = useState\(true\)/);
+  assert.match(source, /const \[melismasVisible, setMelismasVisible\] = useState\(true\)/);
+  assert.match(source, /disabled=\{!coloursVisible\}/);
+  assert.match(source, /disabled=\{!melismasVisible\}/);
   assert.match(source, /aria-expanded=\{toolsOpen\}/);
   assert.match(source, /useState<Hymn\[\]>\(\(\) => \[newHymn\(\)\]\)/);
   assert.match(source, /function addHymn\(\) \{\s+const hymn = newHymn\(\)/);
   assert.match(source, /const restored = restoreHymns\(JSON\.parse\(saved\)\)/);
   assert.match(source, /if \(restored\) setHymns\(restored\)/);
+  assert.match(source, /\{ version: 4, exportedAt: new Date\(\)\.toISOString\(\), hymns \}/);
+  assert.match(librarySource, /JSON\.stringify\(\{ title: name, slug, hymns \}\)/);
   assert.doesNotMatch(`${source}\n${stateSource}`, /const FIRST_HYMN|const SAMPLE/);
+  assert.doesNotMatch(stateSource, /coloursVisible|melismasVisible|training-hide/);
 
   const visibleSource = `${source}\n${librarySource}`;
   for (const untranslated of [
