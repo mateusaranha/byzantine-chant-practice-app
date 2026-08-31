@@ -91,6 +91,16 @@ button,input,textarea { font:inherit; } button { cursor:pointer; }
 .speed-badge span { display:block; margin-bottom:2px; color:#8a7765; font:600 9px Arial,sans-serif; text-transform:uppercase; letter-spacing:.09em; }
 .speed-badge strong { display:block; color:var(--red); font:600 19px Arial,sans-serif; letter-spacing:.02em; }
 .text-button { border:0; border-bottom:1px solid #c9af83; background:transparent; color:var(--red); padding:5px 1px; font:600 12px Arial,sans-serif; }
+.reading-controls { position:relative; z-index:1; padding-top:12px; }
+.reading-options { display:flex; flex-wrap:wrap; gap:6px; }
+.tool-button.reading-toggle { min-height:44px; padding:8px 14px; }
+.tool-button.reading-toggle.active { border-color:var(--red); background:var(--red); color:#fff; }
+.transliteration-note,.transliteration-help { margin:8px 0 0; color:#675b50; font:12px/1.5 Arial,sans-serif; }
+.transliteration-help > summary { width:fit-content; padding-block:8px; color:var(--red); cursor:pointer; }
+.transliteration-help > summary:focus-visible,.text-button:focus-visible { outline:2px solid var(--red); outline-offset:2px; }
+.transliteration-help p { margin:6px 0; }
+.lyrics-transliterated { overflow-wrap:anywhere; }
+.lyrics-print-original { display:none; }
 .tools-panel { position:relative; z-index:2; padding-top:10px; }
 .tools-panel-heading { min-height:32px; display:flex; align-items:center; justify-content:space-between; gap:12px; }
 .tools-panel.collapsed { padding-bottom:2px; border-bottom:1px solid #ded3c3; }
@@ -246,6 +256,8 @@ footer { max-width:1500px; margin:15px auto 0; display:flex; align-items:center;
   html,body { background:#fff!important; color:#231d19!important; }
   body { -webkit-print-color-adjust:exact!important; print-color-adjust:exact!important; }
   .app-shell { min-height:0; padding:0; background:none!important; }
+  .reading-controls,.lyrics-transliterated { display:none!important; }
+  .lyrics-print-original { display:block; }
   .shared-notice,.help-dialog,.help-dialog::backdrop,.topbar,.cloud-library,.hymn-strip,.video-panel,.tools-panel,.text-button,.practice-hint,.empty-lyrics,.add-hymn,footer { display:none!important; }
   .empty-hymn-block { display:none!important; }
   .hymn-list { display:block; max-width:none; margin:0; }

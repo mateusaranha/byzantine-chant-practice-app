@@ -10,6 +10,7 @@ O Psaltikon é um auxílio intermediário de escuta e memorização. Ele não su
 
 - vários hinos no mesmo espaço de trabalho;
 - texto grego politônico com fonte local incorporada;
+- alternância **Grego / Transliterado** no mesmo hino e com a mesma gravação;
 - cinco cores de marcação, melisma simples e melisma complexo;
 - borracha, desfazer e limpeza independente de cores e melismas;
 - vídeo do YouTube, velocidade-alvo e repetição 1x, 3x ou contínua;
@@ -24,12 +25,22 @@ Recursos online — YouTube, login e biblioteca — continuam dependendo de cone
 
 ## Fluxo principal de uso
 
-1. Edite título, modo e texto do hino em **Edit text**.
+1. Edite título, modo e texto do hino em **Editar texto**.
 2. Cole uma URL do YouTube e carregue a gravação.
 3. Selecione trechos do texto com uma cor, melisma ou borracha ativa.
 4. Registre a velocidade-alvo e, se necessário, configure a repetição do vídeo.
 5. Acrescente outros hinos e ajuste a apresentação de cada um.
 6. Mantenha o trabalho no dispositivo, exporte backup/PDF ou publique o conjunto na biblioteca.
+
+### Leitura transliterada
+
+Depois de concluir a edição, **Transliterado** mostra uma conversão automática da letra, feita no navegador segundo a convenção aprovada a partir do livrinho da paróquia. **Grego** retorna ao original; a gravação não reinicia. Título e modo permanecem como foram escritos. A opção também está disponível nos hinos abertos por link.
+
+A letra grega continua sendo a única fonte salva. A escolha de leitura é temporária, independente por hino, e não altera armazenamento, backup, biblioteca ou compartilhamento. Editar texto e marcações exige voltar ao grego; **Editar grego** faz essa troca diretamente. Cores, sublinhados, tamanho, espaçamento e controles de treino continuam disponíveis na leitura transliterada. O PDF continua em grego e inclui todas as marcações, mesmo quando ocultas na tela.
+
+O conversor mantém uma correspondência com as posições originais, inclusive em texto com acentos decompostos. Uma marca que intersecta uma conversão indivisível, como `αι → e`, aparece no grupo convertido inteiro; se houver duas cores ou dois tipos de sublinhado concorrentes nesse grupo, prevalece a primeira marca daquela categoria. Ao voltar ao grego, cada intervalo original reaparece intacto.
+
+As regras incluem `δ → dh`, `γ → gh` diante dos sons de e/i, `υ → y` fora de combinações, `χ → ch`, vogais combinadas, trema, acentos e `αυ/ευ → av/af/ev/ef` conforme a consoante seguinte na mesma palavra. Acento agudo, grave e circunflexo aparecem como agudo; espíritos e iota subscrito não são reproduzidos. O padrão aprovado `Υἱῷ → Iió` usa `υι → ii`. Grupos internos usam `μπ → mb`, `ντ → nd`, `γγ → ng/ngh` e `γκ → nk`; no início de palavra, `μπ/ντ/γκ` usam `b/d/g`. Trata-se de um auxílio de leitura, não de uma transcrição fonética completa: pronúncia e particularidades da execução devem ser acompanhadas pela gravação. Correções manuais da transliteração ficam para outra etapa.
 
 ## Arquitetura atual
 
@@ -76,6 +87,7 @@ src/App.tsx                     espaço de trabalho e persistência local
 src/CloudLibrary.tsx            interface da biblioteca e administração
 src/ShareDialog.tsx             seleção e cópia de links para material publicado
 src/sharedHymns.ts              links, leitura pública e adição segura de cópias
+src/transliteration.ts          conversão grega e projeção das marcações, sem persistência
 src/styles.css                  layout responsivo e impressão
 public/                         manifesto, ícones e service worker
 hinos/<login>/                  conjuntos públicos versionados
