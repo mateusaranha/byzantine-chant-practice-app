@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import StudyReferences from "./StudyReferences";
+import HelpSection from "./HelpSection";
 
 export type HelpPage = "guide" | "about";
 
@@ -76,7 +77,12 @@ export default function HelpDialog({
         </nav>
       )}
       <div ref={copyRef} className="help-copy" tabIndex={0} role="region" aria-label={`Conteúdo: ${title}`}>
-        {page === "about" ? <About /> : referencesOpen ? <StudyReferences /> : <StudyGuide />}
+        {page === "about" ? <About /> : (
+          <>
+            <div hidden={referencesOpen}><StudyGuide /></div>
+            <div hidden={!referencesOpen}><StudyReferences /></div>
+          </>
+        )}
       </div>
     </dialog>
   );
@@ -92,7 +98,7 @@ function StudyGuide() {
         aprendizado da notação musical bizantina.
       </p>
 
-      <h3>1. Encontrar o texto e as gravações</h3>
+      <HelpSection title="1. Encontrar o texto e as gravações">
       <p>
         Começo pelo <a href="https://dcs.goarch.org/goa/dcs/dcs.html" target="_blank" rel="noopener noreferrer" aria-label="Digital Chant Stand da GOARCH (abre em nova aba)">Digital Chant Stand da GOARCH</a>.
         {" "}Abro o dia e o ofício em que aparece o hino que quero estudar e localizo seu texto.
@@ -109,7 +115,9 @@ function StudyGuide() {
         enquanto outros exigem algumas tentativas.
       </p>
 
-      <h3>2. Escolher uma gravação de referência</h3>
+      </HelpSection>
+
+      <HelpSection title="2. Escolher uma gravação de referência">
       <p>
         A capacidade de avaliar uma gravação como referência de estudo vai se desenvolvendo com o
         tempo e com a escuta. Para quem está começando, uma orientação prática é procurar
@@ -149,7 +157,9 @@ function StudyGuide() {
         ajude a cantar bem, dentro das minhas possibilidades atuais.
       </p>
 
-      <h3>3. Usar cores e sublinhados</h3>
+      </HelpSection>
+
+      <HelpSection title="3. Usar cores e sublinhados">
       <p>
         Faço as marcações a partir da gravação escolhida. Diferentes interpretações de um mesmo
         tropário podem me levar a dividir o texto de maneiras diferentes.
@@ -179,7 +189,9 @@ function StudyGuide() {
         pessoais para a escuta e o canto, não uma substituição da notação musical bizantina.
       </p>
 
-      <h3>4. Praticar o hino</h3>
+      </HelpSection>
+
+      <HelpSection title="4. Praticar o hino">
       <p>
         Primeiro, canto junto com a gravação várias vezes. Depois de algum tempo, começo a alternar:
         ora canto acompanhando a gravação, ora canto sozinho.
@@ -198,6 +210,7 @@ function StudyGuide() {
         encontrando mais facilidade para aprender outros hinos. Não preciso esperar uma execução
         perfeita para reconhecer esse progresso.
       </p>
+      </HelpSection>
     </>
   );
 }
