@@ -20,7 +20,7 @@ export type Hymn = {
 export function newHymn(): Hymn {
   return {
     id: `hymn-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
-    title: "Novo hino",
+    title: "",
     mode: "",
     lyrics: "",
     videoInput: "",

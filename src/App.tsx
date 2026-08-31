@@ -374,7 +374,7 @@ function HymnWorkspace({
                 </>
               ) : (
                 <>
-                  <h2>{hymn.title || "Hino sem título"}</h2>
+                  <h2>{hymn.title || "Novo hino"}</h2>
                   {hymn.mode && <p className="mode">{hymn.mode}</p>}
                 </>
               )}
