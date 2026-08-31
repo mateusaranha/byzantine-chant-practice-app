@@ -17,6 +17,7 @@ O Psaltikon é um auxílio intermediário de escuta e memorização. Ele não su
 - impressão/PDF em formato vertical, iniciando cada hino em nova página;
 - backup e restauração do espaço de trabalho em JSON;
 - biblioteca pública de conjuntos, com publicação restrita a usuários aprovados;
+- links públicos para estudar um conjunto ou hino publicado sem login nem navegação pela biblioteca;
 - interface responsiva, instalável como PWA e com o shell disponível offline após ser carregado.
 
 Recursos online — YouTube, login e biblioteca — continuam dependendo de conexão.
@@ -49,6 +50,12 @@ Não há servidor da interface, banco de dados próprio, contas próprias do Psa
 
 **Leitura da biblioteca:** qualquer visitante pode listar e abrir os JSONs de `hinos/` pelo Worker, sem login. O conjunto carregado passa a ser uma cópia local editável.
 
+**Compartilhamento:** na biblioteca, use **Compartilhar** ao lado do conjunto, escolha o conjunto inteiro ou um hino e copie o link. O link aponta para a versão publicada mais recente; alterações locais precisam ser publicadas antes de serem compartilhadas. Quem recebe abre diretamente uma área temporária de estudo, com letra, gravação e marcações, sem login e sem alterar o espaço local. Ajustes nessa área duram somente enquanto a página estiver aberta; sair ou atualizar a página os descarta. Backup e PDF exportam o material em estudo, mantendo suas marcações mesmo quando ocultas para treino.
+
+**Guardar uma cópia compartilhada:** **Adicionar ao meu espaço** acrescenta uma cópia com novos identificadores aos hinos salvos no dispositivo e abre o espaço local. Só o hino inicial vazio e intocado é substituído. A ação relê o armazenamento antes de gravar; dados locais ilegíveis, falta de espaço ou mais de 80 hinos impedem a adição. A cópia guardada não acompanha automaticamente futuras alterações do autor.
+
+Links usam `?conjunto=hinos/<autor>/<slug>.json` e, opcionalmente, `&hino=<id-publicado>`, sem incluir tokens ou conteúdo local. A seleção individual usa o identificador, não a posição do hino no conjunto; se ele for removido, o link informa a indisponibilidade. Hinos antigos sem identificador único podem ser compartilhados como parte do conjunto inteiro. Conjuntos excluídos, links inválidos e falhas de rede não substituem o trabalho local. Todo conteúdo compartilhado continua público.
+
 **Publicação:** o login ocorre no GitHub por OAuth. O Worker devolve uma sessão assinada, válida por oito horas, que a interface guarda em `psaltikon-publisher-session`. Para salvar, a conta precisa constar em `config/approved-users.json`. Cada publicador grava somente em `hinos/<seu-login>/`; o administrador também pode excluir conjuntos de outros autores.
 
 **Solicitação de acesso:** o Worker cria uma Issue com o prefixo `[Psaltikon access]`. O administrador aprova ou recusa pela interface; a aprovação atualiza `config/approved-users.json` e fecha a Issue.
@@ -67,6 +74,8 @@ Não publique informações privadas em títulos, letras ou links.
 ```text
 src/App.tsx                     espaço de trabalho e persistência local
 src/CloudLibrary.tsx            interface da biblioteca e administração
+src/ShareDialog.tsx             seleção e cópia de links para material publicado
+src/sharedHymns.ts              links, leitura pública e adição segura de cópias
 src/styles.css                  layout responsivo e impressão
 public/                         manifesto, ícones e service worker
 hinos/<login>/                  conjuntos públicos versionados

@@ -4,6 +4,8 @@ import HelpDialog from "./HelpDialog";
 import type { HelpPage } from "./HelpDialog";
 import { newHymn, normalizeHymn, restoreHymns } from "./hymnState";
 import type { Highlight, Hymn, Melisma, RepeatMode } from "./hymnState";
+import { addSharedToWorkspace, loadPublishedSet, parseShareRequest, selectSharedHymns, workspaceUrl } from "./sharedHymns";
+import type { SharedRoute } from "./sharedHymns";
 
 type ActiveTool =
   | "sage"
@@ -687,7 +689,7 @@ function HymnWorkspace({
   );
 }
 
-export default function Home() {
+function LocalWorkspace() {
   const [hymns, setHymns] = useState<Hymn[]>(() => [newHymn()]);
   const [hydrated, setHydrated] = useState(false);
   const [printRequest, setPrintRequest] = useState(0);
@@ -732,17 +734,7 @@ export default function Home() {
   }
 
   function exportBackup() {
-    const backup = JSON.stringify(
-      { version: 4, exportedAt: new Date().toISOString(), hymns },
-      null,
-      2,
-    );
-    const url = URL.createObjectURL(new Blob([backup], { type: "application/json" }));
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `psaltikon-copia-seguranca-${new Date().toISOString().slice(0, 10)}.json`;
-    link.click();
-    URL.revokeObjectURL(url);
+    downloadBackup(hymns);
   }
 
   async function importBackup(event: React.ChangeEvent<HTMLInputElement>) {
@@ -861,4 +853,128 @@ export default function Home() {
       {help && <HelpDialog page={help.page} trigger={help.trigger} onClose={() => setHelp(null)} />}
     </main>
   );
+}
+
+function downloadBackup(hymns: Hymn[]) {
+  const backup = JSON.stringify({ version: 4, exportedAt: new Date().toISOString(), hymns }, null, 2);
+  const url = URL.createObjectURL(new Blob([backup], { type: "application/json" }));
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `psaltikon-copia-seguranca-${new Date().toISOString().slice(0, 10)}.json`;
+  link.click();
+  URL.revokeObjectURL(url);
+}
+
+function SharedWorkspace({ route }: { route: SharedRoute }) {
+  const [hymns, setHymns] = useState<Hymn[]>([]);
+  const [title, setTitle] = useState("");
+  const [error, setError] = useState("");
+  const [copyError, setCopyError] = useState("");
+  const [copying, setCopying] = useState(false);
+  const [attempt, setAttempt] = useState(0);
+  const [printRequest, setPrintRequest] = useState(0);
+  const [help, setHelp] = useState<{ page: HelpPage; trigger: HTMLButtonElement } | null>(null);
+  const localUrl = workspaceUrl(window.location.href);
+
+  useEffect(() => {
+    if ("error" in route) { setError(route.error); return; }
+    const controller = new AbortController();
+    setError("");
+    setHymns([]);
+    const timeout = window.setTimeout(() => {
+      controller.abort();
+      setError("O carregamento demorou demais. Confira sua conexão e tente novamente.");
+    }, 20000);
+    loadPublishedSet(PUBLISHER_API_URL, route.path, controller.signal).then((published) => {
+      if (controller.signal.aborted) return;
+      const selected = selectSharedHymns(published, route.hymnId);
+      setHymns(selected);
+      setTitle(route.hymnId === null ? published.title : selected[0].title);
+    }).catch((reason) => {
+      if (!controller.signal.aborted) setError(reason instanceof Error ? reason.message : "Não foi possível carregar o material. Confira sua conexão.");
+    }).finally(() => window.clearTimeout(timeout));
+    return () => { controller.abort(); window.clearTimeout(timeout); };
+  }, [route, attempt]);
+
+  useEffect(() => {
+    const previous = document.title;
+    document.title = `${title || "Material compartilhado"} · Psaltikon`;
+    return () => { document.title = previous; };
+  }, [title]);
+
+  function addToMyWorkspace() {
+    if (copying) return;
+    setCopying(true);
+    setCopyError("");
+    try {
+      addSharedToWorkspace(localStorage, hymns);
+      window.location.assign(localUrl);
+    } catch (reason) {
+      setCopying(false);
+      setCopyError(reason instanceof Error && reason.name === "Error" ? reason.message : "Não foi possível guardar a cópia neste dispositivo. Confira o espaço disponível e a permissão de armazenamento do navegador.");
+    }
+  }
+
+  function exportPdf() {
+    setPrintRequest((current) => current + 1);
+    window.setTimeout(async () => { await document.fonts.ready; window.print(); }, 180);
+  }
+
+  return (
+    <main className="app-shell">
+      <header className="topbar">
+        <div className="brand-mark" aria-hidden="true">Ψ</div>
+        <div><p className="eyebrow">Μελέτη Ψαλτικής</p><h1>Psaltikon</h1></div>
+        <div className="header-note">Escute · Leia · Repita</div>
+        <div className="header-actions">
+          <a className="backup-button" href={localUrl}>Meu espaço</a>
+          {!!hymns.length && <>
+            <button className="backup-button" onClick={() => downloadBackup(hymns)}>Exportar cópia de segurança</button>
+            <button className="export-pdf" onClick={exportPdf}>Exportar PDF para celular</button>
+          </>}
+        </div>
+      </header>
+      <section className="shared-notice" aria-label="Material compartilhado">
+        <p className="section-label">Material compartilhado · público</p>
+        <h2>{title || "Abrir material compartilhado"}</h2>
+        <p>Você pode treinar e ajustar este material sem alterar a publicação nem seu trabalho local.</p>
+        <p>“Adicionar ao meu espaço” guarda uma cópia com seus ajustes, sem substituir seus hinos. Sair ou atualizar esta página descarta os ajustes temporários.</p>
+        {error ? <>
+          <p role="alert">{error}</p>
+          {!("error" in route) && <button className="cloud-secondary" onClick={() => setAttempt((value) => value + 1)}>Tentar novamente</button>}
+        </> : !hymns.length ? <p role="status">Carregando letra, gravação e marcações…</p> : (
+          <button className="cloud-primary" onClick={addToMyWorkspace} disabled={copying}>
+            {copying ? "Adicionando…" : "Adicionar ao meu espaço"}
+          </button>
+        )}
+        {copyError && <p role="alert">{copyError}</p>}
+      </section>
+      <div className="hymn-list">
+        {hymns.map((hymn, index) => (
+          <HymnWorkspace key={hymn.id} hymn={hymn} index={index} canDelete={false} printRequest={printRequest}
+            onChange={(updated) => setHymns((current) => current.map((item) => item.id === updated.id ? updated : item))}
+            onDelete={() => {}}
+            onOpenGuide={(trigger) => setHelp({ page: "guide", trigger })} />
+        ))}
+      </div>
+      <footer>
+        <span>Ἄσωμεν τῷ Κυρίῳ · Um espaço tranquilo para a prática diária</span>
+        <button className="about-link" onClick={(event) => setHelp({ page: "guide", trigger: event.currentTarget })} aria-haspopup="dialog">Guia de estudo</button>
+      </footer>
+      {help && <HelpDialog page={help.page} trigger={help.trigger} onClose={() => setHelp(null)} />}
+    </main>
+  );
+}
+
+export default function Home() {
+  const [search, setSearch] = useState(() => window.location.search);
+  useEffect(() => {
+    const onPopState = () => setSearch(window.location.search);
+    window.addEventListener("popstate", onPopState);
+    return () => window.removeEventListener("popstate", onPopState);
+  }, []);
+  const route = useMemo(() => parseShareRequest(search), [search]);
+  // The autosaving workspace is never mounted for shared links, including
+  // loading/error states. Merely visiting a link cannot overwrite local work.
+  return route ? <SharedWorkspace key={search} route={route} /> : <LocalWorkspace />;
 }

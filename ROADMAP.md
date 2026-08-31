@@ -54,6 +54,7 @@ A borracha e os comandos independentes **Limpar cores** e **Limpar melismas** j�
 
 Concluído nesta etapa:
 
+- **Compartilhamento por link:** conjuntos publicados ou hinos individuais abrem diretamente em uma área temporária, sem login e sem sobrescrever trabalho local. A opção de adicionar uma cópia preserva os hinos existentes. Links acompanham a publicação mais recente; cópias locais permanecem independentes.
 - **Guia de estudo e ajuda compacta:** conteúdo pessoal revisado pelo criador, acessível pelo rodapé e pelas dicas sob texto e vídeo, em janela com rolagem; “Sobre” alinhado ao significado aprovado das marcações.
 - **Modo de treino:** cada hino possui controles independentes para ocultar temporariamente cores e sublinhados sem alterar marcações, backup, biblioteca ou PDF; ferramentas incompatíveis ficam indisponíveis enquanto a categoria está invisível.
 - **Modo neutro/cursor:** cada hino pode ficar sem ferramenta de marcação ativa, evitando alterações acidentais.
@@ -75,7 +76,6 @@ Considerar um exemplo clicável com texto, vídeo, cores e melismas. O exemplo d
 
 Ideias úteis, ainda sem prioridade fechada:
 
-- link direto que abra um conjunto específico;
 - indicador claro de “salvo neste dispositivo” versus “publicado no GitHub”;
 - busca por conjunto ou autor;
 - reordenação e duplicação de hinos;
