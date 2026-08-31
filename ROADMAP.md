@@ -67,9 +67,9 @@ Concluído nesta etapa:
 
 O **Guia de estudo** reúne as quatro seções aprovadas: encontrar textos e gravações, escolher uma referência, usar cores e sublinhados e praticar o hino. A ajuda não ocupa permanentemente o espaço de estudo. Novas dicas, canais e referências dependem de indicação e revisão do criador; orientações de salvamento e recuperação ficam para uma melhoria futura.
 
-A área **Referências para explorar**, acessível dentro do guia, reúne a introdução, os dois relatos aprovados em “Achados em canais pessoais” e as indicações de Giannis Sifakis, Panaretos Filotheitis e Evgenios Hardavellas. Seu conteúdo fica separado em `src/StudyReferences.tsx` para facilitar acréscimos e revisões, sempre sujeitos à aprovação do criador.
+A área **Referências para explorar**, acessível dentro do guia, reúne a introdução, os dois relatos aprovados em “Achados em canais pessoais” e indicações de canais e psaltai selecionados pelo criador. Seu conteúdo fica separado em `src/StudyReferences.tsx` para facilitar acréscimos e revisões, sempre sujeitos à aprovação do criador.
 
-As quatro seções do guia e os quatro blocos de referências têm títulos expansíveis independentes, inicialmente recolhidos, com introduções sempre visíveis. A alternância entre guia e referências preserva os blocos abertos enquanto a janela permanece aberta; fechar e reabrir a ajuda inicia uma nova leitura, sem gravar preferências nos hinos ou no navegador.
+As quatro seções do guia e os seis blocos de referências têm títulos expansíveis independentes, inicialmente recolhidos, com introduções sempre visíveis. A alternância entre guia e referências preserva os blocos abertos enquanto a janela permanece aberta; fechar e reabrir a ajuda inicia uma nova leitura, sem gravar preferências nos hinos ou no navegador.
 
 Considerar um exemplo clicável com texto, vídeo, cores e melismas. O exemplo deve demonstrar o Psaltikon concretamente; não precisa ser o conteúdo inicial obrigatório de todo usuário.
 
