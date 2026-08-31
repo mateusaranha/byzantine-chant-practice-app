@@ -48,13 +48,13 @@ Observar no notebook e no celular:
 
 Estas propostas precisam de desenho e teste antes de implementação:
 
-- **Textos didáticos mais econômicos:** avaliar se as dicas permanentes sob texto e vídeo podem ser resumidas, recolhidas ou movidas para ajuda contextual.
 - **Velocidade:** verificar em uso real se o botão de `+` muda de posição ou provoca toque acidental quando `Restaurar` aparece/desaparece; não há falha confirmada no código.
 
 A borracha e os comandos independentes **Limpar cores** e **Limpar melismas** já existem. Melhorias futuras devem evitar duplicar esses comportamentos.
 
 Concluído nesta etapa:
 
+- **Guia de estudo e ajuda compacta:** conteúdo pessoal revisado pelo criador, acessível pelo rodapé e pelas dicas sob texto e vídeo, em janela com rolagem; “Sobre” alinhado ao significado aprovado das marcações.
 - **Modo de treino:** cada hino possui controles independentes para ocultar temporariamente cores e sublinhados sem alterar marcações, backup, biblioteca ou PDF; ferramentas incompatíveis ficam indisponíveis enquanto a categoria está invisível.
 - **Modo neutro/cursor:** cada hino pode ficar sem ferramenta de marcação ativa, evitando alterações acidentais.
 - **Painel de ferramentas recolhível:** fonte, espaçamento e ferramentas de anotação podem ser ocultados durante a prática; recolher o painel ativa o modo neutro.
@@ -63,7 +63,7 @@ Concluído nesta etapa:
 
 ## Ajuda e demonstração
 
-Avaliar uma área de ajuda que não precise ocupar a tela principal. Ela pode explicar o fluxo de preparação e indicar como encontrar textos e gravações de referência, por exemplo GOARCH, pesquisa das primeiras palavras gregas no YouTube, canais úteis e psaltai de referência.
+O **Guia de estudo** reúne as quatro seções aprovadas: encontrar textos e gravações, escolher uma referência, usar cores e sublinhados e praticar o hino. A ajuda não ocupa permanentemente o espaço de estudo. Novas dicas, canais e referências dependem de indicação e revisão do criador; orientações de salvamento e recuperação ficam para uma melhoria futura.
 
 Considerar um exemplo clicável com texto, vídeo, cores e melismas. O exemplo deve demonstrar o Psaltikon concretamente; não precisa ser o conteúdo inicial obrigatório de todo usuário.
 

@@ -96,8 +96,10 @@ test("the production build contains the app shell and migration features", async
   assert.match(javascript, /Solicitar permissão para publicar/);
   assert.match(javascript, /Salvar conjunto no GitHub/);
   assert.match(javascript, /Sobre o Psaltikon/);
-  assert.match(javascript, /não pretende substituir o aprendizado da notação bizantina/);
-  assert.match(stylesheet, /\.about-modal/);
+  assert.match(javascript, /não substituem o aprendizado da notação musical bizantina/);
+  assert.match(javascript, /Guia de estudo/);
+  assert.match(javascript, /As cores não têm significados próprios/);
+  assert.match(stylesheet, /\.help-dialog/);
   assert.match(stylesheet, /\.tools-panel/);
   assert.match(stylesheet, /\.selection-neutral/);
   assert.match(stylesheet, /\.training-hide-colours/);
@@ -106,7 +108,7 @@ test("the production build contains the app shell and migration features", async
   assert.match(stylesSource, /@media print \{[\s\S]*\.mark-sage \{ background:#d9e3cc!important; \}/);
   assert.match(stylesSource, /@media print \{[\s\S]*text-decoration-color:#3f3731!important/);
   assert.match(stylesheet, /@media \(width<=520px\)/);
-  assert.match(stylesheet, /max-height:calc\(100vh\s*-\s*20px\)/);
+  assert.match(stylesheet, /max-height:calc\(100d?vh\s*-\s*20px\)/);
   assert.match(source, /useState<ActiveTool>\(null\)/);
   assert.match(source, /if \(!activeTool\) return;/);
   assert.match(source, /if \(!coloursVisible && \(isColourTool\(activeTool\) \|\| activeTool === "eraser"\)\) return;/);
