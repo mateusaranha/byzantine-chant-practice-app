@@ -14,7 +14,7 @@ async function loadHymnState() {
 test("a new workspace starts with the same empty hymn used by the add command", async () => {
   const { newHymn, restoreHymns } = await loadHymnState();
   const hymn = newHymn();
-  assert.equal(hymn.title, "Novo hino");
+  assert.equal(hymn.title, "");
   assert.equal(hymn.mode, "");
   assert.equal(hymn.lyrics, "");
   assert.equal(hymn.videoInput, "");
@@ -27,6 +27,12 @@ test("a new workspace starts with the same empty hymn used by the add command", 
   assert.equal(restoreHymns({}), null);
   assert.equal(restoreHymns({ version: 3, hymns: [] }), null);
   assert.equal(restoreHymns({ version: 3, hymns: [null, "inválido"] }), null);
+
+  const previouslyNamed = restoreHymns({
+    version: 3,
+    hymns: [{ title: "Novo hino", lyrics: "κείμενον" }],
+  });
+  assert.equal(previouslyNamed?.[0].title, "Novo hino");
 });
 
 test("saved and legacy workspaces are restored without replacing their content", async () => {
@@ -74,8 +80,10 @@ test("the production build contains the app shell and migration features", async
   const assetNames = await readdir(new URL("../dist/assets/", import.meta.url));
   const javascriptName = assetNames.find((name) => name.endsWith(".js"));
   const stylesheetName = assetNames.find((name) => name.endsWith(".css"));
+  const latinFontName = assetNames.find((name) => name.startsWith("noto-serif-latin-regular-") && name.endsWith(".woff"));
   assert.ok(javascriptName, "JavaScript bundle was not generated");
   assert.ok(stylesheetName, "Stylesheet was not generated");
+  assert.ok(latinFontName, "Latin Noto Serif subset was not generated");
 
   const javascript = await readFile(new URL(`../dist/assets/${javascriptName}`, import.meta.url), "utf8");
   const stylesheet = await readFile(new URL(`../dist/assets/${stylesheetName}`, import.meta.url), "utf8");
@@ -92,6 +100,7 @@ test("the production build contains the app shell and migration features", async
   assert.match(javascript, /Ocultar sublinhados/);
   assert.match(javascript, /Mostrar sublinhados/);
   assert.match(javascript, /Novo hino/);
+  assert.match(javascript, /Título do hino/);
   assert.match(javascript, /Biblioteca online/);
   assert.match(javascript, /Solicitar permissão para publicar/);
   assert.match(javascript, /Salvar conjunto no GitHub/);
@@ -112,6 +121,9 @@ test("the production build contains the app shell and migration features", async
   assert.match(stylesSource, /@media screen \{[\s\S]*\.lyrics\.training-hide-colours/);
   assert.match(stylesSource, /@media print \{[\s\S]*\.mark-sage \{ background:#d9e3cc!important; \}/);
   assert.match(stylesSource, /@media print \{[\s\S]*text-decoration-color:#3f3731!important/);
+  assert.match(stylesSource, /font-family:"Noto Serif Transliteration"/);
+  assert.match(stylesSource, /noto-serif-latin-regular\.woff/);
+  assert.match(stylesSource, /\.lyrics\.lyrics-transliterated/);
   assert.match(stylesheet, /@media \(width<=520px\)/);
   assert.match(stylesheet, /max-height:calc\(100d?vh\s*-\s*20px\)/);
   assert.match(source, /useState<ActiveTool>\(null\)/);
@@ -125,6 +137,7 @@ test("the production build contains the app shell and migration features", async
   assert.match(source, /disabled=\{!melismasVisible\}/);
   assert.match(source, /aria-expanded=\{toolsOpen\}/);
   assert.match(source, /useState<Hymn\[\]>\(\(\) => \[newHymn\(\)\]\)/);
+  assert.match(source, /hymn\.title \|\| "Novo hino"/);
   assert.match(source, /function addHymn\(\) \{\s+const hymn = newHymn\(\)/);
   assert.match(source, /const restored = restoreHymns\(JSON\.parse\(saved\)\)/);
   assert.match(source, /if \(restored\) setHymns\(restored\)/);

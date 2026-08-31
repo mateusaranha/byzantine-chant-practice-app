@@ -75,7 +75,7 @@ export default function ShareDialog({ apiBase, path, trigger, onClose }: {
               <option value="">Conjunto inteiro ({published.hymns.length} hinos)</option>
               {published.hymns.map((hymn, index) => (
                 <option key={hymn.id} value={published.hymnIds[index] || `unavailable-${index}`} disabled={!published.hymnIds[index]}>
-                  {index + 1}. {hymn.title || "Hino sem título"}{!published.hymnIds[index] ? " (somente no conjunto)" : ""}
+                  {index + 1}. {hymn.title || "Novo hino"}{!published.hymnIds[index] ? " (somente no conjunto)" : ""}
                 </option>
               ))}
             </select>

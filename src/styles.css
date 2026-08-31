@@ -14,6 +14,14 @@
   src:url("./fonts/noto-serif-b6cc9b32.woff2") format("woff2");
   unicode-range:U+0370-0377,U+037A-037F,U+0384-038A,U+038C,U+038E-03A1,U+03A3-03FF;
 }
+@font-face {
+  font-family:"Noto Serif Transliteration";
+  font-style:normal;
+  font-weight:400;
+  font-display:swap;
+  src:url("./fonts/noto-serif-latin-regular.woff") format("woff");
+  unicode-range:U+0000-00FF,U+2000-206F;
+}
 :root { --ink:#231d19; --muted:#776c62; --red:#8d302d; --gold:#b48b47; --paper:#f7f0e4; --font-noto-serif:"Noto Serif"; }
 * { box-sizing: border-box; }
 body { margin:0; background:#231d19; color:var(--ink); font-family:var(--font-noto-serif),"Noto Serif","Palatino Linotype",serif; }
@@ -99,7 +107,7 @@ button,input,textarea { font:inherit; } button { cursor:pointer; }
 .transliteration-help > summary { width:fit-content; padding-block:8px; color:var(--red); cursor:pointer; }
 .transliteration-help > summary:focus-visible,.text-button:focus-visible { outline:2px solid var(--red); outline-offset:2px; }
 .transliteration-help p { margin:6px 0; }
-.lyrics-transliterated { overflow-wrap:anywhere; }
+.lyrics.lyrics-transliterated { overflow-wrap:anywhere; font-family:"Noto Serif Transliteration",var(--font-noto-serif),"Noto Serif","Palatino Linotype",serif; }
 .lyrics-print-original { display:none; }
 .tools-panel { position:relative; z-index:2; padding-top:10px; }
 .tools-panel-heading { min-height:32px; display:flex; align-items:center; justify-content:space-between; gap:12px; }

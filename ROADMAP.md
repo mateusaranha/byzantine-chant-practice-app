@@ -60,7 +60,7 @@ Concluído nesta etapa:
 - **Modo de treino:** cada hino possui controles independentes para ocultar temporariamente cores e sublinhados sem alterar marcações, backup, biblioteca ou PDF; ferramentas incompatíveis ficam indisponíveis enquanto a categoria está invisível.
 - **Modo neutro/cursor:** cada hino pode ficar sem ferramenta de marcação ativa, evitando alterações acidentais.
 - **Painel de ferramentas recolhível:** fonte, espaçamento e ferramentas de anotação podem ser ocultados durante a prática; recolher o painel ativa o modo neutro.
-- **Primeiro acesso vazio:** na ausência de trabalho local válido, o aplicativo começa com o mesmo “Novo hino” vazio usado pelo comando de adicionar hino, sem substituir sessões existentes.
+- **Primeiro acesso vazio:** na ausência de trabalho local válido, o aplicativo começa com o mesmo hino vazio usado pelo comando de adicionar hino, sem substituir sessões existentes. O título começa vazio, com “Título do hino” como placeholder e “Novo hino” apenas como identificação visual quando necessário.
 - **Interface em português:** os textos visíveis e de acessibilidade foram padronizados em português brasileiro; grego litúrgico, nomes próprios e termos técnicos necessários foram preservados.
 
 ## Ajuda e demonstração
