@@ -1,4 +1,5 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import StudyReferences from "./StudyReferences";
 
 export type HelpPage = "guide" | "about";
 
@@ -13,7 +14,11 @@ export default function HelpDialog({
 }) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
-  const title = page === "guide" ? "Guia de estudo" : "Sobre o Psaltikon";
+  const copyRef = useRef<HTMLDivElement>(null);
+  const guideScrollRef = useRef(0);
+  const [referencesOpen, setReferencesOpen] = useState(false);
+  const title = page === "about" ? "Sobre o Psaltikon"
+    : referencesOpen ? "Referências para explorar" : "Guia de estudo";
 
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -28,6 +33,16 @@ export default function HelpDialog({
       trigger.focus({ preventScroll: true });
     };
   }, [trigger]);
+
+  useEffect(() => {
+    if (copyRef.current) copyRef.current.scrollTop = referencesOpen ? 0 : guideScrollRef.current;
+    titleRef.current?.focus({ preventScroll: true });
+  }, [referencesOpen]);
+
+  function toggleReferences() {
+    if (!referencesOpen) guideScrollRef.current = copyRef.current?.scrollTop ?? 0;
+    setReferencesOpen((open) => !open);
+  }
 
   return (
     <dialog
@@ -53,8 +68,15 @@ export default function HelpDialog({
           Fechar <span aria-hidden="true">×</span>
         </button>
       </div>
-      <div className="help-copy" tabIndex={0} role="region" aria-label={`Conteúdo: ${title}`}>
-        {page === "guide" ? <StudyGuide /> : <About />}
+      {page === "guide" && (
+        <nav className="help-navigation" aria-label="Navegação do guia">
+          <button className="help-link" onClick={toggleReferences}>
+            {referencesOpen ? "← Voltar ao Guia de estudo" : "Referências para explorar →"}
+          </button>
+        </nav>
+      )}
+      <div ref={copyRef} className="help-copy" tabIndex={0} role="region" aria-label={`Conteúdo: ${title}`}>
+        {page === "about" ? <About /> : referencesOpen ? <StudyReferences /> : <StudyGuide />}
       </div>
     </dialog>
   );
