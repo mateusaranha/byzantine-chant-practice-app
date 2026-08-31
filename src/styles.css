@@ -198,6 +198,8 @@ footer { max-width:1500px; margin:15px auto 0; display:flex; align-items:center;
 .help-copy p:last-child { margin-bottom:0; }
 .help-copy h3 { margin:30px 0 12px; color:var(--red); font:600 20px/1.4 Arial,sans-serif; }
 .help-copy a { color:var(--red); text-underline-offset:3px; }
+.help-navigation { flex:none; padding:4px 28px; border-bottom:1px solid #ded2c1; font:14px/1.4 Arial,sans-serif; }
+.help-navigation .help-link { min-height:44px; text-align:left; }
 @media (max-width:1100px) { .header-note { display:none; } }
 @media (max-width:900px) { .workspace,.cloud-library-grid { grid-template-columns:1fr; } .lyrics-panel,.video-panel { padding:24px; } .topbar { flex-wrap:wrap; } .header-actions { width:100%; } }
 @media (max-width:520px) { .app-shell { padding:16px 10px; } .header-actions { display:grid; grid-template-columns:1fr 1fr; } .cloud-trigger { grid-column:1/-1; } .export-pdf { grid-column:1/-1; width:100%; justify-content:center; } .backup-button { width:100%; } .cloud-library { padding:16px 12px; } .cloud-library-heading h2 { font-size:23px; } .cloud-card-title { flex-direction:column; } .admin-columns { grid-template-columns:1fr; } .admin-add { flex-direction:column; } .panel-heading { flex-direction:column; gap:9px; } .panel-heading.compact { align-items:flex-start; } .speed-badge { position:absolute; right:0; top:0; } .text-button { align-self:flex-end; } .tools-toggle { min-height:44px; } .cursor-tool { min-height:40px; } .type-controls { flex-direction:column; gap:10px; } .highlighter-bar { gap:10px; } .tool-label { width:100%; } .tools-panel-heading .tool-label { width:auto; } .annotation-divider { display:none; } .tool-button.clear { margin-left:0; } .lyrics { padding-inline:0; } .speed-control { align-items:flex-start; flex-direction:column; } .repeat-options { grid-template-columns:1fr 1fr; } .input-row { flex-direction:column; } .input-row button { padding:13px; } }
@@ -205,6 +207,7 @@ footer { max-width:1500px; margin:15px auto 0; display:flex; align-items:center;
   .training-toggle { min-height:42px; }
   .help-dialog,.help-dialog.study-guide { width:calc(100% - 20px); max-height:calc(100vh - 20px); max-height:calc(100dvh - 20px); }
   .help-heading { gap:10px; padding:14px 16px; }
+  .help-navigation { padding-inline:16px; }
   .help-copy { padding:18px 20px 24px; }
   .help-copy h3 { font-size:18px; }
   .about-link,.help-link { min-height:44px; }
