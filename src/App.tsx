@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import CloudLibrary from "./CloudLibrary";
+import HelpDialog from "./HelpDialog";
+import type { HelpPage } from "./HelpDialog";
 import { newHymn, normalizeHymn, restoreHymns } from "./hymnState";
 import type { Highlight, Hymn, Melisma, RepeatMode } from "./hymnState";
 
@@ -116,6 +118,7 @@ function HymnWorkspace({
   printRequest,
   onChange,
   onDelete,
+  onOpenGuide,
 }: {
   hymn: Hymn;
   index: number;
@@ -123,6 +126,7 @@ function HymnWorkspace({
   printRequest: number;
   onChange: (hymn: Hymn) => void;
   onDelete: () => void;
+  onOpenGuide: (trigger: HTMLButtonElement) => void;
 }) {
   const [editing, setEditing] = useState(!hymn.lyrics);
   const [history, setHistory] = useState<HistoryEntry[]>([]);
@@ -566,7 +570,8 @@ function HymnWorkspace({
             </button>
           )}
           <p className="practice-hint">
-            As cores dividem frases melódicas; um sublinhado simples ou duplo marca as sílabas melismáticas.
+            Cores e sublinhados podem servir como lembretes do que você escutou na gravação.
+            {" "}Veja uma sugestão de uso no <button className="help-link" aria-haspopup="dialog" onClick={(event) => onOpenGuide(event.currentTarget)}>Guia de estudo</button>.
           </p>
           {hymn.targetSpeed !== 1 && (
             <p className="print-meta">Velocidade de treino: {hymn.targetSpeed.toFixed(2)}×</p>
@@ -673,13 +678,9 @@ function HymnWorkspace({
             )}
           </div>
 
-          <div className="practice-card">
-            <span className="ornament" aria-hidden="true">✣</span>
-            <div>
-              <h3>Método de treino</h3>
-              <p>Ouça uma frase, pause, cante-a de volta e depois acompanhe a gravação inteira sem parar.</p>
-            </div>
-          </div>
+          <p className="practice-hint video-guide-hint">
+            Como escolher uma gravação e praticar? <button className="help-link" aria-haspopup="dialog" onClick={(event) => onOpenGuide(event.currentTarget)}>Abra o Guia de estudo</button>.
+          </p>
         </aside>
       </div>
     </section>
@@ -691,10 +692,8 @@ export default function Home() {
   const [hydrated, setHydrated] = useState(false);
   const [printRequest, setPrintRequest] = useState(0);
   const [cloudOpen, setCloudOpen] = useState(false);
-  const [aboutOpen, setAboutOpen] = useState(false);
+  const [help, setHelp] = useState<{ page: HelpPage; trigger: HTMLButtonElement } | null>(null);
   const backupInputRef = useRef<HTMLInputElement>(null);
-  const aboutButtonRef = useRef<HTMLButtonElement>(null);
-  const aboutCloseRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     const saved = localStorage.getItem("psaltikon-practice");
@@ -711,22 +710,6 @@ export default function Home() {
     if (!hydrated) return;
     localStorage.setItem("psaltikon-practice", JSON.stringify({ version: 3, hymns }));
   }, [hymns, hydrated]);
-
-  useEffect(() => {
-    if (!aboutOpen) return;
-    const previousOverflow = document.body.style.overflow;
-    const closeOnEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setAboutOpen(false);
-    };
-    document.body.style.overflow = "hidden";
-    window.addEventListener("keydown", closeOnEscape);
-    window.requestAnimationFrame(() => aboutCloseRef.current?.focus());
-    return () => {
-      document.body.style.overflow = previousOverflow;
-      window.removeEventListener("keydown", closeOnEscape);
-      aboutButtonRef.current?.focus();
-    };
-  }, [aboutOpen]);
 
   function updateHymn(updated: Hymn) {
     setHymns((current) => current.map((hymn) => (hymn.id === updated.id ? updated : hymn)));
@@ -842,6 +825,7 @@ export default function Home() {
             canDelete={index > 0}
             printRequest={printRequest}
             onChange={updateHymn}
+            onOpenGuide={(trigger) => setHelp({ page: "guide", trigger })}
             onDelete={() => setHymns((current) => current.filter((item) => item.id !== hymn.id))}
           />
         ))}
@@ -854,65 +838,27 @@ export default function Home() {
 
       <footer>
         <span>Ἄσωμεν τῷ Κυρίῳ · Um espaço tranquilo para a prática diária</span>
-        <button
-          ref={aboutButtonRef}
-          className="about-link"
-          onClick={() => setAboutOpen(true)}
-          aria-haspopup="dialog"
-          aria-expanded={aboutOpen}
-        >
-          Sobre
-        </button>
+        <nav className="footer-help" aria-label="Ajuda do Psaltikon">
+          <button
+            className="about-link"
+            onClick={(event) => setHelp({ page: "guide", trigger: event.currentTarget })}
+            aria-haspopup="dialog"
+            aria-expanded={help?.page === "guide"}
+          >
+            Guia de estudo
+          </button>
+          <button
+            className="about-link"
+            onClick={(event) => setHelp({ page: "about", trigger: event.currentTarget })}
+            aria-haspopup="dialog"
+            aria-expanded={help?.page === "about"}
+          >
+            Sobre
+          </button>
+        </nav>
       </footer>
 
-      {aboutOpen && (
-        <div
-          className="about-modal"
-          onMouseDown={(event) => {
-            if (event.target === event.currentTarget) setAboutOpen(false);
-          }}
-        >
-          <section
-            className="about-dialog"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="about-title"
-            onKeyDown={(event) => {
-              if (event.key === "Tab") {
-                event.preventDefault();
-                aboutCloseRef.current?.focus();
-              }
-            }}
-          >
-            <button
-              ref={aboutCloseRef}
-              className="about-close"
-              onClick={() => setAboutOpen(false)}
-              aria-label="Fechar janela Sobre"
-            >
-              ×
-            </button>
-            <p className="eyebrow">Auxílio de estudo</p>
-            <h2 id="about-title">Sobre o Psaltikon</h2>
-            <div className="about-copy">
-              <p>
-                Aprender a notação musical bizantina continua sendo o caminho ideal para estudar este canto.
-                O Psaltikon serve como uma ponte para quem ainda não lê essa notação com fluência suficiente
-                para os hinos que precisa aprender.
-              </p>
-              <p>
-                As cores dividem a letra em pequenos trechos melódicos. Os sublinhados simples e duplos marcam
-                sílabas com ornamentação mais breve ou mais pronunciada, ajudando a relacionar o texto àquilo
-                que se ouve na gravação.
-              </p>
-              <p>
-                Assim, a ferramenta auxilia a escuta, a prática e a memorização dos hinos, mas não pretende
-                substituir o aprendizado da notação bizantina propriamente dita.
-              </p>
-            </div>
-          </section>
-        </div>
-      )}
+      {help && <HelpDialog page={help.page} trigger={help.trigger} onClose={() => setHelp(null)} />}
     </main>
   );
 }
