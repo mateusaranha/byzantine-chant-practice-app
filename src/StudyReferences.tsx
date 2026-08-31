@@ -78,6 +78,33 @@ export default function StudyReferences() {
           A escuta de diferentes gravações de um mesmo psaltis permite perceber detalhes recorrentes de sua maneira de cantar. Isso também acontece com outros intérpretes desta seleção: conforme cresce a familiaridade com suas gravações, certos movimentos e escolhas tornam aquela voz e aquela execução mais reconhecíveis.
         </p>
       </HelpSection>
+
+      <HelpSection title="Nikos Karachalis: o caráter das Evlogitárias da Ressurreição">
+        <p>
+          O canal de <a href="https://www.youtube.com/@Protopsaltis" target="_blank" rel="noopener noreferrer" aria-label="Canal de Nikos Karachalis (abre em nova aba)" >Nikos Karachalis — <span lang="el">Νίκος Καραχάλης</span></a> é dedicado às suas próprias execuções. Segundo a descrição, ele nasceu em Esparta, estudou música bizantina e europeia e teologia, foi aluno de diferentes mestres — entre eles Georgios Kakoulidis —, cantou em diversas igrejas de Atenas e participou ou dirigiu coros de psaltai.
+        </p>
+        <p>
+          Uma gravação que se destacou durante a exploração foi a das <a href="https://www.youtube.com/watch?v=6le4t17FYh0" target="_blank" rel="noopener noreferrer" aria-label="Evlogitárias da Ressurreição por Nikos Karachalis (abre em nova aba)" >Evlogitárias da Ressurreição</a>, cantadas nas Matinas dos domingos. Nessa execução, o primeiro modo plagal assume de maneira especialmente marcante um caráter recolhido e misterioso. A impressão é difícil de reduzir a uma característica técnica isolada, mas foi justamente ela que fez a gravação permanecer na memória.
+        </p>
+      </HelpSection>
+
+      <HelpSection title="Canais com notação e material para a prática">
+        <p>
+          Alguns canais se destacam menos por uma única gravação e mais pela quantidade de material que oferecem. Quando a notação bizantina aparece na tela, a escuta também pode servir como uma primeira familiarização com a partitura, mesmo para quem ainda não a lê com autonomia.
+        </p>
+        <p>
+          O canal de <a href="https://www.youtube.com/@%CE%93%CE%B5%CF%8E%CF%81%CE%B3%CE%B9%CE%BF%CF%82%CE%9A%CE%B1%CE%BA%CE%BF%CF%85%CE%BB%CE%AF%CE%B4%CE%B7%CF%82-%CE%B94%CF%81" target="_blank" rel="noopener noreferrer" aria-label="Canal de Georgios Kakoulidis (abre em nova aba)" >Georgios Kakoulidis — <span lang="el">Γεώργιος Κακουλίδης</span></a> reúne gravações de um reconhecido protopsaltis, professor de música bizantina, regente e autor de lições musicais. Nascido em Drama em 1935, ele aprendeu inicialmente com o pai, Ioannis, que era psaltis, prosseguiu os estudos com o irmão Nikos e faleceu em 2020.
+        </p>
+        <p>
+          Um exemplo é <a href="https://www.youtube.com/watch?v=crd7L-GCsAM" target="_blank" rel="noopener noreferrer" aria-label="Parallage e melodia de Tou Gavriil fthenxamenou por Georgios Kakoulidis (abre em nova aba)" ><span lang="el">Τοῦ Γαβριὴλ φθεγξαμένου</span>, em parallage e com o texto do hino</a>. Na primeira parte, Kakoulidis canta a melodia usando apenas os nomes das notas — ni, pa, vou e os demais —; depois, canta o mesmo trecho com a letra. Essa passagem da parallage para a melodia permite acompanhar duas etapas distintas do estudo na mesma gravação.
+        </p>
+        <p>
+          O <a href="https://www.youtube.com/@S55s21" target="_blank" rel="noopener noreferrer" aria-label="Canal de Savvas Iliadis (abre em nova aba)" >canal de Savvas Iliadis — <span lang="el">Σάββας Ηλιάδης</span></a> também oferece um acervo amplo, organizado em playlists e frequentemente acompanhado pela notação bizantina. Os títulos, a voz recorrente e outras publicações associadas indicam que a parte hinológica reúne principalmente execuções do próprio Savvas, que também usa a designação <span lang="el">ΑΜΑΣΕΥΣ</span> e está ligado à cidade de Kilkis. Fontes externas também o apresentam como professor e regente de um coro paroquial local.
+        </p>
+        <p>
+          Como exemplo, pode-se ouvir o <a href="https://www.youtube.com/watch?v=k8H7q4v926s" target="_blank" rel="noopener noreferrer" aria-label="Kondakion da Dormição da Theotokos por Savvas Iliadis (abre em nova aba)" >Kondakion da Dormição da Theotokos, na composição de Karamanis</a>. Aqui, o destaque não está em uma execução isolada que tenha chamado especialmente a atenção, mas na presença de várias gravações boas e úteis para a prática e para o acompanhamento visual da notação.
+        </p>
+      </HelpSection>
     </>
   );
 }
