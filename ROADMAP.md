@@ -54,6 +54,7 @@ A borracha e os comandos independentes **Limpar cores** e **Limpar melismas** j�
 
 Concluído nesta etapa:
 
+- **Leitura transliterada:** alternância temporária entre grego e transliteração automática no mesmo hino, seguindo a convenção aprovada do livrinho paroquial. As marcações são projetadas na leitura; edição e PDF permanecem em grego. Também funciona em links compartilhados, sem segundo texto salvo ou migração. Revisão manual da transliteração fica para uma etapa futura.
 - **Compartilhamento por link:** conjuntos publicados ou hinos individuais abrem diretamente em uma área temporária, sem login e sem sobrescrever trabalho local. A opção de adicionar uma cópia preserva os hinos existentes. Links acompanham a publicação mais recente; cópias locais permanecem independentes.
 - **Guia de estudo e ajuda compacta:** conteúdo pessoal revisado pelo criador, acessível pelo rodapé e pelas dicas sob texto e vídeo, em janela com rolagem; “Sobre” alinhado ao significado aprovado das marcações.
 - **Modo de treino:** cada hino possui controles independentes para ocultar temporariamente cores e sublinhados sem alterar marcações, backup, biblioteca ou PDF; ferramentas incompatíveis ficam indisponíveis enquanto a categoria está invisível.

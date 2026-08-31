@@ -6,6 +6,7 @@ import { newHymn, normalizeHymn, restoreHymns } from "./hymnState";
 import type { Highlight, Hymn, Melisma, RepeatMode } from "./hymnState";
 import { addSharedToWorkspace, loadPublishedSet, parseShareRequest, selectSharedHymns, workspaceUrl } from "./sharedHymns";
 import type { SharedRoute } from "./sharedHymns";
+import { projectTransliteration, transliterateGreek } from "./transliteration";
 
 type ActiveTool =
   | "sage"
@@ -113,6 +114,20 @@ function subtractRange<T extends { start: number; end: number }>(
   return next;
 }
 
+function LyricsSegments({ segments }: { segments: ReturnType<typeof projectTransliteration> }) {
+  return segments.map((segment, index) => (
+    <span
+      key={index}
+      className={[
+        segment.color ? `mark-${segment.color}` : "",
+        segment.melisma ? `melisma-${segment.melisma}` : "",
+      ].filter(Boolean).join(" ")}
+    >
+      {segment.text}
+    </span>
+  ));
+}
+
 function HymnWorkspace({
   hymn,
   index,
@@ -136,12 +151,14 @@ function HymnWorkspace({
   const [toolsOpen, setToolsOpen] = useState(true);
   const [coloursVisible, setColoursVisible] = useState(true);
   const [melismasVisible, setMelismasVisible] = useState(true);
+  const [transliterated, setTransliterated] = useState(false);
   const lyricsRef = useRef<HTMLDivElement>(null);
   const playerHostRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<YouTubePlayer | null>(null);
   const repeatModeRef = useRef<RepeatMode>(hymn.repeatMode);
   const repeatsDoneRef = useRef(0);
   const toolsId = `hymn-tools-${hymn.id}`;
+  const lyricsId = `hymn-lyrics-${hymn.id}`;
 
   useEffect(() => {
     if (printRequest > 0) setEditing(false);
@@ -212,6 +229,12 @@ function HymnWorkspace({
     });
   }, [hymn.lyrics, hymn.highlights, hymn.melismas]);
 
+  const transliteration = useMemo(() => transliterateGreek(hymn.lyrics), [hymn.lyrics]);
+  const transliteratedSegments = useMemo(
+    () => projectTransliteration(transliteration, hymn.highlights, hymn.melismas),
+    [transliteration, hymn.highlights, hymn.melismas],
+  );
+
   function remember() {
     setHistory((current) => [
       ...current.slice(-19),
@@ -220,6 +243,7 @@ function HymnWorkspace({
   }
 
   function markSelection() {
+    if (transliterated) return;
     if (!activeTool) return;
     if (!coloursVisible && (isColourTool(activeTool) || activeTool === "eraser")) return;
     if (!melismasVisible && (isMelismaTool(activeTool) || activeTool === "eraser")) return;
@@ -282,6 +306,12 @@ function HymnWorkspace({
   function toggleTools() {
     if (toolsOpen) setActiveTool(null);
     setToolsOpen(!toolsOpen);
+  }
+
+  function changeReading(showTransliteration: boolean) {
+    setActiveTool(null);
+    window.getSelection()?.removeAllRanges();
+    setTransliterated(showTransliteration);
   }
 
   function toggleColours() {
@@ -349,10 +379,48 @@ function HymnWorkspace({
                 </>
               )}
             </div>
-            <button className="text-button" onClick={() => setEditing(!editing)}>
-              {editing ? "Concluir" : "Editar texto"}
+            <button className="text-button" onClick={() => {
+              changeReading(false);
+              setEditing(!editing);
+            }}>
+              {editing ? "Concluir" : transliterated ? "Editar grego" : "Editar texto"}
             </button>
           </div>
+
+          {!editing && hymn.lyrics && (
+            <div className="reading-controls">
+              <div className="reading-options" role="group" aria-label={`Leitura do hino ${index + 1}`}>
+                <button
+                  className={`tool-button reading-toggle ${transliterated ? "" : "active"}`}
+                  aria-pressed={!transliterated}
+                  aria-controls={lyricsId}
+                  onClick={() => changeReading(false)}
+                >Grego</button>
+                <button
+                  className={`tool-button reading-toggle ${transliterated ? "active" : ""}`}
+                  aria-pressed={transliterated}
+                  aria-controls={lyricsId}
+                  onClick={() => changeReading(true)}
+                >Transliterado</button>
+              </div>
+              {transliterated && (
+                <>
+                  <p className="transliteration-note" id={`${lyricsId}-note`}>
+                    Para editar o texto ou as marcações, volte para Grego.
+                  </p>
+                  <details className="transliteration-help">
+                    <summary>Como ler a transliteração</summary>
+                    <p>
+                      Convenção baseada no livrinho da paróquia: <strong>y</strong> soa como <strong>i</strong>;
+                      {" "}<strong>ch</strong> representa o χ grego, não o “ch” de “chuva”.
+                      É um auxílio de leitura; continue usando a gravação como referência.
+                    </p>
+                    <p>A conversão é automática. O PDF continua em grego, com todas as marcações.</p>
+                  </details>
+                </>
+              )}
+            </div>
+          )}
 
           <div className={`tools-panel ${toolsOpen ? "" : "collapsed"}`}>
             <div className="tools-panel-heading">
@@ -424,7 +492,7 @@ function HymnWorkspace({
                       </button>
                     </div>
 
-                    <div className="highlighter-bar" aria-label={`Ferramentas de marcação do hino ${index + 1}`}>
+                    {!transliterated && <div className="highlighter-bar" aria-label={`Ferramentas de marcação do hino ${index + 1}`}>
                       <button
                         className={`tool-button cursor-tool ${activeTool === null ? "active" : ""}`}
                         onClick={() => setActiveTool(null)}
@@ -512,7 +580,7 @@ function HymnWorkspace({
                     >
                       Limpar melismas
                     </button>
-                    </div>
+                    </div>}
                   </>
                 )}
               </div>
@@ -537,35 +605,33 @@ function HymnWorkspace({
               spellCheck={false}
             />
           ) : hymn.lyrics ? (
-            <div
-              ref={lyricsRef}
-              className={[
-                "lyrics",
-                activeTool ? `selection-${activeTool}` : "selection-neutral",
-                coloursVisible ? "" : "training-hide-colours",
-                melismasVisible ? "" : "training-hide-melismas",
-              ]
-                .filter(Boolean)
-                .join(" ")}
-              lang="grc"
-              style={{ fontSize: hymn.fontSize, lineHeight: hymn.lineHeight }}
-              onMouseUp={markSelection}
-              onTouchEnd={markSelection}
-            >
-              {segments.map((segment, segmentIndex) => (
-                <span
-                  key={segmentIndex}
-                  className={[
-                    segment.color ? `mark-${segment.color}` : "",
-                    segment.melisma ? `melisma-${segment.melisma}` : "",
-                  ]
-                    .filter(Boolean)
-                    .join(" ")}
-                >
-                  {segment.text}
-                </span>
-              ))}
-            </div>
+            <>
+              <div
+                ref={lyricsRef}
+                id={lyricsId}
+                className={[
+                  "lyrics",
+                  transliterated ? "lyrics-transliterated" : "",
+                  activeTool ? `selection-${activeTool}` : "selection-neutral",
+                  coloursVisible ? "" : "training-hide-colours",
+                  melismasVisible ? "" : "training-hide-melismas",
+                ]
+                  .filter(Boolean)
+                  .join(" ")}
+                lang={transliterated ? "grc-Latn" : "grc"}
+                aria-describedby={transliterated ? `${lyricsId}-note` : undefined}
+                style={{ fontSize: hymn.fontSize, lineHeight: hymn.lineHeight }}
+                onMouseUp={markSelection}
+                onTouchEnd={markSelection}
+              >
+                <LyricsSegments segments={transliterated ? transliteratedSegments : segments} />
+              </div>
+              {transliterated && (
+                <div className="lyrics lyrics-print-original" lang="grc">
+                  <LyricsSegments segments={segments} />
+                </div>
+              )}
+            </>
           ) : (
             <button className="empty-lyrics" onClick={() => setEditing(true)}>
               Adicionar texto grego
