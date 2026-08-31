@@ -518,27 +518,31 @@ function HymnWorkspace({
                       ))}
                     </div>
                     <span className="annotation-divider" aria-hidden="true" />
-                    <span className="tool-label">Melisma</span>
-                    <button
-                      className={`melisma-tool ${activeTool === "melisma-simple" ? "active" : ""}`}
-                      onClick={() => setActiveTool("melisma-simple")}
-                      disabled={!melismasVisible}
-                      aria-label="Melisma simples"
-                      aria-pressed={activeTool === "melisma-simple"}
-                      title="Melisma simples"
-                    >
-                      <span className="melisma-sample simple">μ</span> Simples
-                    </button>
-                    <button
-                      className={`melisma-tool ${activeTool === "melisma-complex" ? "active" : ""}`}
-                      onClick={() => setActiveTool("melisma-complex")}
-                      disabled={!melismasVisible}
-                      aria-label="Melisma complexo"
-                      aria-pressed={activeTool === "melisma-complex"}
-                      title="Melisma longo ou complexo"
-                    >
-                      <span className="melisma-sample complex">μ</span> Complexo
-                    </button>
+                    <div className="melisma-controls" role="group" aria-label="Melismas">
+                      <span className="tool-label">Melisma</span>
+                      <div className="melisma-options">
+                        <button
+                          className={`melisma-tool ${activeTool === "melisma-simple" ? "active" : ""}`}
+                          onClick={() => setActiveTool("melisma-simple")}
+                          disabled={!melismasVisible}
+                          aria-label="Melisma simples"
+                          aria-pressed={activeTool === "melisma-simple"}
+                          title="Melisma simples"
+                        >
+                          <span className="melisma-sample simple">μ</span> Simples
+                        </button>
+                        <button
+                          className={`melisma-tool ${activeTool === "melisma-complex" ? "active" : ""}`}
+                          onClick={() => setActiveTool("melisma-complex")}
+                          disabled={!melismasVisible}
+                          aria-label="Melisma complexo"
+                          aria-pressed={activeTool === "melisma-complex"}
+                          title="Melisma longo ou complexo"
+                        >
+                          <span className="melisma-sample complex">μ</span> Complexo
+                        </button>
+                      </div>
+                    </div>
                     <span className="annotation-divider" aria-hidden="true" />
                     <button
                       className={`tool-button ${activeTool === "eraser" ? "active" : ""}`}

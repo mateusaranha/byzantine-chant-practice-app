@@ -133,6 +133,8 @@ button,input,textarea { font:inherit; } button { cursor:pointer; }
 .tool-button.clear-melismas { color:#8d302d; }
 .tool-button:disabled,.melisma-tool:disabled,.swatch:disabled { opacity:.38; cursor:default; }
 .annotation-divider { width:1px; height:22px; margin:0 2px; background:#d6c8b5; }
+.melisma-controls { display:flex; align-items:center; flex-wrap:wrap; gap:8px; max-width:100%; }
+.melisma-options { display:flex; flex-wrap:nowrap; gap:8px; }
 .melisma-tool { min-height:29px; display:flex; align-items:center; gap:6px; border:1px solid #cdbfae; border-radius:3px; background:#fffdf8; color:#675b50; padding:4px 8px; font:11px Arial,sans-serif; }
 .melisma-tool:hover:not(:disabled),.melisma-tool.active { border-color:#7c6a5b; background:#eee6d9; color:#302823; }
 .melisma-sample { display:inline-block; min-width:15px; color:#302823; font:600 17px var(--font-noto-serif),"Noto Serif",serif; text-align:center; text-decoration-line:underline; text-underline-offset:.18em; text-decoration-skip-ink:none; }
