@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import type { Hymn } from "./hymnState";
+import ShareDialog from "./ShareDialog";
 
 type GitHubUser = {
   login: string;
@@ -93,6 +94,7 @@ export default function CloudLibrary({
   const [busy, setBusy] = useState("");
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const [sharing, setSharing] = useState<{ path: string; trigger: HTMLButtonElement } | null>(null);
 
   const grouped = useMemo(() => {
     const groups = new Map<string, LibraryItem[]>();
@@ -249,6 +251,8 @@ export default function CloudLibrary({
         </div>
       )}
 
+      {sharing && <ShareDialog apiBase={apiBase} path={sharing.path} trigger={sharing.trigger} onClose={() => setSharing(null)} />}
+
       <div className="cloud-library-grid">
         <div className="cloud-card">
           <div className="cloud-card-title">
@@ -272,6 +276,9 @@ export default function CloudLibrary({
                       <span>{displaySlug(item.slug)}</span>
                       <div>
                         <button onClick={() => loadSet(item)} disabled={Boolean(busy)}>Abrir</button>
+                        <button onClick={(event) => setSharing({ path: item.path, trigger: event.currentTarget })} disabled={Boolean(busy)} aria-haspopup="dialog">
+                          Compartilhar
+                        </button>
                         {canDelete(item) && (
                           <button className="danger" onClick={() => deleteSet(item)} disabled={Boolean(busy)}>Excluir</button>
                         )}

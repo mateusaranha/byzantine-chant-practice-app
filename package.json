@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
-    "test": "VITE_PUBLISHER_API_URL=https://publisher.example npm run build && node --test tests/build.test.mjs"
+    "test": "VITE_PUBLISHER_API_URL=https://publisher.example npm run build && node --test tests/*.test.mjs"
   },
   "dependencies": {
     "react": "19.2.6",
