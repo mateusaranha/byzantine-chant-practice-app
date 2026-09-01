@@ -116,10 +116,15 @@ test("the production build contains the app shell and migration features", async
   assert.match(javascript, /Exportar cópia de segurança/);
   assert.match(javascript, /Limpar cores/);
   assert.match(javascript, /Limpar melismas/);
-  assert.match(source, /className="annotation-cluster annotation-marking-tools"/);
+  const studyControlsIndex = source.indexOf('className="study-control-row"');
+  const toolsPanelIndex = source.indexOf('className={`tools-panel');
+  assert.ok(studyControlsIndex >= 0 && studyControlsIndex < toolsPanelIndex, "training controls must stay outside the collapsible tools panel");
   assert.match(source, /role="toolbar"/);
+  assert.match(source, /className="annotation-row"/);
   assert.match(source, /className="clear-controls" role="group" aria-label="Limpar marcações"/);
-  assert.match(stylesSource, /\.clear-controls \{ flex-wrap:nowrap; \}/);
+  assert.match(stylesSource, /\.highlighter-bar \{[^}]*width:fit-content;[^}]*border-top:/);
+  assert.match(stylesSource, /\.clear-controls \{[^}]*flex-wrap:nowrap;/);
+  assert.doesNotMatch(source, /annotation-cluster/);
   assert.doesNotMatch(stylesSource, /\.tool-button\.clear \{ margin-left:auto;/);
   assert.match(javascript, /Nenhuma ferramenta de marcação/);
   assert.match(javascript, /Modo cursor/);

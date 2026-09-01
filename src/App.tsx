@@ -390,19 +390,45 @@ function HymnWorkspace({
 
           {!editing && hymn.lyrics && (
             <div className="reading-controls">
-              <div className="reading-options" role="group" aria-label={`Leitura do hino ${index + 1}`}>
-                <button
-                  className={`tool-button reading-toggle ${transliterated ? "" : "active"}`}
-                  aria-pressed={!transliterated}
-                  aria-controls={lyricsId}
-                  onClick={() => changeReading(false)}
-                >Grego</button>
-                <button
-                  className={`tool-button reading-toggle ${transliterated ? "active" : ""}`}
-                  aria-pressed={transliterated}
-                  aria-controls={lyricsId}
-                  onClick={() => changeReading(true)}
-                >Transliterado</button>
+              <div className="study-control-row">
+                <div className="reading-options" role="group" aria-label={`Leitura do hino ${index + 1}`}>
+                  <button
+                    className={`tool-button reading-toggle ${transliterated ? "" : "active"}`}
+                    aria-pressed={!transliterated}
+                    aria-controls={lyricsId}
+                    onClick={() => changeReading(false)}
+                  >Grego</button>
+                  <button
+                    className={`tool-button reading-toggle ${transliterated ? "active" : ""}`}
+                    aria-pressed={transliterated}
+                    aria-controls={lyricsId}
+                    onClick={() => changeReading(true)}
+                  >Transliterado</button>
+                </div>
+
+                <div className="training-controls" aria-label={`Recursos de treino do hino ${index + 1}`}>
+                  <span className="tool-label">Treino</span>
+                  <button
+                    className={`tool-button training-toggle ${coloursVisible ? "" : "active"}`}
+                    onClick={toggleColours}
+                    aria-pressed={!coloursVisible}
+                    aria-label={coloursVisible ? "Ocultar cores" : "Mostrar cores"}
+                    title={coloursVisible ? "Ocultar cores durante o treino" : "Mostrar novamente as cores"}
+                  >
+                    <span aria-hidden="true">{coloursVisible ? "◉" : "○"}</span>
+                    {coloursVisible ? "Ocultar cores" : "Mostrar cores"}
+                  </button>
+                  <button
+                    className={`tool-button training-toggle ${melismasVisible ? "" : "active"}`}
+                    onClick={toggleMelismas}
+                    aria-pressed={!melismasVisible}
+                    aria-label={melismasVisible ? "Ocultar sublinhados" : "Mostrar sublinhados"}
+                    title={melismasVisible ? "Ocultar sublinhados durante o treino" : "Mostrar novamente os sublinhados"}
+                  >
+                    <span aria-hidden="true">{melismasVisible ? "μ̲" : "μ"}</span>
+                    {melismasVisible ? "Ocultar sublinhados" : "Mostrar sublinhados"}
+                  </button>
+                </div>
               </div>
               {transliterated && (
                 <>
@@ -467,144 +493,117 @@ function HymnWorkspace({
                   </label>
                 </div>
 
-                {!editing && (
-                  <>
-                    <div className="training-controls" aria-label={`Recursos de treino do hino ${index + 1}`}>
-                      <span className="tool-label">Treino</span>
-                      <button
-                        className={`tool-button training-toggle ${coloursVisible ? "" : "active"}`}
-                        onClick={toggleColours}
-                        aria-pressed={!coloursVisible}
-                        aria-label={coloursVisible ? "Ocultar cores" : "Mostrar cores"}
-                        title={coloursVisible ? "Ocultar cores durante o treino" : "Mostrar novamente as cores"}
-                      >
-                        <span aria-hidden="true">{coloursVisible ? "◉" : "○"}</span>
-                        {coloursVisible ? "Ocultar cores" : "Mostrar cores"}
-                      </button>
-                      <button
-                        className={`tool-button training-toggle ${melismasVisible ? "" : "active"}`}
-                        onClick={toggleMelismas}
-                        aria-pressed={!melismasVisible}
-                        aria-label={melismasVisible ? "Ocultar sublinhados" : "Mostrar sublinhados"}
-                        title={melismasVisible ? "Ocultar sublinhados durante o treino" : "Mostrar novamente os sublinhados"}
-                      >
-                        <span aria-hidden="true">{melismasVisible ? "μ̲" : "μ"}</span>
-                        {melismasVisible ? "Ocultar sublinhados" : "Mostrar sublinhados"}
-                      </button>
-                    </div>
+                {!editing && !transliterated && (
+                  <div
+                    className="highlighter-bar"
+                    role="toolbar"
+                    aria-label={`Ferramentas de marcação do hino ${index + 1}`}
+                  >
+                    <div className="annotation-row">
+                      <div className="annotation-section selection-tools" role="group" aria-label="Cursor e borracha">
+                        <button
+                          className={`tool-button cursor-tool ${activeTool === null ? "active" : ""}`}
+                          onClick={() => setActiveTool(null)}
+                          aria-label="Nenhuma ferramenta de marcação"
+                          aria-pressed={activeTool === null}
+                          title="Selecionar texto sem alterar marcações"
+                        >
+                          <span aria-hidden="true">↖</span> Cursor
+                        </button>
+                        <button
+                          className={`tool-button ${activeTool === "eraser" ? "active" : ""}`}
+                          onClick={() => setActiveTool("eraser")}
+                          disabled={!coloursVisible || !melismasVisible}
+                          aria-label="Borracha"
+                          aria-pressed={activeTool === "eraser"}
+                        >
+                          Borracha
+                        </button>
+                      </div>
 
-                    {!transliterated && (
-                      <div
-                        className="highlighter-bar"
-                        role="toolbar"
-                        aria-label={`Ferramentas de marcação do hino ${index + 1}`}
-                      >
-                        <div className="annotation-cluster annotation-marking-tools">
-                          <div className="annotation-section selection-tools" role="group" aria-label="Cursor e borracha">
+                      <div className="annotation-section colour-controls" role="group" aria-label="Cores das frases">
+                        <span className="tool-label">Frase</span>
+                        <div className="swatches">
+                          {COLORS.map((color) => (
                             <button
-                              className={`tool-button cursor-tool ${activeTool === null ? "active" : ""}`}
-                              onClick={() => setActiveTool(null)}
-                              aria-label="Nenhuma ferramenta de marcação"
-                              aria-pressed={activeTool === null}
-                              title="Selecionar texto sem alterar marcações"
-                            >
-                              <span aria-hidden="true">↖</span> Cursor
-                            </button>
-                            <button
-                              className={`tool-button ${activeTool === "eraser" ? "active" : ""}`}
-                              onClick={() => setActiveTool("eraser")}
-                              disabled={!coloursVisible || !melismasVisible}
-                              aria-label="Borracha"
-                              aria-pressed={activeTool === "eraser"}
-                            >
-                              Borracha
-                            </button>
-                          </div>
-
-                          <div className="annotation-section colour-controls" role="group" aria-label="Cores das frases">
-                            <span className="tool-label">Frase</span>
-                            <div className="swatches">
-                              {COLORS.map((color) => (
-                                <button
-                                  key={color.value}
-                                  className={`swatch swatch-${color.value} ${activeTool === color.value ? "active" : ""}`}
-                                  onClick={() => setActiveTool(color.value)}
-                                  disabled={!coloursVisible}
-                                  aria-label={`Marcador ${color.name.toLowerCase()}`}
-                                  aria-pressed={activeTool === color.value}
-                                  title={color.name}
-                                />
-                              ))}
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="annotation-cluster annotation-detail-tools">
-                          <div className="annotation-section melisma-controls" role="group" aria-label="Melismas">
-                            <span className="tool-label">Melisma</span>
-                            <div className="melisma-options">
-                              <button
-                                className={`melisma-tool ${activeTool === "melisma-simple" ? "active" : ""}`}
-                                onClick={() => setActiveTool("melisma-simple")}
-                                disabled={!melismasVisible}
-                                aria-label="Melisma simples"
-                                aria-pressed={activeTool === "melisma-simple"}
-                                title="Melisma simples"
-                              >
-                                <span className="melisma-sample simple">μ</span> Simples
-                              </button>
-                              <button
-                                className={`melisma-tool ${activeTool === "melisma-complex" ? "active" : ""}`}
-                                onClick={() => setActiveTool("melisma-complex")}
-                                disabled={!melismasVisible}
-                                aria-label="Melisma complexo"
-                                aria-pressed={activeTool === "melisma-complex"}
-                                title="Melisma longo ou complexo"
-                              >
-                                <span className="melisma-sample complex">μ</span> Complexo
-                              </button>
-                            </div>
-                          </div>
-
-                          <div className="annotation-section annotation-action-controls" role="group" aria-label="Ações de marcação">
-                            <button
-                              className="tool-button undo-tool"
-                              onClick={undo}
-                              disabled={!history.length || !coloursVisible || !melismasVisible}
-                            >
-                              <span aria-hidden="true">↶</span> Desfazer
-                            </button>
-                            <div className="clear-controls" role="group" aria-label="Limpar marcações">
-                              <button
-                                className="tool-button clear"
-                                onClick={() => {
-                                  remember();
-                                  onChange({ ...hymn, highlights: [] });
-                                }}
-                                disabled={!coloursVisible || !hymn.highlights.length}
-                                aria-label="Limpar todas as cores deste hino"
-                                title="Manter os melismas e remover somente as cores das frases"
-                              >
-                                Limpar cores
-                              </button>
-                              <button
-                                className="tool-button clear-melismas"
-                                onClick={() => {
-                                  remember();
-                                  onChange({ ...hymn, melismas: [] });
-                                }}
-                                disabled={!melismasVisible || !hymn.melismas.length}
-                                aria-label="Limpar todos os melismas deste hino"
-                                title="Manter as cores das frases e remover somente os sublinhados de melisma"
-                              >
-                                Limpar melismas
-                              </button>
-                            </div>
-                          </div>
+                              key={color.value}
+                              className={`swatch swatch-${color.value} ${activeTool === color.value ? "active" : ""}`}
+                              onClick={() => setActiveTool(color.value)}
+                              disabled={!coloursVisible}
+                              aria-label={`Marcador ${color.name.toLowerCase()}`}
+                              aria-pressed={activeTool === color.value}
+                              title={color.name}
+                            />
+                          ))}
                         </div>
                       </div>
-                    )}
-                  </>
+                    </div>
+
+                    <div className="annotation-row">
+                      <div className="annotation-section melisma-controls" role="group" aria-label="Melismas">
+                        <span className="tool-label">Melisma</span>
+                        <div className="melisma-options">
+                          <button
+                            className={`melisma-tool ${activeTool === "melisma-simple" ? "active" : ""}`}
+                            onClick={() => setActiveTool("melisma-simple")}
+                            disabled={!melismasVisible}
+                            aria-label="Melisma simples"
+                            aria-pressed={activeTool === "melisma-simple"}
+                            title="Melisma simples"
+                          >
+                            <span className="melisma-sample simple">μ</span> Simples
+                          </button>
+                          <button
+                            className={`melisma-tool ${activeTool === "melisma-complex" ? "active" : ""}`}
+                            onClick={() => setActiveTool("melisma-complex")}
+                            disabled={!melismasVisible}
+                            aria-label="Melisma complexo"
+                            aria-pressed={activeTool === "melisma-complex"}
+                            title="Melisma longo ou complexo"
+                          >
+                            <span className="melisma-sample complex">μ</span> Complexo
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="annotation-section annotation-action-controls" role="group" aria-label="Ações de marcação">
+                        <button
+                          className="tool-button undo-tool"
+                          onClick={undo}
+                          disabled={!history.length || !coloursVisible || !melismasVisible}
+                        >
+                          <span aria-hidden="true">↶</span> Desfazer
+                        </button>
+                        <div className="clear-controls" role="group" aria-label="Limpar marcações">
+                          <span className="tool-label">Limpar</span>
+                          <button
+                            className="tool-button clear"
+                            onClick={() => {
+                              remember();
+                              onChange({ ...hymn, highlights: [] });
+                            }}
+                            disabled={!coloursVisible || !hymn.highlights.length}
+                            aria-label="Limpar todas as cores deste hino"
+                            title="Limpar cores: manter os melismas e remover somente as cores das frases"
+                          >
+                            Cores
+                          </button>
+                          <button
+                            className="tool-button clear-melismas"
+                            onClick={() => {
+                              remember();
+                              onChange({ ...hymn, melismas: [] });
+                            }}
+                            disabled={!melismasVisible || !hymn.melismas.length}
+                            aria-label="Limpar todos os melismas deste hino"
+                            title="Limpar melismas: manter as cores das frases e remover somente os sublinhados"
+                          >
+                            Melismas
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 )}
               </div>
             )}
