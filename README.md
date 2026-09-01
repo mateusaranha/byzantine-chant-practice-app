@@ -139,6 +139,8 @@ Para desenvolvimento local do Worker, use `publisher-worker/.dev.vars.example` c
 - publicador aprovado: `POST /api/sets` e `DELETE /api/sets`;
 - administrador: `POST /api/admin/approve|reject|add|revoke`.
 
+Há também um protótipo inativo de `POST /api/experiments/translate`, restrito a publicadores aprovados. Ele valida um texto grego e pode solicitar uma tradução efêmera para português brasileiro, sem gravá-la. O endpoint responde como inexistente enquanto `TRANSLATION_EXPERIMENT_ENABLED` não for ativado e ainda requer uma vinculação `AI` da Cloudflare; não há controle correspondente na interface.
+
 O CORS aceita somente a origem definida em `FRONTEND_URL`. Os valores públicos de repositório, administrador e frontend ficam em `publisher-worker/wrangler.jsonc`; credenciais ficam como secrets do GitHub Actions e do Cloudflare.
 
 ## Deploy
