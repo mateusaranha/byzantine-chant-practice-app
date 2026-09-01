@@ -46,6 +46,15 @@ export function validateHymnSet(value) {
   return { title, slug, hymns: value.hymns };
 }
 
+export function normalizeLibraryMetadata(value) {
+  if (!value || typeof value !== "object") return { title: "", updatedAt: null };
+  const title = String(value.title || "").trim().slice(0, 120);
+  const rawUpdatedAt = typeof value.updatedAt === "string" ? value.updatedAt.trim() : "";
+  const timestamp = Date.parse(rawUpdatedAt);
+  const updatedAt = rawUpdatedAt && Number.isFinite(timestamp) ? new Date(timestamp).toISOString() : null;
+  return { title, updatedAt };
+}
+
 class HttpError extends Error {
   constructor(status, message) {
     super(message);
@@ -442,13 +451,21 @@ async function sessionInfo(request, env) {
 
 async function libraryList(env) {
   const tree = await github(env, repoPath(env, "/git/trees/main?recursive=1"));
-  return (tree.tree || [])
+  const items = (tree.tree || [])
     .filter((item) => item.type === "blob" && /^hinos\/[^/]+\/[a-z0-9][a-z0-9-]{0,79}\.json$/.test(item.path))
     .map((item) => {
       const [, owner, file] = item.path.match(/^hinos\/([^/]+)\/(.+)\.json$/);
-      return { owner, slug: file, path: item.path };
-    })
-    .sort((a, b) => a.owner.localeCompare(b.owner) || a.slug.localeCompare(b.slug));
+      return { owner, slug: file, path: item.path, sha: item.sha };
+    });
+  const enriched = await Promise.all(items.map(async ({ sha, ...item }) => {
+    const blob = await github(env, repoPath(env, `/git/blobs/${sha}`));
+    let metadata = { title: "", updatedAt: null };
+    try {
+      metadata = normalizeLibraryMetadata(JSON.parse(base64ToUtf8(blob.content || "")));
+    } catch {}
+    return { ...item, ...metadata };
+  }));
+  return enriched.sort((a, b) => a.owner.localeCompare(b.owner) || a.slug.localeCompare(b.slug));
 }
 
 async function libraryItem(env, path) {

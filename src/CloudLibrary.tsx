@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import type { Hymn } from "./hymnState";
+import { libraryItemLabel, nextLibrarySort, sortLibraryItems } from "./librarySort";
+import type { LibrarySort } from "./librarySort";
 import ShareDialog from "./ShareDialog";
 
 type GitHubUser = {
@@ -29,6 +31,8 @@ type LibraryItem = {
   owner: string;
   slug: string;
   path: string;
+  title?: string;
+  updatedAt?: string | null;
 };
 
 type SavedSet = {
@@ -40,11 +44,6 @@ type SavedSet = {
 };
 
 const SESSION_KEY = "psaltikon-publisher-session";
-
-function displaySlug(value: string) {
-  const words = value.replace(/-/g, " ");
-  return words.charAt(0).toUpperCase() + words.slice(1);
-}
 
 function slugify(value: string) {
   return (
@@ -95,12 +94,25 @@ export default function CloudLibrary({
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [sharing, setSharing] = useState<{ path: string; trigger: HTMLButtonElement } | null>(null);
+  const [librarySort, setLibrarySort] = useState<LibrarySort>({ by: "name", direction: "asc" });
 
   const grouped = useMemo(() => {
     const groups = new Map<string, LibraryItem[]>();
     items.forEach((item) => groups.set(item.owner, [...(groups.get(item.owner) || []), item]));
-    return [...groups.entries()];
-  }, [items]);
+    return [...groups.entries()].map(([owner, ownerItems]) => [
+      owner,
+      sortLibraryItems(ownerItems, librarySort),
+    ] as const);
+  }, [items, librarySort]);
+
+  function toggleLibrarySort(by: LibrarySort["by"]) {
+    setLibrarySort((current) => nextLibrarySort(current, by));
+  }
+
+  function formattedDate(value?: string | null) {
+    if (!value || !Number.isFinite(Date.parse(value))) return "";
+    return new Intl.DateTimeFormat("pt-BR").format(new Date(value));
+  }
 
   async function run(label: string, operation: () => Promise<void>) {
     setBusy(label);
@@ -206,7 +218,7 @@ export default function CloudLibrary({
   }
 
   function deleteSet(item: LibraryItem) {
-    if (!window.confirm(`Excluir “${displaySlug(item.slug)}” da biblioteca do GitHub?`)) return;
+    if (!window.confirm(`Excluir “${libraryItemLabel(item)}” da biblioteca do GitHub?`)) return;
     void run(`delete:${item.path}`, async () => {
       await api(apiBase, `/api/sets?path=${encodeURIComponent(item.path)}`, { method: "DELETE" }, token);
       await refreshLibrary();
@@ -264,6 +276,23 @@ export default function CloudLibrary({
               Atualizar lista
             </button>
           </div>
+          <div className="library-sort-controls" role="group" aria-label="Ordenar conjuntos">
+            <span>Ordenar por</span>
+            <button
+              className={`cloud-secondary ${librarySort.by === "name" ? "active" : ""}`}
+              aria-pressed={librarySort.by === "name"}
+              onClick={() => toggleLibrarySort("name")}
+            >
+              Nome: {librarySort.by === "name" && librarySort.direction === "desc" ? "Z–A" : "A–Z"}
+            </button>
+            <button
+              className={`cloud-secondary ${librarySort.by === "updatedAt" ? "active" : ""}`}
+              aria-pressed={librarySort.by === "updatedAt"}
+              onClick={() => toggleLibrarySort("updatedAt")}
+            >
+              Atualização: {librarySort.by === "updatedAt" && librarySort.direction === "asc" ? "antigas" : "recentes"}
+            </button>
+          </div>
           {busy === "library" ? (
             <p className="cloud-empty">Buscando conjuntos…</p>
           ) : grouped.length ? (
@@ -273,7 +302,12 @@ export default function CloudLibrary({
                   <h3>@{owner}</h3>
                   {ownerItems.map((item) => (
                     <div className="cloud-set-row" key={item.path}>
-                      <span>{displaySlug(item.slug)}</span>
+                      <span className="cloud-set-copy">
+                        <strong>{libraryItemLabel(item)}</strong>
+                        {formattedDate(item.updatedAt) && (
+                          <time dateTime={item.updatedAt || undefined}>Atualizado em {formattedDate(item.updatedAt)}</time>
+                        )}
+                      </span>
                       <div>
                         <button onClick={() => loadSet(item)} disabled={Boolean(busy)}>Abrir</button>
                         <button onClick={(event) => setSharing({ path: item.path, trigger: event.currentTarget })} disabled={Boolean(busy)} aria-haspopup="dialog">

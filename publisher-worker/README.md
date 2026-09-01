@@ -4,6 +4,10 @@ This Worker authenticates approved GitHub users and writes hymn-set JSON files t
 `hinos/<github-login>/` in `mateusaranha/byzantine-chant-practice-app`. Hymn data
 is not stored by the Worker.
 
+The public library listing reads each matching JSON blob to return its title and
+last-update timestamp alongside the path. Invalid or missing metadata remains
+listable with empty fallback values.
+
 ## GitHub App
 
 Create a GitHub App owned by `mateusaranha` with:

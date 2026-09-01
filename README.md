@@ -17,7 +17,7 @@ O Psaltikon é um auxílio intermediário de escuta e memorização. Ele não su
 - ajustes de tamanho e espaçamento do texto;
 - impressão/PDF em formato vertical, iniciando cada hino em nova página;
 - backup e restauração do espaço de trabalho em JSON;
-- biblioteca pública de conjuntos, com publicação restrita a usuários aprovados;
+- biblioteca pública de conjuntos, com ordenação por nome ou última atualização e publicação restrita a usuários aprovados;
 - links públicos para estudar um conjunto ou hino publicado sem login nem navegação pela biblioteca;
 - interface responsiva, instalável como PWA e com o shell disponível offline após ser carregado.
 
@@ -59,7 +59,7 @@ Não há servidor da interface, banco de dados próprio, contas próprias do Psa
 
 **Trabalho local:** a interface carrega `psaltikon-practice` do `localStorage`, normaliza dados antigos e salva automaticamente `{ version: 3, hymns }` após alterações. O backup exportado usa a versão 4 e inclui data de exportação. Importar ou abrir um conjunto substitui o espaço atual após confirmação.
 
-**Leitura da biblioteca:** qualquer visitante pode listar e abrir os JSONs de `hinos/` pelo Worker, sem login. O conjunto carregado passa a ser uma cópia local editável.
+**Leitura da biblioteca:** qualquer visitante pode listar e abrir os JSONs de `hinos/` pelo Worker, sem login. A listagem lê o título e a data da última atualização gravados em cada conjunto, permitindo alternar entre ordem alfabética e ordem de atualização dentro de cada autor. O conjunto carregado passa a ser uma cópia local editável.
 
 **Compartilhamento:** na biblioteca, use **Compartilhar** ao lado do conjunto, escolha o conjunto inteiro ou um hino e copie o link. O link aponta para a versão publicada mais recente; alterações locais precisam ser publicadas antes de serem compartilhadas. Quem recebe abre diretamente uma área temporária de estudo, com letra, gravação e marcações, sem login e sem alterar o espaço local. Ajustes nessa área duram somente enquanto a página estiver aberta; sair ou atualizar a página os descarta. Backup e PDF exportam o material em estudo, mantendo suas marcações mesmo quando ocultas para treino.
 
