@@ -57,7 +57,7 @@ Não há servidor da interface, banco de dados próprio, contas próprias do Psa
 
 ### Fluxos de dados
 
-**Trabalho local:** a interface carrega `psaltikon-practice` do `localStorage`, normaliza dados antigos e salva automaticamente `{ version: 3, hymns }` após alterações. O backup exportado usa a versão 4 e inclui data de exportação. Importar ou abrir um conjunto substitui o espaço atual após confirmação.
+**Trabalho local:** a interface carrega `psaltikon-practice` do `localStorage`, normaliza dados antigos e salva automaticamente `{ version: 3, hymns }` após alterações. Se os dados existentes não puderem ser lidos ou se uma tentativa de salvamento falhar, o salvamento automático é pausado e um aviso impede que o problema passe despercebido. O backup exportado usa a versão 4 e inclui data de exportação. Importar ou abrir um conjunto valida os dados e substitui o espaço atual somente após confirmação. Alterar uma letra que já possui cores ou sublinhados também exige confirmação, pois os intervalos das marcações precisam ser removidos.
 
 **Leitura da biblioteca:** qualquer visitante pode listar e abrir os JSONs de `hinos/` pelo Worker, sem login. A listagem lê o título e a data da última atualização gravados em cada conjunto, permitindo alternar entre ordem alfabética e ordem de atualização dentro de cada autor. O conjunto carregado passa a ser uma cópia local editável.
 
@@ -67,7 +67,7 @@ Não há servidor da interface, banco de dados próprio, contas próprias do Psa
 
 Links usam `?conjunto=hinos/<autor>/<slug>.json` e, opcionalmente, `&hino=<id-publicado>`, sem incluir tokens ou conteúdo local. A seleção individual usa o identificador, não a posição do hino no conjunto; se ele for removido, o link informa a indisponibilidade. Hinos antigos sem identificador único podem ser compartilhados como parte do conjunto inteiro. Conjuntos excluídos, links inválidos e falhas de rede não substituem o trabalho local. Todo conteúdo compartilhado continua público.
 
-**Publicação:** o login ocorre no GitHub por OAuth. O Worker devolve uma sessão assinada, válida por oito horas, que a interface guarda em `psaltikon-publisher-session`. Para salvar, a conta precisa constar em `config/approved-users.json`. Cada publicador grava somente em `hinos/<seu-login>/`; o administrador também pode excluir conjuntos de outros autores.
+**Publicação:** o login ocorre no GitHub por OAuth. O Worker devolve uma sessão assinada, válida por oito horas, que a interface retira imediatamente da URL e guarda em `psaltikon-publisher-session`. Para salvar, a conta precisa constar em `config/approved-users.json`. Cada publicador grava somente em `hinos/<seu-login>/`; o administrador também pode excluir conjuntos de outros autores, sempre dentro de `hinos/`.
 
 **Solicitação de acesso:** o Worker cria uma Issue com o prefixo `[Psaltikon access]`. O administrador aprova ou recusa pela interface; a aprovação atualiza `config/approved-users.json` e fecha a Issue.
 
@@ -145,10 +145,10 @@ O CORS aceita somente a origem definida em `FRONTEND_URL`. Os valores públicos 
 
 ### Interface no GitHub Pages
 
-Qualquer push na `main` aciona `.github/workflows/deploy-pages.yml`:
+Qualquer pull request executa os testes da interface e do Worker em `.github/workflows/test.yml`. Qualquer push na `main` aciona `.github/workflows/deploy-pages.yml`:
 
 1. instala dependências;
-2. compila e testa tipos;
+2. compila, testa tipos e executa os testes funcionais;
 3. injeta `VITE_PUBLISHER_API_URL` com a URL atual do Worker;
 4. publica `dist/` no GitHub Pages.
 
@@ -172,7 +172,7 @@ Ao mudar nome do repositório, URLs públicas ou domínios, revise em conjunto o
 - Actions externas estão fixadas por hashes imutáveis, com a versão legível em comentário;
 - a GitHub App deve continuar instalada somente neste repositório, com Contents e Issues em leitura/escrita;
 - a leitura é pública, mas gravação, exclusão e administração são validadas no Worker;
-- o caminho de gravação é limitado à pasta do publicador, salvo o poder adicional de exclusão do administrador;
+- o caminho de gravação é limitado à pasta do publicador; o administrador pode excluir conjuntos de outros autores, mas o endpoint continua restrito a caminhos válidos sob `hinos/`;
 - tokens de instalação e lista de aprovados têm cache curto em memória; os hinos não são armazenados no Worker;
 - CodeQL, Dependabot e outras proteções configuradas na interface do GitHub não aparecem necessariamente nos arquivos do checkout e devem ser conferidas nas configurações do repositório.
 

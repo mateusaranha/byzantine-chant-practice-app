@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import type { Hymn } from "./hymnState";
 import { libraryItemLabel, nextLibrarySort, sortLibraryItems } from "./librarySort";
 import type { LibrarySort } from "./librarySort";
+import { readPublishedSet } from "./sharedHymns";
 import ShareDialog from "./ShareDialog";
 
 type GitHubUser = {
@@ -35,15 +36,31 @@ type LibraryItem = {
   updatedAt?: string | null;
 };
 
-type SavedSet = {
-  version: number;
-  title: string;
-  owner: GitHubUser;
-  updatedAt: string;
-  hymns: Partial<Hymn>[];
-};
-
 const SESSION_KEY = "psaltikon-publisher-session";
+
+function readStoredSession() {
+  try {
+    return localStorage.getItem(SESSION_KEY) || "";
+  } catch {
+    return "";
+  }
+}
+
+function storeSession(value: string) {
+  try {
+    localStorage.setItem(SESSION_KEY, value);
+  } catch {
+    // The returned session remains usable in memory for this page.
+  }
+}
+
+function clearStoredSession() {
+  try {
+    localStorage.removeItem(SESSION_KEY);
+  } catch {
+    // The in-memory session is still cleared below.
+  }
+}
 
 function slugify(value: string) {
   return (
@@ -142,7 +159,7 @@ export default function CloudLibrary({
       const next = await api<SessionInfo>(apiBase, "/api/session", {}, sessionToken);
       setSession(next);
     } catch {
-      localStorage.removeItem(SESSION_KEY);
+      clearStoredSession();
       setToken("");
       setSession(null);
     } finally {
@@ -153,9 +170,9 @@ export default function CloudLibrary({
   useEffect(() => {
     const hash = new URLSearchParams(window.location.hash.slice(1));
     const returnedToken = hash.get("psaltikon_token");
-    const initialToken = returnedToken || localStorage.getItem(SESSION_KEY) || "";
+    const initialToken = returnedToken || readStoredSession();
     if (returnedToken) {
-      localStorage.setItem(SESSION_KEY, returnedToken);
+      storeSession(returnedToken);
       history.replaceState(null, "", `${window.location.pathname}${window.location.search}`);
     }
     setToken(initialToken);
@@ -168,7 +185,7 @@ export default function CloudLibrary({
   }
 
   function signOut() {
-    localStorage.removeItem(SESSION_KEY);
+    clearStoredSession();
     setToken("");
     setSession(null);
     setMessage("Sessão encerrada neste dispositivo.");
@@ -206,14 +223,14 @@ export default function CloudLibrary({
 
   function loadSet(item: LibraryItem) {
     void run(`load:${item.path}`, async () => {
-      const saved = await api<SavedSet>(apiBase, `/api/library/item?path=${encodeURIComponent(item.path)}`);
-      if (!Array.isArray(saved.hymns) || !saved.hymns.length) throw new Error("Esse conjunto não contém hinos.");
-      if (!window.confirm(`Substituir o espaço atual pelo conjunto “${saved.title}”?`)) return;
-      onLoad(saved.hymns, saved.title);
-      setCollectionName(saved.title);
+      const saved = await api<unknown>(apiBase, `/api/library/item?path=${encodeURIComponent(item.path)}`);
+      const published = readPublishedSet(saved);
+      if (!window.confirm(`Substituir o espaço atual pelo conjunto “${published.title}”?`)) return;
+      onLoad(published.hymns, published.title);
+      setCollectionName(published.title);
       setSavedSlug(item.slug);
       setSavedOwner(item.owner);
-      setMessage(`“${saved.title}” foi carregado e também ficou salvo neste dispositivo.`);
+      setMessage(`“${published.title}” foi carregado no espaço de trabalho atual.`);
     });
   }
 

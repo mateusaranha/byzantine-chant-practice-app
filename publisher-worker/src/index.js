@@ -4,6 +4,7 @@ const REQUEST_PREFIX = "[Psaltikon access] ";
 const SESSION_SECONDS = 8 * 60 * 60;
 const MAX_SET_BYTES = 1_500_000;
 const MAX_HYMNS = 80;
+const HYMN_PATH_PATTERN = /^hinos\/([a-z\d](?:[a-z\d]|-(?=[a-z\d])){0,38})\/([a-z0-9][a-z0-9-]{0,79})\.json$/;
 
 let installationTokenCache = null;
 let approvedUsersCache = null;
@@ -28,7 +29,12 @@ export function slugify(value) {
 
 export function isOwnedHymnPath(path, login) {
   const normalizedLogin = normalizeLogin(login);
-  return new RegExp(`^hinos/${escapeRegExp(normalizedLogin)}/[a-z0-9][a-z0-9-]{0,79}\\.json$`).test(path);
+  const match = String(path || "").match(HYMN_PATH_PATTERN);
+  return Boolean(match && match[1] === normalizedLogin);
+}
+
+export function isHymnPath(path) {
+  return HYMN_PATH_PATTERN.test(String(path || ""));
 }
 
 export function validateHymnSet(value) {
@@ -60,10 +66,6 @@ class HttpError extends Error {
     super(message);
     this.status = status;
   }
-}
-
-function escapeRegExp(value) {
-  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
 function bytesToBase64Url(bytes) {
@@ -452,9 +454,9 @@ async function sessionInfo(request, env) {
 async function libraryList(env) {
   const tree = await github(env, repoPath(env, "/git/trees/main?recursive=1"));
   const items = (tree.tree || [])
-    .filter((item) => item.type === "blob" && /^hinos\/[^/]+\/[a-z0-9][a-z0-9-]{0,79}\.json$/.test(item.path))
+    .filter((item) => item.type === "blob" && isHymnPath(item.path))
     .map((item) => {
-      const [, owner, file] = item.path.match(/^hinos\/([^/]+)\/(.+)\.json$/);
+      const [, owner, file] = item.path.match(HYMN_PATH_PATTERN);
       return { owner, slug: file, path: item.path, sha: item.sha };
     });
   const enriched = await Promise.all(items.map(async ({ sha, ...item }) => {
@@ -469,7 +471,7 @@ async function libraryList(env) {
 }
 
 async function libraryItem(env, path) {
-  if (!/^hinos\/[^/]+\/[a-z0-9][a-z0-9-]{0,79}\.json$/.test(path || "")) {
+  if (!isHymnPath(path)) {
     throw new HttpError(400, "Caminho de conjunto inválido.");
   }
   const stored = await readRepoJson(env, path);
@@ -494,6 +496,7 @@ async function saveSet(request, env) {
 
 async function deleteSet(request, env, path) {
   const { user, config } = await requireApproved(request, env);
+  if (!isHymnPath(path)) throw new HttpError(400, "Caminho de conjunto inválido.");
   if (!isOwnedHymnPath(path, user.login) && user.login !== config.admin) {
     throw new HttpError(403, "Você só pode excluir conjuntos da sua própria pasta.");
   }
