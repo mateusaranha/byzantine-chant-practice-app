@@ -92,12 +92,12 @@ function StudyGuide() {
   return (
     <>
       <p>
-        Este guia reúne sugestões de preparação e estudo desenvolvidas a partir da experiência do criador do Psaltikon, pela escuta, pela prática e pelo uso na paróquia. Apresenta uma maneira possível de utilizar a ferramenta, não um método formal de ensino. As marcações ajudam a recordar o que foi ouvido, mas não substituem o aprendizado da notação musical bizantina.
+        Este guia reúne sugestões de preparação e estudo nascidas da experiência pessoal do criador do Psaltikon com a escuta, a prática e o uso da ferramenta na paróquia. É uma maneira possível de utilizá-la, não um método formal de ensino. As marcações ajudam a recordar o que foi ouvido, mas não substituem o aprendizado da notação musical bizantina.
       </p>
 
       <HelpSection title="1. Encontrar o texto e as gravações">
         <p>
-          Um ponto de partida é o <a href="https://dcs.goarch.org/goa/dcs/dcs.html" target="_blank" rel="noopener noreferrer" aria-label="Digital Chant Stand da GOARCH (abre em nova aba)">Digital Chant Stand da GOARCH</a>. Escolha o dia e o ofício em que aparece o hino e localize seu texto. Pode ser, por exemplo, o apolytikion do santo do dia nas Matinas, depois do <em>Theos Kyrios</em>, ou o kondakion depois dos tropários da Pequena Entrada.
+          Um ponto de partida é o <a href="https://dcs.goarch.org/goa/dcs/dcs.html" target="_blank" rel="noopener noreferrer" aria-label="Digital Chant Stand da GOARCH (abre em nova aba)">Digital Chant Stand da GOARCH</a>. Escolha o dia e o ofício em que aparece o hino e localize seu texto. Pode ser, por exemplo, o apolytikion do santo do dia nas Matinas, depois do <em>Theos Kyrios</em>, ou o kondakion, último dos hinos cantados após a Pequena Entrada.
         </p>
         <p>
           Para encontrar gravações, experimente buscar no YouTube as primeiras palavras do hino em grego. Se os resultados não ajudarem, tente outras palavras do trecho inicial ou o título e o modo indicados acima da letra no ofício. A aba “Vídeos” do Google também pode ajudar.
@@ -179,12 +179,19 @@ function About() {
       </p>
       <p>
         As marcações podem ajudar a recordar o que foi aprendido pela escuta. Elas não descrevem a
-        melodia por si mesmas nem substituem o aprendizado da notação musical bizantina, a formação
-        musical ou a orientação de um professor.
+        melodia por si mesmas nem substituem o aprendizado da notação musical bizantina ou a
+        formação musical.
+      </p>
+      <h3>Nota de escopo</h3>
+      <p>
+        O Psaltikon é um projeto independente. O Guia de estudo e as referências registram a
+        experiência pessoal de seu criador na preparação e na prática paroquial do canto; não
+        constituem um método formal de ensino nem uma orientação oficial de uma paróquia, diocese
+        ou escola de música.
       </p>
       <p>
-        O Guia de estudo apresenta a maneira como o criador do Psaltikon utiliza a ferramenta, como
-        uma experiência pessoal que pode ajudar outros usuários a começar.
+        Para a formação musical e as decisões sobre a prática litúrgica, devem ser consideradas a
+        orientação de um professor qualificado e a tradição da comunidade local.
       </p>
     </>
   );

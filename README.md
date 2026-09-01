@@ -1,6 +1,6 @@
 # Psaltikon
 
-O **Psaltikon** é uma ferramenta gratuita para preparar, marcar, organizar e praticar hinos de canto bizantino. A letra e uma gravação do YouTube ficam lado a lado; cores dividem frases melódicas e sublinhados simples ou duplos indicam melismas.
+O **Psaltikon** é uma ferramenta gratuita para preparar, marcar, organizar e praticar hinos de canto bizantino. A letra e uma gravação do YouTube ficam lado a lado; cores distinguem trechos da letra e sublinhados simples ou duplos funcionam como lembretes visuais do canto.
 
 **Aplicativo:** <https://mateusaranha.github.io/byzantine-chant-practice-app/>
 
@@ -11,8 +11,8 @@ O Psaltikon é um auxílio intermediário de escuta e memorização. Ele não su
 - vários hinos no mesmo espaço de trabalho, com reorganização da ordem;
 - texto grego politônico com fonte local incorporada;
 - alternância **Grego / Transliterado** no mesmo hino e com a mesma gravação;
-- cinco cores de marcação, melisma simples e melisma complexo;
-- borracha, desfazer e limpeza independente de cores e melismas;
+- cinco cores de marcação e sublinhados simples ou duplos;
+- borracha, desfazer e limpeza independente de cores e sublinhados;
 - vídeo do YouTube, velocidade-alvo e repetição 1x, 3x ou contínua;
 - ajustes de tamanho e espaçamento do texto;
 - impressão/PDF em formato vertical, iniciando cada hino em nova página;
@@ -27,7 +27,7 @@ Recursos online — YouTube, login e biblioteca — continuam dependendo de cone
 
 1. Edite título, modo e texto do hino em **Editar texto**.
 2. Cole uma URL do YouTube e carregue a gravação.
-3. Selecione trechos do texto com uma cor, melisma ou borracha ativa.
+3. Selecione trechos do texto com uma cor, um sublinhado ou a borracha ativa.
 4. Registre a velocidade-alvo e, se necessário, configure a repetição do vídeo.
 5. Acrescente outros hinos, ajuste a apresentação e, quando necessário, use **Organizar hinos** para alterar a ordem.
 6. Mantenha o trabalho no dispositivo, exporte backup/PDF ou publique o conjunto na biblioteca.

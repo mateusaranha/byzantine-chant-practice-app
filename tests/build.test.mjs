@@ -115,7 +115,7 @@ test("the production build contains the app shell and migration features", async
   assert.match(javascript, /psaltikon-copia-seguranca-/);
   assert.match(javascript, /Exportar cópia de segurança/);
   assert.match(javascript, /Limpar cores/);
-  assert.match(javascript, /Limpar melismas/);
+  assert.match(javascript, /Limpar sublinhados/);
   const studyControlsIndex = source.indexOf('className="study-control-row"');
   const toolsPanelIndex = source.indexOf('className={`tools-panel');
   assert.ok(studyControlsIndex >= 0 && studyControlsIndex < toolsPanelIndex, "training controls must stay outside the collapsible tools panel");
@@ -145,8 +145,11 @@ test("the production build contains the app shell and migration features", async
   assert.match(javascript, /Solicitar permissão para publicar/);
   assert.match(javascript, /Salvar conjunto no GitHub/);
   assert.match(javascript, /Sobre o Psaltikon/);
+  assert.match(javascript, /O Psaltikon é um projeto independente/);
+  assert.match(javascript, /não constituem um método formal de ensino nem uma orientação oficial/);
   assert.match(javascript, /não substituem o aprendizado da notação musical bizantina/);
   assert.match(javascript, /Guia de estudo/);
+  assert.match(javascript, /último dos hinos cantados após a Pequena Entrada/);
   assert.match(javascript, /As cores não têm significados próprios/);
   assert.match(javascript, /1,1×, 1,15× ou 1,25×/);
   assert.match(javascript, /Não há uma proporção fixa nem uma velocidade necessariamente correta/);
