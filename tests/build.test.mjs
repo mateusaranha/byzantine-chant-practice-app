@@ -116,6 +116,11 @@ test("the production build contains the app shell and migration features", async
   assert.match(javascript, /Exportar cópia de segurança/);
   assert.match(javascript, /Limpar cores/);
   assert.match(javascript, /Limpar melismas/);
+  assert.match(source, /className="annotation-cluster annotation-marking-tools"/);
+  assert.match(source, /role="toolbar"/);
+  assert.match(source, /className="clear-controls" role="group" aria-label="Limpar marcações"/);
+  assert.match(stylesSource, /\.clear-controls \{ flex-wrap:nowrap; \}/);
+  assert.doesNotMatch(stylesSource, /\.tool-button\.clear \{ margin-left:auto;/);
   assert.match(javascript, /Nenhuma ferramenta de marcação/);
   assert.match(javascript, /Modo cursor/);
   assert.match(javascript, /Recolher/);
