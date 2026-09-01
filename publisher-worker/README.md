@@ -34,6 +34,20 @@ token only needs permission to edit Workers Scripts in the selected account.
 
 The non-secret repository and frontend values live in `wrangler.jsonc`.
 
+## Inactive translation experiment
+
+The Worker contains a dormant `POST /api/experiments/translate` prototype for
+ephemeral Greek-to-Brazilian-Portuguese translation. It is not used by the
+frontend, does not store source text or translations, and returns `404` unless
+`TRANSLATION_EXPERIMENT_ENABLED` is exactly `true`. Approved-publisher
+authentication is still required when it is enabled.
+
+`wrangler.jsonc` declares a Cloudflare Workers AI binding named `AI`, but merely
+deploying that binding does not invoke a model. Before a real-account test,
+confirm the account quota and choose one of the allowlisted models through
+`TRANSLATION_MODEL`. Do not enable the endpoint in production until request
+limits and the user-facing AI notice have been reviewed.
+
 The Pages workflow currently passes the deployed Worker URL directly to Vite as
 `VITE_PUBLISHER_API_URL`. The online library is omitted from builds where that
 environment variable is empty. If the Worker URL changes, update the Pages

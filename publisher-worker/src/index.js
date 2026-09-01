@@ -4,6 +4,15 @@ const REQUEST_PREFIX = "[Psaltikon access] ";
 const SESSION_SECONDS = 8 * 60 * 60;
 const MAX_SET_BYTES = 1_500_000;
 const MAX_HYMNS = 80;
+const MAX_TRANSLATION_CHARACTERS = 6_000;
+const DEFAULT_TRANSLATION_MODEL = "@cf/qwen/qwen3-30b-a3b-fp8";
+const TRANSLATION_MODELS = new Set([
+  DEFAULT_TRANSLATION_MODEL,
+  "@cf/meta/llama-3.3-70b-instruct-fp8-fast",
+  "@cf/openai/gpt-oss-20b",
+]);
+const TRANSLATION_NOTICE =
+  "Tradução gerada por IA para consulta rápida. Pode conter imprecisões e não constitui uma tradução oficial.";
 
 let installationTokenCache = null;
 let approvedUsersCache = null;
@@ -44,6 +53,62 @@ export function validateHymnSet(value) {
     throw new HttpError(413, "O conjunto é grande demais para ser publicado.");
   }
   return { title, slug, hymns: value.hymns };
+}
+
+export function validateTranslationRequest(value) {
+  if (!value || typeof value !== "object") throw new HttpError(400, "Pedido de tradução inválido.");
+  const text = String(value.text || "").trim();
+  if (!text) throw new HttpError(400, "Informe o texto grego a traduzir.");
+  if (text.length > MAX_TRANSLATION_CHARACTERS) {
+    throw new HttpError(413, `O texto deve ter no máximo ${MAX_TRANSLATION_CHARACTERS} caracteres.`);
+  }
+  if (!/[\u0370-\u03ff\u1f00-\u1fff]/u.test(text)) {
+    throw new HttpError(400, "O texto precisa conter grego.");
+  }
+  const targetLanguage = String(value.targetLanguage || "pt-BR").trim();
+  if (targetLanguage !== "pt-BR") {
+    throw new HttpError(400, "Neste experimento, o idioma de destino deve ser português brasileiro.");
+  }
+  return { text, targetLanguage };
+}
+
+export function translationMessages({ text }) {
+  return [
+    {
+      role: "system",
+      content:
+        "Você traduz hinos cristãos em grego litúrgico para português brasileiro. " +
+        "Faça uma tradução fiel e clara para consulta, preservando nomes próprios, termos teológicos e quebras de linha. " +
+        "Não acrescente explicações, notas, títulos ou avisos. Retorne somente a tradução.",
+    },
+    { role: "user", content: text },
+  ];
+}
+
+function translatedText(result) {
+  const value = result?.response ?? result?.result?.response ?? result?.choices?.[0]?.message?.content;
+  return typeof value === "string" ? value.trim() : "";
+}
+
+export async function runTranslationExperiment(value, ai, model = DEFAULT_TRANSLATION_MODEL) {
+  const request = validateTranslationRequest(value);
+  if (!TRANSLATION_MODELS.has(model)) throw new HttpError(500, "O modelo de tradução configurado não é permitido.");
+  if (!ai || typeof ai.run !== "function") {
+    throw new HttpError(503, "O experimento de tradução ainda não está conectado à IA.");
+  }
+  let result;
+  try {
+    result = await ai.run(model, {
+      messages: translationMessages(request),
+      temperature: 0.1,
+      max_tokens: 4_096,
+    });
+  } catch {
+    throw new HttpError(502, "Não foi possível gerar a tradução agora. Tente novamente mais tarde.");
+  }
+  const translation = translatedText(result);
+  if (!translation) throw new HttpError(502, "A IA não retornou uma tradução.");
+  return { translation, model, notice: TRANSLATION_NOTICE };
 }
 
 class HttpError extends Error {
@@ -484,6 +549,13 @@ async function deleteSet(request, env, path) {
   return { deleted: true };
 }
 
+async function translateHymn(request, env) {
+  if (env.TRANSLATION_EXPERIMENT_ENABLED !== "true") throw new HttpError(404, "Página não encontrada.");
+  await requireApproved(request, env);
+  const model = String(env.TRANSLATION_MODEL || DEFAULT_TRANSLATION_MODEL);
+  return runTranslationExperiment(await parseBody(request), env.AI, model);
+}
+
 async function adminAction(request, env, action) {
   const { config } = await requireAdmin(request, env);
   const body = await parseBody(request);
@@ -554,6 +626,9 @@ async function route(request, env) {
   if (url.pathname === "/api/sets" && request.method === "POST") return jsonResponse(await saveSet(request, env), env, 201);
   if (url.pathname === "/api/sets" && request.method === "DELETE") {
     return jsonResponse(await deleteSet(request, env, url.searchParams.get("path")), env);
+  }
+  if (url.pathname === "/api/experiments/translate" && request.method === "POST") {
+    return jsonResponse(await translateHymn(request, env), env);
   }
   const adminMatch = url.pathname.match(/^\/api\/admin\/(approve|reject|add|revoke)$/);
   if (adminMatch && request.method === "POST") {
