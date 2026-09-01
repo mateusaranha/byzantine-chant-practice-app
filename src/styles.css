@@ -49,6 +49,10 @@ button,input,textarea { font:inherit; } button { cursor:pointer; }
 .cloud-card > span,.cloud-card-title span { color:var(--red); font-size:18px; font-weight:600; }
 .cloud-card > p,.cloud-card-title p,.publish-form p { margin:6px 0 14px; color:#7f7063; font:13px/1.5 Arial,sans-serif; }
 .cloud-card-title { display:flex; align-items:flex-start; justify-content:space-between; gap:16px; }
+.library-sort-controls { display:flex; align-items:center; flex-wrap:wrap; gap:7px; margin:13px 0 3px; padding-top:12px; border-top:1px solid #e3d8c9; }
+.library-sort-controls > span { margin-right:2px; color:#776c62; font:600 10px Arial,sans-serif; letter-spacing:.08em; text-transform:uppercase; }
+.library-sort-controls .cloud-secondary { min-height:38px; }
+.library-sort-controls .cloud-secondary.active { border-color:var(--red); background:var(--red); color:#fff; }
 .cloud-primary,.cloud-secondary,.cloud-set-row button,.github-identity button,.admin-row button,.admin-add button { border:1px solid #8d302d; border-radius:3px; background:#8d302d; color:#fff; padding:8px 11px; font:600 11px Arial,sans-serif; }
 .cloud-secondary,.github-identity button { border-color:#c4b5a2; background:#fff; color:#675b50; }
 .cloud-primary:disabled,.cloud-secondary:disabled,.cloud-set-row button:disabled { opacity:.45; cursor:default; }
@@ -59,6 +63,10 @@ button,input,textarea { font:inherit; } button { cursor:pointer; }
 .cloud-set-row,.admin-row { min-height:39px; display:flex; align-items:center; justify-content:space-between; gap:12px; border-top:1px solid #eee5d9; font:14px Arial,sans-serif; }
 .cloud-set-row:first-of-type,.admin-row:first-of-type { border-top:0; }
 .cloud-set-row > div,.admin-row > div { display:flex; gap:6px; }
+.cloud-set-copy { min-width:0; display:block; }
+.cloud-set-copy strong,.cloud-set-copy time { display:block; overflow-wrap:anywhere; }
+.cloud-set-copy strong { color:var(--ink); font:600 14px/1.35 Arial,sans-serif; }
+.cloud-set-copy time { margin-top:3px; color:#8a7c6f; font:11px/1.35 Arial,sans-serif; }
 .cloud-set-row button,.admin-row button,.admin-add button { padding:6px 9px; }
 .cloud-set-row button.danger,.admin-row button.danger,.admin-row > button.danger { border-color:#caa9a3; background:#fff7f5; color:#8d302d; }
 .github-identity { display:flex; align-items:center; gap:10px; margin:14px 0; padding:10px; border:1px solid #e1d5c5; background:#f9f3e9; }
@@ -250,7 +258,7 @@ footer { max-width:1500px; margin:15px auto 0; display:flex; align-items:center;
 .share-form { display:grid; gap:10px; }
 .share-form select,.share-form input { width:100%; min-width:0; min-height:44px; padding:10px; border:1px solid #c4b5a2; border-radius:3px; background:#fffdf8; color:var(--ink); font:14px Arial,sans-serif; }
 .share-dialog .cloud-primary,.share-dialog .cloud-secondary { min-height:44px; }
-.share-form :focus-visible,.share-dialog button:focus-visible,.shared-notice button:focus-visible,.cloud-set-row button:focus-visible { outline:2px solid var(--red); outline-offset:3px; }
+.share-form :focus-visible,.share-dialog button:focus-visible,.shared-notice button:focus-visible,.cloud-set-row button:focus-visible,.library-sort-controls button:focus-visible { outline:2px solid var(--red); outline-offset:3px; }
 .shared-notice { max-width:1500px; margin:0 auto 24px; padding:20px; border:1px solid #c4b5a2; border-radius:4px; background:var(--paper); color:#5f554d; font:14px/1.6 Arial,sans-serif; overflow-wrap:anywhere; }
 .shared-notice h2 { margin:6px 0 10px; color:var(--red); font-size:22px; }
 .shared-notice p { margin:0 0 10px; }

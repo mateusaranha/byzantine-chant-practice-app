@@ -129,6 +129,9 @@ test("the production build contains the app shell and migration features", async
   assert.match(javascript, /Organizar hinos/);
   assert.match(javascript, /A alteração é salva automaticamente/);
   assert.match(javascript, /Biblioteca online/);
+  assert.match(javascript, /Ordenar por/);
+  assert.match(javascript, /Atualização:/);
+  assert.match(javascript, /Atualizado em/);
   assert.match(javascript, /Solicitar permissão para publicar/);
   assert.match(javascript, /Salvar conjunto no GitHub/);
   assert.match(javascript, /Sobre o Psaltikon/);
@@ -143,6 +146,7 @@ test("the production build contains the app shell and migration features", async
   assert.match(javascript, /canal de Savvas Iliadis/);
   assert.match(javascript, /k8H7q4v926s/);
   assert.match(stylesheet, /\.help-dialog/);
+  assert.match(stylesheet, /\.library-sort-controls/);
   assert.match(stylesheet, /\.reorder-dialog/);
   assert.match(stylesheet, /\.hymn-list-actions/);
   assert.match(stylesheet, /\.tools-panel/);
