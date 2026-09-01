@@ -521,8 +521,8 @@ function HymnWorkspace({
                         </button>
                       </div>
 
-                      <div className="annotation-section colour-controls" role="group" aria-label="Cores das frases">
-                        <span className="tool-label">Frase</span>
+                      <div className="annotation-section colour-controls" role="group" aria-label="Cores dos trechos">
+                        <span className="tool-label">Trecho</span>
                         <div className="swatches">
                           {COLORS.map((color) => (
                             <button
@@ -540,16 +540,16 @@ function HymnWorkspace({
                     </div>
 
                     <div className="annotation-row">
-                      <div className="annotation-section melisma-controls" role="group" aria-label="Melismas">
-                        <span className="tool-label">Melisma</span>
+                      <div className="annotation-section melisma-controls" role="group" aria-label="Sublinhados">
+                        <span className="tool-label">Sublinhado</span>
                         <div className="melisma-options">
                           <button
                             className={`melisma-tool ${activeTool === "melisma-simple" ? "active" : ""}`}
                             onClick={() => setActiveTool("melisma-simple")}
                             disabled={!melismasVisible}
-                            aria-label="Melisma simples"
+                            aria-label="Sublinhado simples"
                             aria-pressed={activeTool === "melisma-simple"}
-                            title="Melisma simples"
+                            title="Sublinhado simples"
                           >
                             <span className="melisma-sample simple">μ</span> Simples
                           </button>
@@ -557,11 +557,11 @@ function HymnWorkspace({
                             className={`melisma-tool ${activeTool === "melisma-complex" ? "active" : ""}`}
                             onClick={() => setActiveTool("melisma-complex")}
                             disabled={!melismasVisible}
-                            aria-label="Melisma complexo"
+                            aria-label="Sublinhado duplo"
                             aria-pressed={activeTool === "melisma-complex"}
-                            title="Melisma longo ou complexo"
+                            title="Sublinhado duplo"
                           >
-                            <span className="melisma-sample complex">μ</span> Complexo
+                            <span className="melisma-sample complex">μ</span> Duplo
                           </button>
                         </div>
                       </div>
@@ -584,7 +584,7 @@ function HymnWorkspace({
                             }}
                             disabled={!coloursVisible || !hymn.highlights.length}
                             aria-label="Limpar todas as cores deste hino"
-                            title="Limpar cores: manter os melismas e remover somente as cores das frases"
+                            title="Limpar cores: manter os sublinhados e remover somente as cores dos trechos"
                           >
                             Cores
                           </button>
@@ -595,10 +595,10 @@ function HymnWorkspace({
                               onChange({ ...hymn, melismas: [] });
                             }}
                             disabled={!melismasVisible || !hymn.melismas.length}
-                            aria-label="Limpar todos os melismas deste hino"
-                            title="Limpar melismas: manter as cores das frases e remover somente os sublinhados"
+                            aria-label="Limpar todos os sublinhados deste hino"
+                            title="Limpar sublinhados: manter as cores dos trechos e remover somente os sublinhados"
                           >
-                            Melismas
+                            Sublinhados
                           </button>
                         </div>
                       </div>

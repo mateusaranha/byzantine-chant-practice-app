@@ -50,7 +50,7 @@ Estas propostas precisam de desenho e teste antes de implementação:
 
 - **Velocidade:** verificar em uso real se o botão de `+` muda de posição ou provoca toque acidental quando `Restaurar` aparece/desaparece; não há falha confirmada no código.
 
-A borracha e os comandos independentes **Limpar cores** e **Limpar melismas** já existem. Melhorias futuras devem evitar duplicar esses comportamentos.
+A borracha e os comandos independentes **Limpar cores** e **Limpar sublinhados** já existem. Melhorias futuras devem evitar duplicar esses comportamentos.
 
 Concluído nesta etapa:
 
@@ -72,7 +72,7 @@ A área **Referências para explorar**, acessível dentro do guia, reúne a intr
 
 As quatro seções do guia e os seis blocos de referências têm títulos expansíveis independentes, inicialmente recolhidos, com introduções sempre visíveis. A alternância entre guia e referências preserva os blocos abertos enquanto a janela permanece aberta; fechar e reabrir a ajuda inicia uma nova leitura, sem gravar preferências nos hinos ou no navegador.
 
-Considerar um exemplo clicável com texto, vídeo, cores e melismas. O exemplo deve demonstrar o Psaltikon concretamente; não precisa ser o conteúdo inicial obrigatório de todo usuário.
+Considerar um exemplo clicável com texto, vídeo, cores e sublinhados. O exemplo deve demonstrar o Psaltikon concretamente; não precisa ser o conteúdo inicial obrigatório de todo usuário.
 
 ## Evolução funcional possível
 

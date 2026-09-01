@@ -24,7 +24,7 @@ export default function StudyReferences() {
           Uma busca pelo kondakion da Transfiguração, usando as primeiras palavras — <span lang="el">«ἐπὶ τοῦ ὄρους μετεμορφώθης»</span> —, levou, depois de vários resultados, a <a href="https://www.youtube.com/watch?v=eIl6CXITqoE" target="_blank" rel="noopener noreferrer" aria-label="Gravação do kondakion da Transfiguração por Papanikolaou Georgios (abre em nova aba)" >esta gravação de Papanikolaou Georgios</a>.
         </p>
         <p>
-          No canal, as gravações de canto aparecem entre vídeos familiares, festas e apresentações escolares: registros caseiros de um pai de família grego. Em um dos vídeos, ele se apresenta como lampadários do Santuário de Faneromeni, em Nea Artaki, na Grécia — isto é, o psaltis responsável pelo coro esquerdo da igreja.
+          No canal, as gravações de canto aparecem entre vídeos familiares, festas e apresentações escolares: registros caseiros de um pai de família grego. Em um dos vídeos, ele se apresenta com o título de <em>lampadarios</em> do Santuário de Faneromeni, em Nea Artaki, na Grécia — tradicionalmente, o psaltis à frente do coro esquerdo da igreja.
         </p>
         <p>
           Parte do encanto desse achado está nessa pequena janela para uma vida em que o canto aparece junto dos registros da família e do cotidiano. A busca por um hino acaba revelando também algo da comunidade e da pessoa que o canta.
@@ -42,7 +42,7 @@ export default function StudyReferences() {
 
       <HelpSection title="Giannis Sifakis: força e energia no canto">
         <p>
-          O canal de <a href="https://www.youtube.com/@J.Sifakis1980" target="_blank" rel="noopener noreferrer" aria-label="Canal de Giannis Sifakis (abre em nova aba)" >Giannis Sifakis — <span lang="el">Γιαννης Σηφακης</span></a> é dedicado às gravações de suas execuções. Na descrição, ele se apresenta como protopsaltis — cantor principal — da histórica Catedral de São Nicolau, em Splantzia, Chania.
+          O canal de <a href="https://www.youtube.com/@J.Sifakis1980" target="_blank" rel="noopener noreferrer" aria-label="Canal de Giannis Sifakis (abre em nova aba)" >Giannis Sifakis — <span lang="el">Γιαννης Σηφακης</span></a> é dedicado às gravações de suas execuções. Na descrição, ele se apresenta como protopsaltis — primeiro cantor, tradicionalmente à frente do coro direito — da histórica Catedral de São Nicolau, em Splantzia, Chania.
         </p>
         <p>
           Nesta seleção, suas gravações aparecem como indicações de escuta exploratória, pela maneira peculiar de cantar, com bastante força e energia. Um exemplo é <a href="https://www.youtube.com/watch?v=xkbtp_QyOkU" target="_blank" rel="noopener noreferrer" aria-label="Apolytikion da Dormição da Theotokos por Giannis Sifakis (abre em nova aba)" >esta interpretação do apolytikion da Dormição da Theotokos</a>.
@@ -57,7 +57,7 @@ export default function StudyReferences() {
           O canal de <a href="https://www.youtube.com/@%CE%9A%CF%8E%CF%83%CF%84%CE%B1%CF%82%CE%9C%CE%B1%CE%BA%CF%81%CF%85%CE%B3%CE%B9%CE%AC%CE%BD%CE%BD%CE%B7%CF%822" target="_blank" rel="noopener noreferrer" aria-label="Canal de Kostas Makrygiannis (abre em nova aba)" >Kostas Makrygiannis — <span lang="el">Κώστας Μακρυγιάννης</span></a> publica gravações do monge Panaretos Filotheitis.
         </p>
         <p>
-          Segundo a descrição do canal, Panaretos, chamado Panagiotis Makrygiannis antes da vida monástica, dedicou sua vida a Deus, e um de seus serviços era a oração por meio da música bizantina. Ele faleceu em 1993. Quem publica os vídeos é seu sobrinho, o protopsaltis — cantor principal — Konstantinos Makrygiannis.
+          Segundo a descrição do canal, Panaretos, chamado Panagiotis Makrygiannis antes da vida monástica, dedicou sua vida a Deus, e um de seus serviços era a oração por meio da música bizantina. Ele faleceu em 1993. Quem publica os vídeos é seu sobrinho, Konstantinos Makrygiannis, apresentado como protopsaltis — primeiro cantor, tradicionalmente à frente do coro direito.
         </p>
         <p>
           Esse canal também forneceu gravações utilizadas no treino. Uma interpretação destacada nesta seleção é a das <a href="https://www.youtube.com/watch?v=kapqEv4pAdo" target="_blank" rel="noopener noreferrer" aria-label="Evlogitárias fúnebres por Panaretos Filotheitis (abre em nova aba)" >Evlogitárias fúnebres, no primeiro modo plagal</a>.
@@ -69,7 +69,7 @@ export default function StudyReferences() {
           As gravações de <a href="https://www.youtube.com/@jinxsalonika" target="_blank" rel="noopener noreferrer" aria-label="Canal de Evgenios Hardavellas (abre em nova aba)" >Evgenios Hardavellas — <span lang="el">Ευγένιος Χαρδαβέλλας</span></a> também já serviram como referências de treino.
         </p>
         <p>
-          Seu site o apresenta como protopsaltis — cantor principal — e traz registros de sua formação com Emmanouil Hatzimarkos, de quem foi aluno, além de sua participação no coro de Theodoros Vassilikos. O <a href="https://evgenioshardavellas.blogspot.com/2013/07/blog-post_8869.html" target="_blank" rel="noopener noreferrer" aria-label="Arquivo fotográfico comentado de Evgenios Hardavellas (abre em nova aba)" >arquivo fotográfico comentado</a> permite conhecer um pouco dessa trajetória.
+          Seu site o apresenta como protopsaltis — primeiro cantor, tradicionalmente à frente do coro direito — e traz registros de sua formação com Emmanouil Hatzimarkos, de quem foi aluno, além de sua participação no coro de Theodoros Vassilikos. O <a href="https://evgenioshardavellas.blogspot.com/2013/07/blog-post_8869.html" target="_blank" rel="noopener noreferrer" aria-label="Arquivo fotográfico comentado de Evgenios Hardavellas (abre em nova aba)" >arquivo fotográfico comentado</a> permite conhecer um pouco dessa trajetória.
         </p>
         <p>
           Uma das indicações é o <a href="https://www.youtube.com/watch?v=fTlX1zkbsA4" target="_blank" rel="noopener noreferrer" aria-label="Apolytikion da Transfiguração por Evgenios Hardavellas (abre em nova aba)" >apolytikion da Transfiguração</a>. Um motivo especial para essa escolha é a beleza do encerramento da melodia.
@@ -96,7 +96,7 @@ export default function StudyReferences() {
           O canal de <a href="https://www.youtube.com/@%CE%93%CE%B5%CF%8E%CF%81%CE%B3%CE%B9%CE%BF%CF%82%CE%9A%CE%B1%CE%BA%CE%BF%CF%85%CE%BB%CE%AF%CE%B4%CE%B7%CF%82-%CE%B94%CF%81" target="_blank" rel="noopener noreferrer" aria-label="Canal de Georgios Kakoulidis (abre em nova aba)" >Georgios Kakoulidis — <span lang="el">Γεώργιος Κακουλίδης</span></a> reúne gravações de um reconhecido protopsaltis, professor de música bizantina, regente e autor de lições musicais. Nascido em Drama em 1935, ele aprendeu inicialmente com o pai, Ioannis, que era psaltis, prosseguiu os estudos com o irmão Nikos e faleceu em 2020.
         </p>
         <p>
-          Um exemplo é <a href="https://www.youtube.com/watch?v=crd7L-GCsAM" target="_blank" rel="noopener noreferrer" aria-label="Parallage e melodia de Tou Gavriil fthenxamenou por Georgios Kakoulidis (abre em nova aba)" ><span lang="el">Τοῦ Γαβριὴλ φθεγξαμένου</span>, em parallage e com o texto do hino</a>. Na primeira parte, Kakoulidis canta a melodia usando apenas os nomes das notas — ni, pa, vou e os demais —; depois, canta o mesmo trecho com a letra. Essa passagem da parallage para a melodia permite acompanhar duas etapas distintas do estudo na mesma gravação.
+          Um exemplo é <a href="https://www.youtube.com/watch?v=crd7L-GCsAM" target="_blank" rel="noopener noreferrer" aria-label="Solmização em parallage e melodia de Tou Gavriil fthenxamenou por Georgios Kakoulidis (abre em nova aba)" ><span lang="el">Τοῦ Γαβριὴλ φθεγξαμένου</span>, em <em>parallage</em> — solmização — e depois com o texto do hino</a>. Na primeira parte, Kakoulidis canta a melodia usando apenas os nomes das notas — ni, pa, vou e os demais —; depois, canta o mesmo trecho com a letra. Essa passagem da parallage para a melodia permite acompanhar duas etapas distintas do estudo na mesma gravação.
         </p>
         <p>
           O <a href="https://www.youtube.com/@S55s21" target="_blank" rel="noopener noreferrer" aria-label="Canal de Savvas Iliadis (abre em nova aba)" >canal de Savvas Iliadis — <span lang="el">Σάββας Ηλιάδης</span></a> também oferece um acervo amplo, organizado em playlists e frequentemente acompanhado pela notação bizantina. Os títulos, a voz recorrente e outras publicações associadas indicam que a parte hinológica reúne principalmente execuções do próprio Savvas, que também usa a designação <span lang="el">ΑΜΑΣΕΥΣ</span> e está ligado à cidade de Kilkis. Fontes externas também o apresentam como professor e regente de um coro paroquial local.
