@@ -6,6 +6,9 @@
   "observability": {
     "enabled": true
   },
+  "ai": {
+    "binding": "AI"
+  },
   "vars": {
     "GITHUB_OWNER": "mateusaranha",
     "GITHUB_REPO": "byzantine-chant-practice-app",

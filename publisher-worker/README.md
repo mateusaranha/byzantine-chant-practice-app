@@ -42,9 +42,9 @@ frontend, does not store source text or translations, and returns `404` unless
 `TRANSLATION_EXPERIMENT_ENABLED` is exactly `true`. Approved-publisher
 authentication is still required when it is enabled.
 
-The prototype deliberately has no AI binding in `wrangler.jsonc` yet. Before a
-real-account test, add a Cloudflare Workers AI binding named `AI`, confirm the
-account quota, and choose one of the allowlisted models through
+`wrangler.jsonc` declares a Cloudflare Workers AI binding named `AI`, but merely
+deploying that binding does not invoke a model. Before a real-account test,
+confirm the account quota and choose one of the allowlisted models through
 `TRANSLATION_MODEL`. Do not enable the endpoint in production until request
 limits and the user-facing AI notice have been reviewed.
 
