@@ -154,6 +154,32 @@ test("hymns can be reordered without changing their content or identifiers", asy
   assert.equal(moveHymn(hymns, "missing", 1), hymns);
 });
 
+test("license metadata and notices accompany the published build", async () => {
+  const packageData = JSON.parse(await readFile(new URL("../package.json", import.meta.url), "utf8"));
+  const workerPackageData = JSON.parse(
+    await readFile(new URL("../publisher-worker/package.json", import.meta.url), "utf8"),
+  );
+  const projectLicense = await readFile(new URL("../LICENSE", import.meta.url), "utf8");
+  const publishedProjectLicense = await readFile(
+    new URL("../dist/licenses/psaltikon-MIT.txt", import.meta.url),
+    "utf8",
+  );
+  const fontLicense = await readFile(
+    new URL("../public/licenses/noto-serif-OFL.txt", import.meta.url),
+    "utf8",
+  );
+  const publishedFontLicense = await readFile(
+    new URL("../dist/licenses/noto-serif-OFL.txt", import.meta.url),
+    "utf8",
+  );
+
+  assert.equal(packageData.license, "MIT");
+  assert.equal(workerPackageData.license, "MIT");
+  assert.equal(publishedProjectLicense, projectLicense);
+  assert.equal(publishedFontLicense, fontLicense);
+  assert.match(fontLicense, /SIL OPEN FONT LICENSE Version 1\.1/);
+});
+
 test("the production build contains the app shell and migration features", async () => {
   const html = await readFile(new URL("../dist/index.html", import.meta.url), "utf8");
   const source = await readFile(new URL("../src/App.tsx", import.meta.url), "utf8");
