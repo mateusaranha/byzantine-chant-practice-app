@@ -55,6 +55,15 @@ export function normalizeHymn(value: Partial<Hymn>, fallbackId: string): Hymn {
   };
 }
 
+export function moveHymn(hymns: Hymn[], id: string, direction: -1 | 1): Hymn[] {
+  const currentIndex = hymns.findIndex((hymn) => hymn.id === id);
+  const nextIndex = currentIndex + direction;
+  if (currentIndex < 0 || nextIndex < 0 || nextIndex >= hymns.length) return hymns;
+  const next = [...hymns];
+  [next[currentIndex], next[nextIndex]] = [next[nextIndex], next[currentIndex]];
+  return next;
+}
+
 export function restoreHymns(value: unknown): Hymn[] | null {
   if (!value || typeof value !== "object") return null;
   const data = value as Partial<Hymn> & { hymns?: unknown };
