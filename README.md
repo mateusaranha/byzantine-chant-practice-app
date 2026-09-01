@@ -1,106 +1,82 @@
 # Psaltikon
 
-O **Psaltikon** é uma ferramenta gratuita para preparar, marcar, organizar e praticar hinos de canto bizantino. A letra e uma gravação do YouTube ficam lado a lado; cores distinguem trechos da letra e sublinhados simples ou duplos funcionam como lembretes visuais do canto.
+O **Psaltikon** é uma ferramenta gratuita para preparar, marcar, organizar e praticar hinos de canto bizantino. A letra e uma gravação do YouTube ficam lado a lado; cores distinguem trechos e sublinhados simples ou duplos funcionam como lembretes visuais do canto.
 
 **Aplicativo:** <https://mateusaranha.github.io/byzantine-chant-practice-app/>
 
 O Psaltikon é um auxílio intermediário de escuta e memorização. Ele não substitui o aprendizado da notação musical bizantina, a formação musical ou a orientação de um professor.
 
-## O que existe hoje
+## Estado atual
 
-- vários hinos no mesmo espaço de trabalho, com reorganização da ordem;
-- texto grego politônico com fonte local incorporada;
-- alternância **Grego / Transliterado** no mesmo hino e com a mesma gravação;
-- cinco cores de marcação e sublinhados simples ou duplos;
-- borracha, desfazer e limpeza independente de cores e sublinhados;
-- vídeo do YouTube, velocidade-alvo e repetição 1x, 3x ou contínua;
-- ajustes de tamanho e espaçamento do texto;
-- impressão/PDF em formato vertical, iniciando cada hino em nova página;
-- backup e restauração do espaço de trabalho em JSON;
-- biblioteca pública de conjuntos, com ordenação por nome ou última atualização e publicação restrita a usuários aprovados;
-- links públicos para estudar um conjunto ou hino publicado sem login nem navegação pela biblioteca;
-- interface responsiva, instalável como PWA e com o shell disponível offline após ser carregado.
+- vários hinos no mesmo espaço, com reorganização da ordem;
+- texto grego politônico e leitura transliterada automática;
+- cinco cores, sublinhados simples ou duplos, borracha e desfazer;
+- controles de treino para ocultar temporariamente cores ou sublinhados;
+- YouTube, velocidade-alvo e repetição 1x, 3x ou contínua;
+- tamanho e espaçamento do texto ajustáveis;
+- backup em JSON e impressão/PDF para celular;
+- biblioteca pública, publicação por usuários aprovados e links de compartilhamento;
+- interface responsiva e instalável como PWA.
 
-Recursos online — YouTube, login e biblioteca — continuam dependendo de conexão.
+YouTube, login e biblioteca dependem de conexão. O restante do espaço de estudo funciona localmente e o shell do aplicativo fica disponível offline depois de carregado.
 
-## Fluxo principal de uso
+## Fluxo principal
 
-1. Edite título, modo e texto do hino em **Editar texto**.
+1. Edite título, modo e letra em **Editar texto**.
 2. Cole uma URL do YouTube e carregue a gravação.
-3. Selecione trechos do texto com uma cor, um sublinhado ou a borracha ativa.
-4. Registre a velocidade-alvo e, se necessário, configure a repetição do vídeo.
-5. Acrescente outros hinos, ajuste a apresentação e, quando necessário, use **Organizar hinos** para alterar a ordem.
-6. Mantenha o trabalho no dispositivo, exporte backup/PDF ou publique o conjunto na biblioteca.
+3. Marque trechos com cores ou sublinhados e defina a velocidade de estudo.
+4. Acrescente e reorganize hinos quando necessário.
+5. Mantenha o trabalho no dispositivo, exporte backup/PDF ou publique um conjunto.
 
 ### Leitura transliterada
 
-Depois de concluir a edição, **Transliterado** mostra uma conversão automática da letra, feita no navegador segundo a convenção aprovada a partir do livrinho da paróquia. **Grego** retorna ao original; a gravação não reinicia. Título e modo permanecem como foram escritos. A opção também está disponível nos hinos abertos por link.
+**Transliterado** converte a letra grega no navegador segundo a convenção aprovada a partir do livrinho da paróquia. A opção é temporária: somente o grego é salvo, e voltar para **Grego** recupera o texto e todas as marcações originais. Cores e sublinhados são projetados sobre a leitura latina sem modificar seus intervalos.
 
-A letra grega continua sendo a única fonte salva. A escolha de leitura é temporária, independente por hino, e não altera armazenamento, backup, biblioteca ou compartilhamento. Editar texto e marcações exige voltar ao grego; **Editar grego** faz essa troca diretamente. Cores, sublinhados, tamanho, espaçamento e controles de treino continuam disponíveis na leitura transliterada. O PDF continua em grego e inclui todas as marcações, mesmo quando ocultas na tela.
+A transliteração é um auxílio de leitura, não uma transcrição fonética completa. Pronúncia e particularidades da execução devem ser acompanhadas pela gravação; correções manuais ficam para uma etapa futura.
 
-O conversor mantém uma correspondência com as posições originais, inclusive em texto com acentos decompostos. Uma marca que intersecta uma conversão indivisível, como `αι → e`, aparece no grupo convertido inteiro; se houver duas cores ou dois tipos de sublinhado concorrentes nesse grupo, prevalece a primeira marca daquela categoria. Ao voltar ao grego, cada intervalo original reaparece intacto.
-
-As regras incluem `δ → dh`, `γ → gh` diante dos sons de e/i, `υ → y` fora de combinações, `χ → ch`, vogais combinadas, trema, acentos e `αυ/ευ → av/af/ev/ef` conforme a consoante seguinte na mesma palavra. Acento agudo, grave e circunflexo aparecem como agudo; espíritos e iota subscrito não são reproduzidos. O padrão aprovado `Υἱῷ → Iió` usa `υι → ii`. Grupos internos usam `μπ → mb`, `ντ → nd`, `γγ → ng/ngh` e `γκ → nk`; no início de palavra, `μπ/ντ/γκ` usam `b/d/g`. Trata-se de um auxílio de leitura, não de uma transcrição fonética completa: pronúncia e particularidades da execução devem ser acompanhadas pela gravação. Correções manuais da transliteração ficam para outra etapa.
-
-## Arquitetura atual
+## Arquitetura
 
 | Parte | Tecnologia | Responsabilidade |
 |---|---|---|
 | Interface | React 19, TypeScript e Vite | Edição, marcações, vídeo, backup, impressão e biblioteca |
-| Hospedagem | GitHub Pages | Entrega do site estático gerado em `dist/` |
-| Persistência local | `localStorage` | Espaço de trabalho e sessão do publicador no navegador |
-| Biblioteca | Arquivos JSON neste repositório | Conjuntos públicos versionados em `hinos/<login>/` |
-| Serviço de publicação | Cloudflare Worker | OAuth, autorização e operações de leitura/gravação no GitHub |
-| Acesso ao repositório | GitHub App do Psaltikon | Permissões limitadas a Contents e Issues neste repositório |
+| Hospedagem | GitHub Pages | Site estático gerado em `dist/` |
+| Persistência local | `localStorage` | Espaço de trabalho e sessão do publicador |
+| Biblioteca | JSONs neste repositório | Conjuntos públicos em `hinos/<login>/` |
+| Serviço de publicação | Cloudflare Worker | OAuth, autorização e operações no GitHub |
+| Acesso ao repositório | GitHub App do Psaltikon | Contents e Issues neste repositório |
 
-Não há servidor da interface, banco de dados próprio, contas próprias do Psaltikon nem agente de IA em execução. O Worker é um intermediário sem armazenamento de hinos: recebe uma requisição, aplica regras e usa a GitHub App para operar no repositório.
+Não há servidor da interface, banco de dados próprio, contas próprias do Psaltikon nem agente de IA em execução. O Worker não armazena hinos: valida cada requisição e usa a GitHub App para operar no repositório.
 
-### Fluxos de dados
+## Dados e permissões
 
-**Trabalho local:** a interface carrega `psaltikon-practice` do `localStorage`, normaliza dados antigos e salva automaticamente `{ version: 3, hymns }` após alterações. Se os dados existentes não puderem ser lidos ou se uma tentativa de salvamento falhar, o salvamento automático é pausado e um aviso impede que o problema passe despercebido. O backup exportado usa a versão 4 e inclui data de exportação. Importar ou abrir um conjunto valida os dados e substitui o espaço atual somente após confirmação. Alterar uma letra que já possui cores ou sublinhados também exige confirmação, pois os intervalos das marcações precisam ser removidos.
+**Trabalho local:** o espaço fica em `psaltikon-practice` no `localStorage` e é salvo automaticamente. Dados antigos são normalizados. Se uma leitura ou tentativa de salvamento falhar, o salvamento é pausado e a interface oferece recuperação antes de qualquer substituição. Importações, conjuntos da biblioteca e alterações de letras com marcações são validados e confirmados quando podem remover dados.
 
-**Leitura da biblioteca:** qualquer visitante pode listar e abrir os JSONs de `hinos/` pelo Worker, sem login. A listagem lê o título e a data da última atualização gravados em cada conjunto, permitindo alternar entre ordem alfabética e ordem de atualização dentro de cada autor. O conjunto carregado passa a ser uma cópia local editável.
+**Biblioteca e compartilhamento:** qualquer visitante pode abrir os conjuntos públicos sem login. Um link pode apontar para o conjunto inteiro ou para um hino específico e sempre lê a publicação mais recente. O material compartilhado abre em uma área temporária; **Adicionar ao meu espaço** cria uma cópia local independente sem sobrescrever trabalho válido.
 
-**Compartilhamento:** na biblioteca, use **Compartilhar** ao lado do conjunto, escolha o conjunto inteiro ou um hino e copie o link. O link aponta para a versão publicada mais recente; alterações locais precisam ser publicadas antes de serem compartilhadas. Quem recebe abre diretamente uma área temporária de estudo, com letra, gravação e marcações, sem login e sem alterar o espaço local. Ajustes nessa área duram somente enquanto a página estiver aberta; sair ou atualizar a página os descarta. Backup e PDF exportam o material em estudo, mantendo suas marcações mesmo quando ocultas para treino.
+**Publicação:** o login usa GitHub OAuth. A interface retira a sessão assinada da URL e a mantém no navegador por até oito horas. Somente contas em `config/approved-users.json` publicam; cada autor grava em `hinos/<seu-login>/`. A administração continua restrita ao administrador e toda exclusão é limitada a caminhos válidos sob `hinos/`.
 
-**Guardar uma cópia compartilhada:** **Adicionar ao meu espaço** acrescenta uma cópia com novos identificadores aos hinos salvos no dispositivo e abre o espaço local. Só o hino inicial vazio e intocado é substituído. A ação relê o armazenamento antes de gravar; dados locais ilegíveis, falta de espaço ou mais de 80 hinos impedem a adição. A cópia guardada não acompanha automaticamente futuras alterações do autor.
-
-Links usam `?conjunto=hinos/<autor>/<slug>.json` e, opcionalmente, `&hino=<id-publicado>`, sem incluir tokens ou conteúdo local. A seleção individual usa o identificador, não a posição do hino no conjunto; se ele for removido, o link informa a indisponibilidade. Hinos antigos sem identificador único podem ser compartilhados como parte do conjunto inteiro. Conjuntos excluídos, links inválidos e falhas de rede não substituem o trabalho local. Todo conteúdo compartilhado continua público.
-
-**Publicação:** o login ocorre no GitHub por OAuth. O Worker devolve uma sessão assinada, válida por oito horas, que a interface retira imediatamente da URL e guarda em `psaltikon-publisher-session`. Para salvar, a conta precisa constar em `config/approved-users.json`. Cada publicador grava somente em `hinos/<seu-login>/`; o administrador também pode excluir conjuntos de outros autores, sempre dentro de `hinos/`.
-
-**Solicitação de acesso:** o Worker cria uma Issue com o prefixo `[Psaltikon access]`. O administrador aprova ou recusa pela interface; a aprovação atualiza `config/approved-users.json` e fecha a Issue.
-
-Cada conjunto publicado:
-
-- é um JSON público com título, autor, data e hinos;
-- recebe um slug de até 72 caracteres;
-- aceita de 1 a 80 hinos e até 1,5 MB de dados de hinos;
-- é gravado diretamente na branch `main`, gerando um commit e preservando histórico.
-
-Não publique informações privadas em títulos, letras ou links.
+Cada publicação aceita de 1 a 80 hinos e até 1,5 MB de dados de hinos. Os JSONs, títulos, letras e links publicados são públicos: não inclua informações privadas.
 
 ## Estrutura relevante
 
 ```text
 src/App.tsx                     espaço de trabalho e persistência local
-src/CloudLibrary.tsx            interface da biblioteca e administração
-src/ShareDialog.tsx             seleção e cópia de links para material publicado
-src/sharedHymns.ts              links, leitura pública e adição segura de cópias
-src/transliteration.ts          conversão grega e projeção das marcações, sem persistência
-src/styles.css                  layout responsivo e impressão
+src/CloudLibrary.tsx            biblioteca e administração
+src/ShareDialog.tsx             compartilhamento de conjuntos e hinos
+src/sharedHymns.ts              leitura pública e cópias compartilhadas
+src/transliteration.ts          transliteração e projeção das marcações
+src/fonts/                      fontes incorporadas
+public/licenses/                licenças incluídas no site publicado
 public/                         manifesto, ícones e service worker
 hinos/<login>/                  conjuntos públicos versionados
 config/approved-users.json      administrador e publicadores aprovados
-publisher-worker/src/index.js   OAuth, autorização e API da biblioteca
-publisher-worker/wrangler.jsonc valores públicos do Worker
+publisher-worker/               OAuth, autorização e API da biblioteca
 .github/workflows/              testes e deploys automáticos
-tests/                          teste do build da interface
-ROADMAP.md                      prioridades, ideias e adiamentos
-AGENTS.md                       instruções para futuros agentes
+tests/                          testes da interface e regressões principais
+ROADMAP.md                      direção e prioridades ainda abertas
 ```
 
-## Desenvolvimento local
+## Desenvolvimento
 
 Requer Node.js 22 ou superior.
 
@@ -109,13 +85,13 @@ npm ci
 npm run dev
 ```
 
-Para compilar e testar a interface:
+O teste da interface compila, verifica tipos e executa os testes funcionais:
 
 ```bash
 npm test
 ```
 
-`npm test` fornece uma URL fictícia ao build para também verificar a presença da biblioteca. Para testar manualmente contra outro serviço:
+Para testar manualmente a biblioteca contra outro serviço:
 
 ```bash
 VITE_PUBLISHER_API_URL=https://worker.example npm run dev
@@ -130,50 +106,34 @@ npm test
 npm run dev
 ```
 
-Para desenvolvimento local do Worker, use `publisher-worker/.dev.vars.example` como referência e mantenha o arquivo real em `.dev.vars`, que já está ignorado pelo Git. Nunca registre tokens, client secrets ou chaves privadas.
+Use `publisher-worker/.dev.vars.example` como referência e mantenha credenciais reais em `.dev.vars`, já ignorado pelo Git.
 
-## API do Worker
+## Deploy e configuração
 
-- públicos: `GET /health`, `GET /auth/login`, `GET /auth/callback`, `GET /api/library` e `GET /api/library/item`;
-- com sessão: `GET /api/session` e `POST /api/access/request`;
-- publicador aprovado: `POST /api/sets` e `DELETE /api/sets`;
-- administrador: `POST /api/admin/approve|reject|add|revoke`.
+Pull requests executam os testes da interface e do Worker. Um push na `main` testa e publica a interface no GitHub Pages; mudanças em `publisher-worker/**` testam e publicam o Worker com Wrangler.
 
-O CORS aceita somente a origem definida em `FRONTEND_URL`. Os valores públicos de repositório, administrador e frontend ficam em `publisher-worker/wrangler.jsonc`; credenciais ficam como secrets do GitHub Actions e do Cloudflare.
-
-## Deploy
-
-### Interface no GitHub Pages
-
-Qualquer pull request executa os testes da interface e do Worker em `.github/workflows/test.yml`. Qualquer push na `main` aciona `.github/workflows/deploy-pages.yml`:
-
-1. instala dependências;
-2. compila, testa tipos e executa os testes funcionais;
-3. injeta `VITE_PUBLISHER_API_URL` com a URL atual do Worker;
-4. publica `dist/` no GitHub Pages.
-
-Como os conjuntos também são gravados na `main`, salvar ou excluir um conjunto atualmente aciona esse workflow, embora não altere o código da interface.
-
-### Worker na Cloudflare
-
-Mudanças em `publisher-worker/**` ou no próprio workflow acionam `.github/workflows/deploy-publisher.yml`, que testa e publica com Wrangler. O workflow precisa destes secrets:
+O deploy do Worker utiliza estes secrets:
 
 - `CLOUDFLARE_API_TOKEN` e `CLOUDFLARE_ACCOUNT_ID`;
 - `PSALTIKON_APP_ID`, `PSALTIKON_CLIENT_ID` e `PSALTIKON_INSTALLATION_ID`;
 - `PSALTIKON_CLIENT_SECRET` e `PSALTIKON_PRIVATE_KEY`.
 
-O workflow os mapeia para secrets criptografados do Worker. Veja `publisher-worker/README.md` para o provisionamento da GitHub App.
+Os valores públicos ficam em `publisher-worker/wrangler.jsonc`. O provisionamento da GitHub App está documentado em `publisher-worker/README.md`.
 
-Ao mudar nome do repositório, URLs públicas ou domínios, revise em conjunto o workflow do Pages, `wrangler.jsonc`, a GitHub App, o callback OAuth, CORS, manifesto e documentação.
+Renomear o repositório ou mudar URLs exige revisar em conjunto GitHub Pages, Worker, GitHub App, callback OAuth, CORS, manifesto, workflows e documentação. Salvar um conjunto ainda cria um commit na `main` e, por isso, também aciona o workflow do Pages.
 
 ## Segurança e manutenção
 
-- os workflows declaram permissões mínimas para o `GITHUB_TOKEN`;
-- Actions externas estão fixadas por hashes imutáveis, com a versão legível em comentário;
-- a GitHub App deve continuar instalada somente neste repositório, com Contents e Issues em leitura/escrita;
-- a leitura é pública, mas gravação, exclusão e administração são validadas no Worker;
-- o caminho de gravação é limitado à pasta do publicador; o administrador pode excluir conjuntos de outros autores, mas o endpoint continua restrito a caminhos válidos sob `hinos/`;
-- tokens de instalação e lista de aprovados têm cache curto em memória; os hinos não são armazenados no Worker;
-- CodeQL, Dependabot e outras proteções configuradas na interface do GitHub não aparecem necessariamente nos arquivos do checkout e devem ser conferidas nas configurações do repositório.
+- workflows usam permissões mínimas e Actions fixadas por hash;
+- credenciais ficam em secrets, nunca no repositório;
+- leitura pública, publicação e administração são validadas separadamente no Worker;
+- caminhos de gravação e exclusão permanecem limitados a `hinos/`;
+- CodeQL, Dependabot e proteções configuradas no GitHub devem ser conferidos também na interface do repositório.
 
-Antes de mudanças relevantes, leia também `ROADMAP.md` e `AGENTS.md`.
+Antes de mudanças relevantes, leia `ROADMAP.md` e `AGENTS.md`.
+
+## Licença
+
+O código-fonte e a documentação produzidos para o Psaltikon são distribuídos sob a [licença MIT](LICENSE), Copyright (c) 2026 Mateus Aranha Martins.
+
+A licença MIT não concede automaticamente direitos sobre conjuntos em `hinos/`, textos litúrgicos, gravações externas ou outros conteúdos de terceiros. A Noto Serif incorporada ao aplicativo permanece sob a SIL Open Font License 1.1. Consulte [os avisos de terceiros](THIRD_PARTY_NOTICES.md).
