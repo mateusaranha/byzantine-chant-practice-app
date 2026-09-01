@@ -124,7 +124,7 @@ test("the production build contains the app shell and migration features", async
   assert.match(stylesSource, /font-family:"Noto Serif Transliteration"/);
   assert.match(stylesSource, /noto-serif-latin-regular\.woff/);
   assert.match(stylesSource, /\.lyrics\.lyrics-transliterated/);
-  assert.match(stylesSource, /font-weight:500; font-synthesis:weight; letter-spacing:-\.015em/);
+  assert.match(stylesSource, /font-weight:475; font-synthesis:weight; letter-spacing:-\.015em/);
   assert.match(stylesheet, /@media \(width<=520px\)/);
   assert.match(stylesheet, /max-height:calc\(100d?vh\s*-\s*20px\)/);
   assert.match(source, /useState<ActiveTool>\(null\)/);
