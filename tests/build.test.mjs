@@ -108,6 +108,8 @@ test("the production build contains the app shell and migration features", async
   assert.match(javascript, /não substituem o aprendizado da notação musical bizantina/);
   assert.match(javascript, /Guia de estudo/);
   assert.match(javascript, /As cores não têm significados próprios/);
+  assert.match(javascript, /1,1×, 1,15× ou 1,25×/);
+  assert.match(javascript, /Não há uma proporção fixa nem uma velocidade necessariamente correta/);
   assert.match(javascript, /Nikos Karachalis: o caráter das Evlogitárias da Ressurreição/);
   assert.match(javascript, /Canais com notação e material para a prática/);
   assert.match(javascript, /Georgios Kakoulidis/);

@@ -118,6 +118,9 @@ function StudyGuide() {
           Há interpretações mais lentas e desenvolvidas, como as versões <em>argá</em>. Na experiência paroquial que deu origem a este guia, execuções mais dinâmicas costumam se ajustar melhor à ocasião. Uma versão pode ser muito apreciada e, ainda assim, ficar extensa demais para aquele contexto; isso não diminui sua qualidade.
         </p>
         <p>
+          Algumas gravações apresentam uma interpretação mais lenta ou desenvolvida do que a dinâmica desejada para o contexto em que o hino será cantado. Nesses casos, experimente aumentar um pouco a velocidade de reprodução para ouvir como a melodia funciona com maior fluidez. Não há uma proporção fixa nem uma velocidade necessariamente correta: tente, por exemplo, 1,1×, 1,15× ou 1,25× e escute novamente. Use sua experiência para avaliar se o resultado preserva a naturalidade das frases e se aproxima melhor da dinâmica procurada.
+        </p>
+        <p>
           A dificuldade da execução também importa. Quando as ornamentações de uma gravação ainda são difíceis de reproduzir, outra interpretação, com elaboração mais simples, pode permitir cantar com mais segurança e manter claras as características melódicas do modo.
         </p>
         <p>
