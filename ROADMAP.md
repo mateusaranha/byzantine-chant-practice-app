@@ -54,6 +54,7 @@ A borracha e os comandos independentes **Limpar cores** e **Limpar melismas** j�
 
 Concluído nesta etapa:
 
+- **Reordenação de hinos:** uma janela compacta permite mover cada hino para cima ou para baixo sem alterar seu conteúdo ou identificador. A nova ordem é salva localmente e seguida no backup, PDF e próxima publicação.
 - **Leitura transliterada:** alternância temporária entre grego e transliteração automática no mesmo hino, seguindo a convenção aprovada do livrinho paroquial. As marcações são projetadas na leitura; edição e PDF permanecem em grego. Também funciona em links compartilhados, sem segundo texto salvo ou migração. Revisão manual da transliteração fica para uma etapa futura.
 - **Compartilhamento por link:** conjuntos publicados ou hinos individuais abrem diretamente em uma área temporária, sem login e sem sobrescrever trabalho local. A opção de adicionar uma cópia preserva os hinos existentes. Links acompanham a publicação mais recente; cópias locais permanecem independentes.
 - **Guia de estudo e ajuda compacta:** conteúdo pessoal revisado pelo criador, acessível pelo rodapé e pelas dicas sob texto e vídeo, em janela com rolagem; “Sobre” alinhado ao significado aprovado das marcações.
@@ -79,7 +80,7 @@ Ideias úteis, ainda sem prioridade fechada:
 
 - indicador claro de “salvo neste dispositivo” versus “publicado no GitHub”;
 - busca por conjunto ou autor;
-- reordenação e duplicação de hinos;
+- duplicação de hinos;
 - recuperação simplificada de versões anteriores;
 - revisão do limite de 80 hinos somente se uso real mostrar necessidade;
 - biblioteca pública curada com grandes festas e exemplos completos;

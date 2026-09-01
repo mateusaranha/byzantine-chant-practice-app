@@ -191,9 +191,13 @@ button,input,textarea { font:inherit; } button { cursor:pointer; }
 .input-row { display:flex; gap:8px; } .input-row input { min-width:0; flex:1; border:1px solid #cdbfae; background:#fffdf8; border-radius:3px; padding:12px 13px; color:var(--ink); outline:none; font:14px Arial,sans-serif; }
 .input-row input:focus { border-color:var(--gold); box-shadow:0 0 0 3px rgba(180,139,71,.12); } .input-row button { border:1px solid #752724; background:var(--red); color:white; border-radius:3px; padding:0 20px; font:600 12px Arial,sans-serif; }
 .input-row button:hover { background:#742623; } .error { margin:7px 0 0; color:var(--red); font:12px Arial,sans-serif; }
-.add-hymn { max-width:1500px; width:100%; min-height:58px; margin:24px auto 0; display:flex; align-items:center; justify-content:center; gap:11px; border:1px dashed rgba(202,169,104,.58); border-radius:4px; background:rgba(180,139,71,.06); color:#d4bd96; font:600 12px Arial,sans-serif; letter-spacing:.08em; text-transform:uppercase; transition:.18s ease; }
+.hymn-list-actions { max-width:1500px; margin:24px auto 0; display:grid; grid-template-columns:minmax(0,2fr) minmax(220px,.65fr); gap:10px; }
+.add-hymn { width:100%; min-height:58px; display:flex; align-items:center; justify-content:center; gap:11px; border:1px dashed rgba(202,169,104,.58); border-radius:4px; background:rgba(180,139,71,.06); color:#d4bd96; font:600 12px Arial,sans-serif; letter-spacing:.08em; text-transform:uppercase; transition:.18s ease; }
 .add-hymn span { width:28px; height:28px; display:grid; place-items:center; border:1px solid rgba(202,169,104,.65); border-radius:50%; font:300 21px/1 Arial,sans-serif; }
 .add-hymn:hover { border-color:#d8b36d; background:rgba(180,139,71,.13); color:#fff3df; }
+.organize-hymns { min-height:58px; display:flex; align-items:center; justify-content:center; gap:9px; border:1px solid rgba(202,169,104,.42); border-radius:4px; background:rgba(20,16,14,.24); color:#c8b18d; padding:10px 16px; font:600 11px Arial,sans-serif; letter-spacing:.08em; text-transform:uppercase; }
+.organize-hymns span { color:#d8b36d; font:20px/1 Arial,sans-serif; }
+.organize-hymns:hover { border-color:#d8b36d; background:rgba(180,139,71,.1); color:#fff3df; }
 footer { max-width:1500px; margin:15px auto 0; display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:8px 14px; color:#9e8e7e; text-align:center; font:11px Arial,sans-serif; letter-spacing:.1em; }
 .about-link { border:0; border-bottom:1px solid rgba(202,169,104,.5); background:transparent; color:#cbb58f; padding:3px 1px; font:600 10px Arial,sans-serif; letter-spacing:.09em; text-transform:uppercase; }
 .about-link:hover,.about-link:focus-visible { border-color:#d8b36d; color:#fff3df; outline:none; }
@@ -228,6 +232,21 @@ footer { max-width:1500px; margin:15px auto 0; display:flex; align-items:center;
 .help-section-copy { padding:16px; }
 .help-navigation { flex:none; padding:4px 28px; border-bottom:1px solid #ded2c1; font:14px/1.4 Arial,sans-serif; }
 .help-navigation .help-link { min-height:44px; text-align:left; }
+.reorder-dialog { width:min(720px,calc(100% - 40px)); }
+.reorder-copy { padding-top:20px; }
+.reorder-intro { color:#675b50; }
+.reorder-list { display:grid; gap:8px; margin:18px 0 0; padding:0; list-style:none; }
+.reorder-list li { min-height:62px; display:flex; align-items:center; gap:12px; padding:8px 10px 8px 13px; border:1px solid #d8cbb8; border-radius:3px; background:#fffdf8; }
+.reorder-number { flex:none; color:var(--gold); font:600 11px Arial,sans-serif; letter-spacing:.1em; }
+.reorder-hymn-copy { min-width:0; flex:1; }
+.reorder-hymn-copy strong,.reorder-hymn-copy > span { display:block; overflow-wrap:anywhere; }
+.reorder-hymn-copy strong { color:var(--ink); font:600 15px/1.35 Arial,sans-serif; }
+.reorder-hymn-copy > span { margin-top:3px; color:var(--muted); font:italic 12px/1.35 Arial,sans-serif; }
+.reorder-buttons { flex:none; display:flex; gap:6px; }
+.reorder-buttons button { width:44px; height:44px; display:grid; place-items:center; border:1px solid #cdbfae; border-radius:3px; background:#fff; color:var(--red); font:20px/1 Arial,sans-serif; }
+.reorder-buttons button:hover:not(:disabled) { border-color:var(--red); background:#f7ede5; }
+.reorder-buttons button:disabled { opacity:.3; cursor:default; }
+.reorder-status { min-height:1.5em; margin:12px 0 0!important; color:var(--red); font:13px/1.5 Arial,sans-serif; }
 .share-form { display:grid; gap:10px; }
 .share-form select,.share-form input { width:100%; min-width:0; min-height:44px; padding:10px; border:1px solid #c4b5a2; border-radius:3px; background:#fffdf8; color:var(--ink); font:14px Arial,sans-serif; }
 .share-dialog .cloud-primary,.share-dialog .cloud-secondary { min-height:44px; }
@@ -244,7 +263,7 @@ footer { max-width:1500px; margin:15px auto 0; display:flex; align-items:center;
 .cloud-set-row button { min-height:40px; }
 @media (max-width:1100px) { .header-note { display:none; } }
 @media (max-width:900px) { .workspace,.cloud-library-grid { grid-template-columns:1fr; } .lyrics-panel,.video-panel { padding:24px; } .topbar { flex-wrap:wrap; } .header-actions { width:100%; } }
-@media (max-width:520px) { .app-shell { padding:16px 10px; } .header-actions { display:grid; grid-template-columns:1fr 1fr; } .cloud-trigger { grid-column:1/-1; } .export-pdf { grid-column:1/-1; width:100%; justify-content:center; } .backup-button { width:100%; } .cloud-library { padding:16px 12px; } .cloud-library-heading h2 { font-size:23px; } .cloud-card-title { flex-direction:column; } .admin-columns { grid-template-columns:1fr; } .admin-add { flex-direction:column; } .panel-heading { flex-direction:column; gap:9px; } .panel-heading.compact { align-items:flex-start; } .speed-badge { position:absolute; right:0; top:0; } .text-button { align-self:flex-end; } .tools-toggle { min-height:44px; } .cursor-tool { min-height:40px; } .type-controls { flex-direction:column; gap:10px; } .highlighter-bar { gap:10px; } .tool-label { width:100%; } .tools-panel-heading .tool-label { width:auto; } .annotation-divider { display:none; } .tool-button.clear { margin-left:0; } .lyrics { padding-inline:0; } .speed-control { align-items:flex-start; flex-direction:column; } .repeat-options { grid-template-columns:1fr 1fr; } .input-row { flex-direction:column; } .input-row button { padding:13px; } }
+@media (max-width:520px) { .app-shell { padding:16px 10px; } .header-actions { display:grid; grid-template-columns:1fr 1fr; } .cloud-trigger { grid-column:1/-1; } .export-pdf { grid-column:1/-1; width:100%; justify-content:center; } .backup-button { width:100%; } .cloud-library { padding:16px 12px; } .cloud-library-heading h2 { font-size:23px; } .cloud-card-title { flex-direction:column; } .admin-columns { grid-template-columns:1fr; } .admin-add { flex-direction:column; } .panel-heading { flex-direction:column; gap:9px; } .panel-heading.compact { align-items:flex-start; } .speed-badge { position:absolute; right:0; top:0; } .text-button { align-self:flex-end; } .tools-toggle { min-height:44px; } .cursor-tool { min-height:40px; } .type-controls { flex-direction:column; gap:10px; } .highlighter-bar { gap:10px; } .tool-label { width:100%; } .tools-panel-heading .tool-label { width:auto; } .annotation-divider { display:none; } .tool-button.clear { margin-left:0; } .lyrics { padding-inline:0; } .speed-control { align-items:flex-start; flex-direction:column; } .repeat-options { grid-template-columns:1fr 1fr; } .input-row { flex-direction:column; } .input-row button { padding:13px; } .hymn-list-actions { grid-template-columns:1fr; } }
 @media (max-width:520px) {
   .training-toggle { min-height:42px; }
   .help-dialog,.help-dialog.study-guide { width:calc(100% - 20px); max-height:calc(100vh - 20px); max-height:calc(100dvh - 20px); }
@@ -268,7 +287,7 @@ footer { max-width:1500px; margin:15px auto 0; display:flex; align-items:center;
   .app-shell { min-height:0; padding:0; background:none!important; }
   .reading-controls,.lyrics-transliterated { display:none!important; }
   .lyrics-print-original { display:block; }
-  .shared-notice,.help-dialog,.help-dialog::backdrop,.topbar,.cloud-library,.hymn-strip,.video-panel,.tools-panel,.text-button,.practice-hint,.empty-lyrics,.add-hymn,footer { display:none!important; }
+  .shared-notice,.help-dialog,.help-dialog::backdrop,.topbar,.cloud-library,.hymn-strip,.video-panel,.tools-panel,.text-button,.practice-hint,.empty-lyrics,.hymn-list-actions,footer { display:none!important; }
   .empty-hymn-block { display:none!important; }
   .hymn-list { display:block; max-width:none; margin:0; }
   .hymn-block { display:block; margin:0; padding:0; break-before:page; page-break-before:always; break-inside:auto; page-break-inside:auto; }

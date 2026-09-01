@@ -8,7 +8,7 @@ O Psaltikon é um auxílio intermediário de escuta e memorização. Ele não su
 
 ## O que existe hoje
 
-- vários hinos no mesmo espaço de trabalho;
+- vários hinos no mesmo espaço de trabalho, com reorganização da ordem;
 - texto grego politônico com fonte local incorporada;
 - alternância **Grego / Transliterado** no mesmo hino e com a mesma gravação;
 - cinco cores de marcação, melisma simples e melisma complexo;
@@ -29,7 +29,7 @@ Recursos online — YouTube, login e biblioteca — continuam dependendo de cone
 2. Cole uma URL do YouTube e carregue a gravação.
 3. Selecione trechos do texto com uma cor, melisma ou borracha ativa.
 4. Registre a velocidade-alvo e, se necessário, configure a repetição do vídeo.
-5. Acrescente outros hinos e ajuste a apresentação de cada um.
+5. Acrescente outros hinos, ajuste a apresentação e, quando necessário, use **Organizar hinos** para alterar a ordem.
 6. Mantenha o trabalho no dispositivo, exporte backup/PDF ou publique o conjunto na biblioteca.
 
 ### Leitura transliterada

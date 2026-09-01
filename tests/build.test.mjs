@@ -68,12 +68,37 @@ test("saved and legacy workspaces are restored without replacing their content",
   assert.equal(legacy?.[0].lyrics, "παλαιόν");
 });
 
+test("hymns can be reordered without changing their content or identifiers", async () => {
+  const { moveHymn, restoreHymns } = await loadHymnState();
+  const hymns = restoreHymns({
+    version: 3,
+    hymns: [
+      { id: "first", title: "Primeiro", lyrics: "α" },
+      { id: "second", title: "Segundo", lyrics: "β" },
+      { id: "third", title: "Terceiro", lyrics: "γ", highlights: [{ start: 0, end: 1, color: "sage" }] },
+    ],
+  });
+  assert.ok(hymns);
+
+  const moved = moveHymn(hymns, "third", -1);
+  assert.deepEqual(moved.map((hymn) => hymn.id), ["first", "third", "second"]);
+  assert.equal(moved[1], hymns[2]);
+  assert.deepEqual(moved[1].highlights, [{ start: 0, end: 1, color: "sage" }]);
+
+  const restored = restoreHymns({ version: 3, hymns: JSON.parse(JSON.stringify(moved)) });
+  assert.deepEqual(restored?.map((hymn) => hymn.id), ["first", "third", "second"]);
+  assert.equal(moveHymn(hymns, "first", -1), hymns);
+  assert.equal(moveHymn(hymns, "third", 1), hymns);
+  assert.equal(moveHymn(hymns, "missing", 1), hymns);
+});
+
 test("the production build contains the app shell and migration features", async () => {
   const html = await readFile(new URL("../dist/index.html", import.meta.url), "utf8");
   const source = await readFile(new URL("../src/App.tsx", import.meta.url), "utf8");
   const stateSource = await readFile(new URL("../src/hymnState.ts", import.meta.url), "utf8");
   const stylesSource = await readFile(new URL("../src/styles.css", import.meta.url), "utf8");
   const librarySource = await readFile(new URL("../src/CloudLibrary.tsx", import.meta.url), "utf8");
+  const reorderSource = await readFile(new URL("../src/ReorderHymnsDialog.tsx", import.meta.url), "utf8");
   assert.match(html, /Psaltikon/);
   assert.match(html, /manifest\.webmanifest/);
 
@@ -101,6 +126,8 @@ test("the production build contains the app shell and migration features", async
   assert.match(javascript, /Mostrar sublinhados/);
   assert.match(javascript, /Novo hino/);
   assert.match(javascript, /Título do hino/);
+  assert.match(javascript, /Organizar hinos/);
+  assert.match(javascript, /A alteração é salva automaticamente/);
   assert.match(javascript, /Biblioteca online/);
   assert.match(javascript, /Solicitar permissão para publicar/);
   assert.match(javascript, /Salvar conjunto no GitHub/);
@@ -116,6 +143,8 @@ test("the production build contains the app shell and migration features", async
   assert.match(javascript, /canal de Savvas Iliadis/);
   assert.match(javascript, /k8H7q4v926s/);
   assert.match(stylesheet, /\.help-dialog/);
+  assert.match(stylesheet, /\.reorder-dialog/);
+  assert.match(stylesheet, /\.hymn-list-actions/);
   assert.match(stylesheet, /\.tools-panel/);
   assert.match(stylesheet, /\.selection-neutral/);
   assert.match(stylesheet, /\.training-hide-colours/);
@@ -150,7 +179,7 @@ test("the production build contains the app shell and migration features", async
   assert.doesNotMatch(`${source}\n${stateSource}`, /const FIRST_HYMN|const SAMPLE/);
   assert.doesNotMatch(stateSource, /coloursVisible|melismasVisible|training-hide/);
 
-  const visibleSource = `${source}\n${librarySource}`;
+  const visibleSource = `${source}\n${librarySource}\n${reorderSource}`;
   for (const untranslated of [
     "Add another hymn",
     "Add the Greek lyrics",

@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import CloudLibrary from "./CloudLibrary";
 import HelpDialog from "./HelpDialog";
+import ReorderHymnsDialog from "./ReorderHymnsDialog";
 import type { HelpPage } from "./HelpDialog";
-import { newHymn, normalizeHymn, restoreHymns } from "./hymnState";
+import { moveHymn, newHymn, normalizeHymn, restoreHymns } from "./hymnState";
 import type { Highlight, Hymn, Melisma, RepeatMode } from "./hymnState";
 import { addSharedToWorkspace, loadPublishedSet, parseShareRequest, selectSharedHymns, workspaceUrl } from "./sharedHymns";
 import type { SharedRoute } from "./sharedHymns";
@@ -768,6 +769,7 @@ function LocalWorkspace() {
   const [printRequest, setPrintRequest] = useState(0);
   const [cloudOpen, setCloudOpen] = useState(false);
   const [help, setHelp] = useState<{ page: HelpPage; trigger: HTMLButtonElement } | null>(null);
+  const [reorderTrigger, setReorderTrigger] = useState<HTMLButtonElement | null>(null);
   const backupInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -896,10 +898,18 @@ function LocalWorkspace() {
         ))}
       </div>
 
-      <button className="add-hymn" onClick={addHymn}>
-        <span aria-hidden="true">+</span>
-        Adicionar outro hino
-      </button>
+      <div className="hymn-list-actions">
+        <button className="add-hymn" onClick={addHymn}>
+          <span aria-hidden="true">+</span>
+          Adicionar outro hino
+        </button>
+        {hymns.length > 1 && (
+          <button className="organize-hymns" onClick={(event) => setReorderTrigger(event.currentTarget)}>
+            <span aria-hidden="true">↕</span>
+            Organizar hinos
+          </button>
+        )}
+      </div>
 
       <footer>
         <span>Ἄσωμεν τῷ Κυρίῳ · Um espaço tranquilo para a prática diária</span>
@@ -924,6 +934,14 @@ function LocalWorkspace() {
       </footer>
 
       {help && <HelpDialog page={help.page} trigger={help.trigger} onClose={() => setHelp(null)} />}
+      {reorderTrigger && (
+        <ReorderHymnsDialog
+          hymns={hymns}
+          trigger={reorderTrigger}
+          onMove={(id, direction) => setHymns((current) => moveHymn(current, id, direction))}
+          onClose={() => setReorderTrigger(null)}
+        />
+      )}
     </main>
   );
 }
