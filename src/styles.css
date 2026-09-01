@@ -107,7 +107,7 @@ button,input,textarea { font:inherit; } button { cursor:pointer; }
 .transliteration-help > summary { width:fit-content; padding-block:8px; color:var(--red); cursor:pointer; }
 .transliteration-help > summary:focus-visible,.text-button:focus-visible { outline:2px solid var(--red); outline-offset:2px; }
 .transliteration-help p { margin:6px 0; }
-.lyrics.lyrics-transliterated { overflow-wrap:anywhere; font-family:"Noto Serif Transliteration",var(--font-noto-serif),"Noto Serif","Palatino Linotype",serif; font-weight:500; font-synthesis:weight; letter-spacing:-.015em; }
+.lyrics.lyrics-transliterated { overflow-wrap:anywhere; font-family:"Noto Serif Transliteration",var(--font-noto-serif),"Noto Serif","Palatino Linotype",serif; font-weight:475; font-synthesis:weight; letter-spacing:-.015em; }
 .lyrics-print-original { display:none; }
 .tools-panel { position:relative; z-index:2; padding-top:10px; }
 .tools-panel-heading { min-height:32px; display:flex; align-items:center; justify-content:space-between; gap:12px; }
