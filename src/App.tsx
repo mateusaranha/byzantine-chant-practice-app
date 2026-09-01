@@ -624,7 +624,10 @@ function HymnWorkspace({
                   .join(" ")}
                 lang={transliterated ? "grc-Latn" : "grc"}
                 aria-describedby={transliterated ? `${lyricsId}-note` : undefined}
-                style={{ fontSize: hymn.fontSize, lineHeight: hymn.lineHeight }}
+                style={{
+                  fontSize: transliterated ? hymn.fontSize * 1.04 : hymn.fontSize,
+                  lineHeight: hymn.lineHeight,
+                }}
                 onMouseUp={markSelection}
                 onTouchEnd={markSelection}
               >
