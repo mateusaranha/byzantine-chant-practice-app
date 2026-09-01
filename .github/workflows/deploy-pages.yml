@@ -27,8 +27,8 @@ jobs:
           cache: npm
       - name: Install dependencies
         run: npm ci
-      - name: Build site
-        run: npm run build
+      - name: Test and build site
+        run: npm run build && npm run test:unit
         env:
           VITE_PUBLISHER_API_URL: https://psaltikon-publisher.m-aranha-martins.workers.dev
       - name: Configure Pages

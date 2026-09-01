@@ -44,6 +44,12 @@ button,input,textarea { font:inherit; } button { cursor:pointer; }
 .cloud-notice { margin-top:15px; padding:11px 13px; border-radius:3px; font:13px/1.45 Arial,sans-serif; }
 .cloud-notice.success { border:1px solid #a8b997; background:#edf2e7; color:#3f5636; }
 .cloud-notice.error { border:1px solid #cfa9a3; background:#f7e9e6; color:#7a2c28; }
+.workspace-storage-notice { max-width:1500px; margin:0 auto 24px; display:flex; align-items:center; justify-content:space-between; gap:18px; padding:15px 17px; border:1px solid #cfa9a3; border-radius:4px; background:#f7e9e6; color:#6f2926; font:13px/1.5 Arial,sans-serif; }
+.workspace-storage-notice strong { display:block; margin-bottom:3px; font-size:14px; }
+.workspace-storage-notice p { margin:0; }
+.workspace-storage-actions { flex:none; display:flex; flex-wrap:wrap; justify-content:flex-end; gap:7px; }
+.workspace-storage-actions button { min-height:40px; border:1px solid #a65a53; border-radius:3px; background:#fffaf8; color:#7a2c28; padding:8px 11px; font:600 11px Arial,sans-serif; }
+.workspace-storage-actions button:last-child { background:#8d302d; color:#fff; }
 .cloud-library-grid { display:grid; grid-template-columns:minmax(0,1.35fr) minmax(320px,.65fr); gap:16px; margin-top:16px; }
 .cloud-card { padding:18px; border:1px solid #d8cbb8; border-radius:4px; background:#fffdf8; }
 .cloud-card > span,.cloud-card-title span { color:var(--red); font-size:18px; font-weight:600; }
@@ -279,7 +285,7 @@ footer { max-width:1500px; margin:15px auto 0; display:flex; align-items:center;
 .cloud-set-row button { min-height:40px; }
 @media (max-width:1100px) { .header-note { display:none; } }
 @media (max-width:900px) { .workspace,.cloud-library-grid { grid-template-columns:1fr; } .lyrics-panel,.video-panel { padding:24px; } .topbar { flex-wrap:wrap; } .header-actions { width:100%; } }
-@media (max-width:520px) { .app-shell { padding:16px 10px; } .header-actions { display:grid; grid-template-columns:1fr 1fr; } .cloud-trigger { grid-column:1/-1; } .export-pdf { grid-column:1/-1; width:100%; justify-content:center; } .backup-button { width:100%; } .cloud-library { padding:16px 12px; } .cloud-library-heading h2 { font-size:23px; } .cloud-card-title { flex-direction:column; } .admin-columns { grid-template-columns:1fr; } .admin-add { flex-direction:column; } .panel-heading { flex-direction:column; gap:9px; } .panel-heading.compact { align-items:flex-start; } .speed-badge { position:absolute; right:0; top:0; } .text-button { align-self:flex-end; } .study-control-row { align-items:flex-start; gap:10px; } .training-controls { width:100%; } .tools-toggle { min-height:44px; } .cursor-tool { min-height:40px; } .type-controls { flex-direction:column; gap:10px; } .highlighter-bar { gap:8px; padding-top:8px; } .highlighter-bar .tool-button,.highlighter-bar .melisma-tool { min-height:40px; } .annotation-action-controls { max-width:100%; flex-wrap:wrap; } .tool-label { width:auto; } .tools-panel-heading .tool-label { width:auto; } .lyrics { padding-inline:0; } .speed-control { align-items:flex-start; flex-direction:column; } .repeat-options { grid-template-columns:1fr 1fr; } .input-row { flex-direction:column; } .input-row button { padding:13px; } .hymn-list-actions { grid-template-columns:1fr; } }
+@media (max-width:520px) { .app-shell { padding:16px 10px; } .header-actions { display:grid; grid-template-columns:1fr 1fr; } .cloud-trigger { grid-column:1/-1; } .export-pdf { grid-column:1/-1; width:100%; justify-content:center; } .backup-button { width:100%; } .workspace-storage-notice { align-items:stretch; flex-direction:column; } .workspace-storage-actions { justify-content:stretch; } .workspace-storage-actions button { flex:1 1 100%; } .cloud-library { padding:16px 12px; } .cloud-library-heading h2 { font-size:23px; } .cloud-card-title { flex-direction:column; } .admin-columns { grid-template-columns:1fr; } .admin-add { flex-direction:column; } .panel-heading { flex-direction:column; gap:9px; } .panel-heading.compact { align-items:flex-start; } .speed-badge { position:absolute; right:0; top:0; } .text-button { align-self:flex-end; } .study-control-row { align-items:flex-start; gap:10px; } .training-controls { width:100%; } .tools-toggle { min-height:44px; } .cursor-tool { min-height:40px; } .type-controls { flex-direction:column; gap:10px; } .highlighter-bar { gap:8px; padding-top:8px; } .highlighter-bar .tool-button,.highlighter-bar .melisma-tool { min-height:40px; } .annotation-action-controls { max-width:100%; flex-wrap:wrap; } .tool-label { width:auto; } .tools-panel-heading .tool-label { width:auto; } .lyrics { padding-inline:0; } .speed-control { align-items:flex-start; flex-direction:column; } .repeat-options { grid-template-columns:1fr 1fr; } .input-row { flex-direction:column; } .input-row button { padding:13px; } .hymn-list-actions { grid-template-columns:1fr; } }
 @media (max-width:520px) {
   .training-toggle { min-height:42px; }
   .help-dialog,.help-dialog.study-guide { width:calc(100% - 20px); max-height:calc(100vh - 20px); max-height:calc(100dvh - 20px); }
@@ -303,7 +309,7 @@ footer { max-width:1500px; margin:15px auto 0; display:flex; align-items:center;
   .app-shell { min-height:0; padding:0; background:none!important; }
   .reading-controls,.lyrics-transliterated { display:none!important; }
   .lyrics-print-original { display:block; }
-  .shared-notice,.help-dialog,.help-dialog::backdrop,.topbar,.cloud-library,.hymn-strip,.video-panel,.tools-panel,.text-button,.practice-hint,.empty-lyrics,.hymn-list-actions,footer { display:none!important; }
+  .shared-notice,.help-dialog,.help-dialog::backdrop,.topbar,.cloud-library,.workspace-storage-notice,.hymn-strip,.video-panel,.tools-panel,.text-button,.practice-hint,.empty-lyrics,.hymn-list-actions,footer { display:none!important; }
   .empty-hymn-block { display:none!important; }
   .hymn-list { display:block; max-width:none; margin:0; }
   .hymn-block { display:block; margin:0; padding:0; break-before:page; page-break-before:always; break-inside:auto; page-break-inside:auto; }

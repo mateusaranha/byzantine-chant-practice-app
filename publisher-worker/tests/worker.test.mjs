@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { isOwnedHymnPath, normalizeLibraryMetadata, normalizeLogin, slugify, validateHymnSet } from "../src/index.js";
+import { isHymnPath, isOwnedHymnPath, normalizeLibraryMetadata, normalizeLogin, slugify, validateHymnSet } from "../src/index.js";
 
 test("normalizes GitHub logins and collection slugs", () => {
   assert.equal(normalizeLogin(" MateusAranha "), "mateusaranha");
@@ -8,6 +8,11 @@ test("normalizes GitHub logins and collection slugs", () => {
 });
 
 test("limits a publisher to their own hymn directory", () => {
+  assert.equal(isHymnPath("hinos/mateusaranha/dormicao.json"), true);
+  assert.equal(isHymnPath("hinos/outro-autor/dormicao.json"), true);
+  assert.equal(isHymnPath("hinos/../config/approved-users.json"), false);
+  assert.equal(isHymnPath("config/approved-users.json"), false);
+  assert.equal(isHymnPath("hinos/autor/../../package.json"), false);
   assert.equal(isOwnedHymnPath("hinos/mateusaranha/dormicao.json", "MateusAranha"), true);
   assert.equal(isOwnedHymnPath("hinos/outro/dormicao.json", "mateusaranha"), false);
   assert.equal(isOwnedHymnPath("src/App.tsx", "mateusaranha"), false);

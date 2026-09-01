@@ -68,6 +68,68 @@ test("saved and legacy workspaces are restored without replacing their content",
   assert.equal(legacy?.[0].lyrics, "παλαιόν");
 });
 
+test("restoration sanitizes malformed fields and replaces duplicate identifiers", async () => {
+  const { restoreHymns } = await loadHymnState();
+  const restored = restoreHymns({
+    version: 3,
+    hymns: [
+      {
+        id: "duplicated",
+        title: "Primeiro",
+        lyrics: "κείμενον",
+        videoInput: 42,
+        fontSize: 200,
+        lineHeight: 0,
+        highlights: [
+          { start: 0, end: 3, color: "sage" },
+          null,
+          { start: 3, end: 99, color: "rose" },
+          { start: 3, end: 4, color: "unknown" },
+        ],
+        melismas: [
+          { start: 3, end: 4, kind: "simple" },
+          { start: 4, end: 5, kind: "unknown" },
+        ],
+      },
+      { id: "duplicated", title: "Segundo", lyrics: "β" },
+    ],
+  });
+  assert.ok(restored);
+  assert.equal(restored[0].videoInput, "");
+  assert.equal(restored[0].fontSize, 40);
+  assert.equal(restored[0].lineHeight, 1.4);
+  assert.deepEqual(restored[0].highlights, [{ start: 0, end: 3, color: "sage" }]);
+  assert.deepEqual(restored[0].melismas, [{ start: 3, end: 4, kind: "simple" }]);
+  assert.equal(restored[0].id, "duplicated");
+  assert.notEqual(restored[1].id, "duplicated");
+});
+
+test("workspace storage reports unreadable data and never hides write failures", async () => {
+  const { newHymn, readWorkspace, writeWorkspace, WORKSPACE_KEY } = await loadHymnState();
+  const values = new Map();
+  const storage = {
+    getItem: (key) => values.get(key) ?? null,
+    setItem: (key, value) => values.set(key, value),
+  };
+
+  assert.deepEqual(readWorkspace(storage), { status: "empty" });
+  writeWorkspace(storage, [newHymn()]);
+  const ready = readWorkspace(storage);
+  assert.equal(ready.status, "ready");
+  assert.equal(ready.hymns.length, 1);
+
+  values.set(WORKSPACE_KEY, "{arquivo interrompido");
+  assert.deepEqual(readWorkspace(storage), { status: "unreadable", raw: "{arquivo interrompido" });
+  assert.deepEqual(readWorkspace({ getItem: () => { throw new Error("blocked"); } }), {
+    status: "unreadable",
+    raw: null,
+  });
+  assert.throws(
+    () => writeWorkspace({ setItem: () => { throw new Error("quota"); } }, [newHymn()]),
+    /quota/,
+  );
+});
+
 test("hymns can be reordered without changing their content or identifiers", async () => {
   const { moveHymn, restoreHymns } = await loadHymnState();
   const hymns = restoreHymns({
@@ -99,6 +161,8 @@ test("the production build contains the app shell and migration features", async
   const stylesSource = await readFile(new URL("../src/styles.css", import.meta.url), "utf8");
   const librarySource = await readFile(new URL("../src/CloudLibrary.tsx", import.meta.url), "utf8");
   const reorderSource = await readFile(new URL("../src/ReorderHymnsDialog.tsx", import.meta.url), "utf8");
+  const pullRequestWorkflow = await readFile(new URL("../.github/workflows/test.yml", import.meta.url), "utf8");
+  const pagesWorkflow = await readFile(new URL("../.github/workflows/deploy-pages.yml", import.meta.url), "utf8");
   assert.match(html, /Psaltikon/);
   assert.match(html, /manifest\.webmanifest/);
 
@@ -144,6 +208,10 @@ test("the production build contains the app shell and migration features", async
   assert.match(javascript, /Atualizado em/);
   assert.match(javascript, /Solicitar permissão para publicar/);
   assert.match(javascript, /Salvar conjunto no GitHub/);
+  assert.match(javascript, /Salvamento automático pausado/);
+  assert.match(javascript, /Baixar dados não lidos/);
+  assert.match(javascript, /Alterar a letra removerá todas as cores e todos os sublinhados/);
+  assert.match(javascript, /Importar esta cópia de segurança substituirá/);
   assert.match(javascript, /Sobre o Psaltikon/);
   assert.match(javascript, /O Psaltikon é um projeto independente/);
   assert.match(javascript, /não constituem um método formal de ensino nem uma orientação oficial/);
@@ -189,10 +257,17 @@ test("the production build contains the app shell and migration features", async
   assert.match(source, /hymn\.title \|\| "Novo hino"/);
   assert.match(source, /fontSize: hymn\.fontSize/);
   assert.match(source, /function addHymn\(\) \{\s+const hymn = newHymn\(\)/);
-  assert.match(source, /const restored = restoreHymns\(JSON\.parse\(saved\)\)/);
-  assert.match(source, /if \(restored\) setHymns\(restored\)/);
+  assert.match(source, /const stored = readWorkspace\(localStorage\)/);
+  assert.match(source, /if \(stored\.status === "ready"\) setHymns\(stored\.hymns\)/);
+  assert.match(source, /writeWorkspace\(localStorage, hymns\)/);
+  assert.match(source, /has\("psaltikon_token"\)/);
   assert.match(source, /\{ version: 4, exportedAt: new Date\(\)\.toISOString\(\), hymns \}/);
   assert.match(librarySource, /JSON\.stringify\(\{ title: name, slug, hymns \}\)/);
+  assert.match(librarySource, /const published = readPublishedSet\(saved\)/);
+  assert.match(pullRequestWorkflow, /pull_request:/);
+  assert.match(pullRequestWorkflow, /Test interface/);
+  assert.match(pullRequestWorkflow, /Test publisher service/);
+  assert.match(pagesWorkflow, /npm run build && npm run test:unit/);
   assert.doesNotMatch(`${source}\n${stateSource}`, /const FIRST_HYMN|const SAMPLE/);
   assert.doesNotMatch(stateSource, /coloursVisible|melismasVisible|training-hide/);
 

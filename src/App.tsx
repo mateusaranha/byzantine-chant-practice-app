@@ -3,7 +3,14 @@ import CloudLibrary from "./CloudLibrary";
 import HelpDialog from "./HelpDialog";
 import ReorderHymnsDialog from "./ReorderHymnsDialog";
 import type { HelpPage } from "./HelpDialog";
-import { moveHymn, newHymn, normalizeHymn, restoreHymns } from "./hymnState";
+import {
+  moveHymn,
+  newHymn,
+  normalizeHymn,
+  readWorkspace,
+  restoreHymns,
+  writeWorkspace,
+} from "./hymnState";
 import type { Highlight, Hymn, Melisma, RepeatMode } from "./hymnState";
 import { addSharedToWorkspace, loadPublishedSet, parseShareRequest, selectSharedHymns, workspaceUrl } from "./sharedHymns";
 import type { SharedRoute } from "./sharedHymns";
@@ -614,6 +621,10 @@ function HymnWorkspace({
               className="lyrics-editor"
               value={hymn.lyrics}
               onChange={(event) => {
+                if (
+                  (hymn.highlights.length || hymn.melismas.length) &&
+                  !window.confirm("Alterar a letra removerá todas as cores e todos os sublinhados deste hino. Continuar?")
+                ) return;
                 setHistory([]);
                 onChange({
                   ...hymn,
@@ -783,27 +794,48 @@ function HymnWorkspace({
 function LocalWorkspace() {
   const [hymns, setHymns] = useState<Hymn[]>(() => [newHymn()]);
   const [hydrated, setHydrated] = useState(false);
+  const [storageProblem, setStorageProblem] = useState<
+    { kind: "read"; raw: string | null; writeFailed?: boolean } | { kind: "write" } | null
+  >(null);
   const [printRequest, setPrintRequest] = useState(0);
-  const [cloudOpen, setCloudOpen] = useState(false);
+  const [cloudOpen, setCloudOpen] = useState(
+    () => new URLSearchParams(window.location.hash.slice(1)).has("psaltikon_token"),
+  );
   const [help, setHelp] = useState<{ page: HelpPage; trigger: HTMLButtonElement } | null>(null);
   const [reorderTrigger, setReorderTrigger] = useState<HTMLButtonElement | null>(null);
   const backupInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    const saved = localStorage.getItem("psaltikon-practice");
-    if (saved) {
-      try {
-        const restored = restoreHymns(JSON.parse(saved));
-        if (restored) setHymns(restored);
-      } catch {}
-    }
+    const stored = readWorkspace(localStorage);
+    if (stored.status === "ready") setHymns(stored.hymns);
+    if (stored.status === "unreadable") setStorageProblem({ kind: "read", raw: stored.raw });
     setHydrated(true);
   }, []);
 
   useEffect(() => {
-    if (!hydrated) return;
-    localStorage.setItem("psaltikon-practice", JSON.stringify({ version: 3, hymns }));
-  }, [hymns, hydrated]);
+    if (!hydrated || storageProblem) return;
+    try {
+      writeWorkspace(localStorage, hymns);
+    } catch {
+      setStorageProblem({ kind: "write" });
+    }
+  }, [hymns, hydrated, storageProblem]);
+
+  function retryWorkspaceSave() {
+    try {
+      writeWorkspace(localStorage, hymns);
+      setStorageProblem(null);
+    } catch {
+      setStorageProblem((current) => current?.kind === "read"
+        ? { ...current, writeFailed: true }
+        : { kind: "write" });
+    }
+  }
+
+  function replaceUnreadableWorkspace() {
+    if (!window.confirm("Substituir os dados que não puderam ser lidos pelo espaço que está aberto agora? Esta ação não pode ser desfeita.")) return;
+    retryWorkspaceSave();
+  }
 
   function updateHymn(updated: Hymn) {
     setHymns((current) => current.map((hymn) => (hymn.id === updated.id ? updated : hymn)));
@@ -834,12 +866,11 @@ function LocalWorkspace() {
     if (!file) return;
     try {
       const data = JSON.parse(await file.text());
-      if (!Array.isArray(data.hymns) || !data.hymns.length) throw new Error("Cópia de segurança inválida");
-      setHymns(
-        data.hymns.map((hymn: Partial<Hymn>, index: number) =>
-          normalizeHymn(hymn, `hymn-${index}`),
-        ),
-      );
+      const restored = restoreHymns(data);
+      if (!restored) throw new Error("Cópia de segurança inválida");
+      const currentLabel = hymns.length === 1 ? "o hino atual" : `os ${hymns.length} hinos atuais`;
+      if (!window.confirm(`Importar esta cópia de segurança substituirá ${currentLabel}. Continuar?`)) return;
+      setHymns(restored);
       window.alert("Cópia de segurança importada com sucesso.");
     } catch {
       window.alert("Este arquivo não é uma cópia de segurança válida do Psaltikon.");
@@ -887,6 +918,34 @@ function LocalWorkspace() {
           </button>
         </div>
       </header>
+
+      {storageProblem && (
+        <section className="workspace-storage-notice" role="alert" aria-label="Problema no salvamento automático">
+          <div>
+            <strong>Salvamento automático pausado</strong>
+            {storageProblem.kind === "read" ? (
+              <p>
+                O trabalho salvo neste dispositivo não pôde ser lido. Nada foi substituído. Você pode exportar
+                os dados originais antes de substituí-los pelo espaço aberto agora.
+                {storageProblem.writeFailed ? " A tentativa de salvar novamente também falhou." : ""}
+              </p>
+            ) : (
+              <p>
+                Não foi possível salvar as últimas alterações neste dispositivo. Elas continuam nesta página,
+                mas podem ser perdidas ao fechá-la. Exporte uma cópia de segurança antes de sair.
+              </p>
+            )}
+          </div>
+          <div className="workspace-storage-actions">
+            {storageProblem.kind === "read" && storageProblem.raw !== null && (
+              <button onClick={() => downloadUnreadableWorkspace(storageProblem.raw!)}>Baixar dados não lidos</button>
+            )}
+            <button onClick={storageProblem.kind === "read" ? replaceUnreadableWorkspace : retryWorkspaceSave}>
+              {storageProblem.kind === "read" ? "Substituir pelo espaço atual" : "Tentar salvar novamente"}
+            </button>
+          </div>
+        </section>
+      )}
 
       {PUBLISHER_API_URL && cloudOpen && (
         <CloudLibrary
@@ -969,6 +1028,16 @@ function downloadBackup(hymns: Hymn[]) {
   const link = document.createElement("a");
   link.href = url;
   link.download = `psaltikon-copia-seguranca-${new Date().toISOString().slice(0, 10)}.json`;
+  link.click();
+  URL.revokeObjectURL(url);
+}
+
+function downloadUnreadableWorkspace(raw: string) {
+  const blob = new Blob([raw], { type: "text/plain;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `psaltikon-dados-nao-lidos-${new Date().toISOString().slice(0, 10)}.txt`;
   link.click();
   URL.revokeObjectURL(url);
 }

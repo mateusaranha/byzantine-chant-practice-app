@@ -2,6 +2,11 @@ export type Highlight = { start: number; end: number; color: string };
 export type Melisma = { start: number; end: number; kind: "simple" | "complex" };
 export type RepeatMode = "off" | "once" | "three" | "continuous";
 
+export const WORKSPACE_KEY = "psaltikon-practice";
+
+const HIGHLIGHT_COLOURS = new Set(["sage", "sky", "rose", "wheat", "lavender"]);
+const REPEAT_MODES = new Set<RepeatMode>(["off", "once", "three", "continuous"]);
+
 export type Hymn = {
   id: string;
   title: string;
@@ -35,24 +40,78 @@ export function newHymn(): Hymn {
 }
 
 export function normalizeHymn(value: Partial<Hymn>, fallbackId: string): Hymn {
+  const lyrics = typeof value.lyrics === "string" ? value.lyrics : "";
   const savedSpeed =
     typeof value.targetSpeed === "number" && Number.isFinite(value.targetSpeed)
       ? value.targetSpeed
       : 1;
+  const savedFontSize =
+    typeof value.fontSize === "number" && Number.isFinite(value.fontSize)
+      ? value.fontSize
+      : 27;
+  const savedLineHeight =
+    typeof value.lineHeight === "number" && Number.isFinite(value.lineHeight)
+      ? value.lineHeight
+      : 1.9;
+  const highlights = Array.isArray(value.highlights)
+    ? value.highlights.filter(
+        (mark): mark is Highlight =>
+          Boolean(
+            mark &&
+              Number.isInteger(mark.start) &&
+              Number.isInteger(mark.end) &&
+              mark.start >= 0 &&
+              mark.end > mark.start &&
+              mark.end <= lyrics.length &&
+              HIGHLIGHT_COLOURS.has(mark.color),
+          ),
+      ).map(({ start, end, color }) => ({ start, end, color }))
+    : [];
+  const melismas = Array.isArray(value.melismas)
+    ? value.melismas.filter(
+        (mark): mark is Melisma =>
+          Boolean(
+            mark &&
+              Number.isInteger(mark.start) &&
+              Number.isInteger(mark.end) &&
+              mark.start >= 0 &&
+              mark.end > mark.start &&
+              mark.end <= lyrics.length &&
+              (mark.kind === "simple" || mark.kind === "complex"),
+          ),
+      ).map(({ start, end, kind }) => ({ start, end, kind }))
+    : [];
+  const id = typeof value.id === "string" && value.id.trim() && value.id.length <= 200
+    ? value.id
+    : fallbackId;
   return {
-    ...newHymn(),
-    ...value,
-    id: typeof value.id === "string" ? value.id : fallbackId,
+    id,
     title: typeof value.title === "string" ? value.title : "Novo hino",
     mode: typeof value.mode === "string" ? value.mode : "",
-    lyrics: typeof value.lyrics === "string" ? value.lyrics : "",
-    highlights: Array.isArray(value.highlights) ? value.highlights : [],
-    melismas: Array.isArray(value.melismas) ? value.melismas : [],
+    lyrics,
+    videoInput: typeof value.videoInput === "string" ? value.videoInput : "",
+    videoId: typeof value.videoId === "string" ? value.videoId : "",
     targetSpeed: Math.min(2, Math.max(0.25, Math.round(savedSpeed * 20) / 20)),
-    repeatMode: ["off", "once", "three", "continuous"].includes(value.repeatMode || "")
-      ? (value.repeatMode as RepeatMode)
-      : "off",
+    repeatMode: REPEAT_MODES.has(value.repeatMode as RepeatMode) ? (value.repeatMode as RepeatMode) : "off",
+    fontSize: Math.min(40, Math.max(20, Math.round(savedFontSize))),
+    lineHeight: Math.min(2.4, Math.max(1.4, Math.round(savedLineHeight * 10) / 10)),
+    highlights,
+    melismas,
   };
+}
+
+function uniqueHymnIds(hymns: Hymn[]): Hymn[] {
+  const ids = new Set<string>();
+  return hymns.map((hymn) => {
+    if (!ids.has(hymn.id)) {
+      ids.add(hymn.id);
+      return hymn;
+    }
+    let id = newHymn().id;
+    while (ids.has(id)) id = newHymn().id;
+    ids.add(id);
+    return { ...hymn, id };
+  });
 }
 
 export function moveHymn(hymns: Hymn[], id: string, direction: -1 | 1): Hymn[] {
@@ -72,7 +131,7 @@ export function restoreHymns(value: unknown): Hymn[] | null {
       (hymn): hymn is Partial<Hymn> => Boolean(hymn && typeof hymn === "object"),
     );
     if (!savedHymns.length) return null;
-    return savedHymns.map((hymn, index) => normalizeHymn(hymn, `hymn-${index}`));
+    return uniqueHymnIds(savedHymns.map((hymn, index) => normalizeHymn(hymn, `hymn-${index}`)));
   }
 
   const isLegacyHymn = ["lyrics", "videoInput", "videoId", "highlights"].some(
@@ -91,4 +150,29 @@ export function restoreHymns(value: unknown): Hymn[] | null {
       "primary-hymn",
     ),
   ];
+}
+
+export type WorkspaceReadResult =
+  | { status: "empty" }
+  | { status: "ready"; hymns: Hymn[] }
+  | { status: "unreadable"; raw: string | null };
+
+export function readWorkspace(storage: Pick<Storage, "getItem">): WorkspaceReadResult {
+  let raw: string | null;
+  try {
+    raw = storage.getItem(WORKSPACE_KEY);
+  } catch {
+    return { status: "unreadable", raw: null };
+  }
+  if (raw === null) return { status: "empty" };
+  try {
+    const hymns = restoreHymns(JSON.parse(raw));
+    return hymns ? { status: "ready", hymns } : { status: "unreadable", raw };
+  } catch {
+    return { status: "unreadable", raw };
+  }
+}
+
+export function writeWorkspace(storage: Pick<Storage, "setItem">, hymns: Hymn[]) {
+  storage.setItem(WORKSPACE_KEY, JSON.stringify({ version: 3, hymns }));
 }
