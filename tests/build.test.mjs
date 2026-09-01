@@ -139,7 +139,7 @@ test("the production build contains the app shell and migration features", async
   assert.match(source, /aria-expanded=\{toolsOpen\}/);
   assert.match(source, /useState<Hymn\[\]>\(\(\) => \[newHymn\(\)\]\)/);
   assert.match(source, /hymn\.title \|\| "Novo hino"/);
-  assert.match(source, /fontSize: transliterated \? hymn\.fontSize \* 1\.04 : hymn\.fontSize/);
+  assert.match(source, /fontSize: hymn\.fontSize/);
   assert.match(source, /function addHymn\(\) \{\s+const hymn = newHymn\(\)/);
   assert.match(source, /const restored = restoreHymns\(JSON\.parse\(saved\)\)/);
   assert.match(source, /if \(restored\) setHymns\(restored\)/);

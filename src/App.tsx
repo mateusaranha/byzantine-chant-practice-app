@@ -625,7 +625,7 @@ function HymnWorkspace({
                 lang={transliterated ? "grc-Latn" : "grc"}
                 aria-describedby={transliterated ? `${lyricsId}-note` : undefined}
                 style={{
-                  fontSize: transliterated ? hymn.fontSize * 1.04 : hymn.fontSize,
+                  fontSize: hymn.fontSize,
                   lineHeight: hymn.lineHeight,
                 }}
                 onMouseUp={markSelection}
