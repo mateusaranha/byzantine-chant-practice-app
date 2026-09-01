@@ -124,6 +124,7 @@ test("the production build contains the app shell and migration features", async
   assert.match(stylesSource, /font-family:"Noto Serif Transliteration"/);
   assert.match(stylesSource, /noto-serif-latin-regular\.woff/);
   assert.match(stylesSource, /\.lyrics\.lyrics-transliterated/);
+  assert.match(stylesSource, /font-weight:500; font-synthesis:weight; letter-spacing:-\.015em/);
   assert.match(stylesheet, /@media \(width<=520px\)/);
   assert.match(stylesheet, /max-height:calc\(100d?vh\s*-\s*20px\)/);
   assert.match(source, /useState<ActiveTool>\(null\)/);
@@ -138,6 +139,7 @@ test("the production build contains the app shell and migration features", async
   assert.match(source, /aria-expanded=\{toolsOpen\}/);
   assert.match(source, /useState<Hymn\[\]>\(\(\) => \[newHymn\(\)\]\)/);
   assert.match(source, /hymn\.title \|\| "Novo hino"/);
+  assert.match(source, /fontSize: transliterated \? hymn\.fontSize \* 1\.04 : hymn\.fontSize/);
   assert.match(source, /function addHymn\(\) \{\s+const hymn = newHymn\(\)/);
   assert.match(source, /const restored = restoreHymns\(JSON\.parse\(saved\)\)/);
   assert.match(source, /if \(restored\) setHymns\(restored\)/);
