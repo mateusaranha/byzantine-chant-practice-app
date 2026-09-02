@@ -79,12 +79,21 @@ export default function StudyReferences() {
         </p>
       </HelpSection>
 
-      <HelpSection title="Nikos Karachalis: o caráter das Evlogitárias da Ressurreição">
+      <HelpSection title="Nikolaos Karachalis: interpretação e coordenação do coro">
         <p>
-          O canal de <a href="https://www.youtube.com/@Protopsaltis" target="_blank" rel="noopener noreferrer" aria-label="Canal de Nikos Karachalis (abre em nova aba)" >Nikos Karachalis — <span lang="el">Νίκος Καραχάλης</span></a> é dedicado às suas próprias execuções. Segundo a descrição, ele nasceu em Esparta, estudou música bizantina e europeia e teologia, foi aluno de diferentes mestres — entre eles Georgios Kakoulidis —, cantou em diversas igrejas de Atenas e participou ou dirigiu coros de psaltai.
+          O canal de <a href="https://www.youtube.com/@Protopsaltis" target="_blank" rel="noopener noreferrer" aria-label="Canal de Nikolaos Karachalis (abre em nova aba)" >Nikolaos Karachalis — <span lang="el">Νικόλαος Καραχάλης</span></a>, identificado no YouTube também pelo nome abreviado Nikos Karachalis, é dedicado às suas próprias execuções. Segundo a descrição, ele nasceu em Esparta, estudou música bizantina e europeia e teologia, foi aluno de diferentes mestres — entre eles Georgios Kakoulidis —, cantou em diversas igrejas de Atenas e participou ou dirigiu coros de psaltai.
         </p>
         <p>
-          Uma gravação que se destacou durante a exploração foi a das <a href="https://www.youtube.com/watch?v=6le4t17FYh0" target="_blank" rel="noopener noreferrer" aria-label="Evlogitárias da Ressurreição por Nikos Karachalis (abre em nova aba)" >Evlogitárias da Ressurreição</a>, cantadas nas Matinas dos domingos. Nessa execução, o primeiro modo plagal assume de maneira especialmente marcante um caráter recolhido e misterioso. A impressão é difícil de reduzir a uma característica técnica isolada, mas foi justamente ela que fez a gravação permanecer na memória.
+          Uma gravação que se destacou durante a exploração foi a das <a href="https://www.youtube.com/watch?v=6le4t17FYh0" target="_blank" rel="noopener noreferrer" aria-label="Evlogitárias da Ressurreição por Nikolaos Karachalis (abre em nova aba)" >Evlogitárias da Ressurreição</a>, cantadas nas Matinas dos domingos. Nessa execução, o primeiro modo plagal assume de maneira especialmente marcante um caráter recolhido e misterioso. A impressão é difícil de reduzir a uma característica técnica isolada, mas foi justamente ela que fez a gravação permanecer na memória.
+        </p>
+        <p>
+          Outra gravação especialmente interessante é a de <a href="https://www.youtube.com/watch?v=MijzkvxD_K8" target="_blank" rel="noopener noreferrer" aria-label="Agni Parthene por Nikolaos Karachalis (abre em nova aba)" ><span lang="el">Ἁγνὴ Παρθένε Δέσποινα</span> (<em>Agni Parthene</em>)</a>, registrada, segundo a descrição do vídeo, em 11 de setembro de 2016, na Igreja do Profeta Elias, em Drosia, Ática. Além da beleza da execução, ela permite observar Karachalis coordenando o grupo a partir da posição de protopsaltis.
+        </p>
+        <p>
+          Logo no início, outros cantores começam a acompanhá-lo em uma estrofe, e ele sinaliza para que parem. A execução parece reservar a ele as estrofes e ao grupo o refrão — <span lang="el">«Χαῖρε Νύμφη Ἀνύμφευτε»</span>. O mesmo tipo de sinal aparece novamente quando outro psaltis, de rasso, entra em uma estrofe. Mais adiante, a coordenação muda: Karachalis passa a convidar os demais a cantar junto e indica maior intensidade.
+        </p>
+        <p>
+          A cena torna visível que a função do protopsaltis envolve também combinar, em tempo real, quem entra, quem espera e como o grupo participa. Essa dimensão encontra um paralelo direto na experiência paroquial: durante os ofícios, os cantores frequentemente recorrem a olhares e gestos breves para comunicar “eu canto esta parte”, “entrem agora” ou “cantemos juntos”. A gravação é, assim, uma referência não apenas de interpretação, mas também de condução prática do canto.
         </p>
       </HelpSection>
 
