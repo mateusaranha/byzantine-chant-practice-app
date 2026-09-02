@@ -1065,7 +1065,7 @@ function LocalWorkspace() {
             aria-haspopup="dialog"
             aria-expanded={help?.page === "guide"}
           >
-            Guia de estudo
+            Ajuda e guia
           </button>
           <button
             className="about-link"
@@ -1223,7 +1223,14 @@ function SharedWorkspace({ route }: { route: SharedRoute }) {
       </div>
       <footer>
         <span>Ἄσωμεν τῷ Κυρίῳ · Um espaço tranquilo para a prática diária</span>
-        <button className="about-link" onClick={(event) => setHelp({ page: "guide", trigger: event.currentTarget })} aria-haspopup="dialog">Guia de estudo</button>
+        <button
+          className="about-link"
+          onClick={(event) => setHelp({ page: "guide", trigger: event.currentTarget })}
+          aria-haspopup="dialog"
+          aria-expanded={help?.page === "guide"}
+        >
+          Ajuda e guia
+        </button>
       </footer>
       {help && <HelpDialog page={help.page} trigger={help.trigger} onClose={() => setHelp(null)} />}
       {pdfTrigger && (
