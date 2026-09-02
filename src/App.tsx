@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import CloudLibrary from "./CloudLibrary";
 import HelpDialog from "./HelpDialog";
+import PdfExportDialog, { DEFAULT_PDF_EXPORT_SETTINGS } from "./PdfExportDialog";
 import ReorderHymnsDialog from "./ReorderHymnsDialog";
 import type { HelpPage } from "./HelpDialog";
+import type { PdfExportSettings } from "./PdfExportDialog";
 import {
   moveHymn,
   newHymn,
@@ -136,11 +138,46 @@ function LyricsSegments({ segments }: { segments: ReturnType<typeof projectTrans
   ));
 }
 
+function PrintPresentation({
+  hymn,
+  segments,
+  transliterated,
+  label,
+}: {
+  hymn: Hymn;
+  segments: ReturnType<typeof projectTransliteration>;
+  transliterated: boolean;
+  label?: string;
+}) {
+  return (
+    <article className="panel lyrics-panel print-presentation">
+      <div className="panel-heading">
+        <div className="hymn-heading-fields">
+          <p className="section-label">Κείμενον</p>
+          {label && <p className="print-script-label">{label}</p>}
+          <h2>{hymn.title || "Novo hino"}</h2>
+          {hymn.mode && <p className="mode">{hymn.mode}</p>}
+        </div>
+      </div>
+      <div
+        className={`lyrics ${transliterated ? "lyrics-transliterated" : ""}`}
+        lang={transliterated ? "grc-Latn" : "grc"}
+      >
+        <LyricsSegments segments={segments} />
+      </div>
+      {hymn.targetSpeed !== 1 && (
+        <p className="print-meta">Velocidade de treino: {hymn.targetSpeed.toFixed(2)}×</p>
+      )}
+    </article>
+  );
+}
+
 function HymnWorkspace({
   hymn,
   index,
   canDelete,
   printRequest,
+  printSettings,
   onChange,
   onDelete,
   onOpenGuide,
@@ -149,6 +186,7 @@ function HymnWorkspace({
   index: number;
   canDelete: boolean;
   printRequest: number;
+  printSettings: PdfExportSettings;
   onChange: (hymn: Hymn) => void;
   onDelete: () => void;
   onOpenGuide: (trigger: HTMLButtonElement) => void;
@@ -338,7 +376,13 @@ function HymnWorkspace({
 
   return (
     <section
-      className={`hymn-block ${hymn.lyrics ? "printable-hymn" : "empty-hymn-block"}`}
+      className={[
+        "hymn-block",
+        hymn.lyrics ? "printable-hymn" : "empty-hymn-block",
+        `print-text-${printSettings.textMode}`,
+        printSettings.includeColours ? "" : "print-hide-colours",
+        printSettings.includeMelismas ? "" : "print-hide-melismas",
+      ].filter(Boolean).join(" ")}
       id={hymn.id}
       aria-label={`Hino ${index + 1}`}
     >
@@ -358,7 +402,7 @@ function HymnWorkspace({
         )}
       </div>
 
-      <div className="workspace">
+      <div className="workspace screen-workspace">
         <article className="panel lyrics-panel">
           <div className="panel-heading">
             <div className="hymn-heading-fields">
@@ -449,7 +493,7 @@ function HymnWorkspace({
                       {" "}<strong>ch</strong> representa o χ grego, não o “ch” de “chuva”.
                       É um auxílio de leitura; continue usando a gravação como referência.
                     </p>
-                    <p>A conversão é automática. O PDF continua em grego, com todas as marcações.</p>
+                    <p>Ao exportar o PDF, você pode escolher o grego, a transliteração ou as duas leituras.</p>
                   </details>
                 </>
               )}
@@ -662,11 +706,6 @@ function HymnWorkspace({
               >
                 <LyricsSegments segments={transliterated ? transliteratedSegments : segments} />
               </div>
-              {transliterated && (
-                <div className="lyrics lyrics-print-original" lang="grc">
-                  <LyricsSegments segments={segments} />
-                </div>
-              )}
             </>
           ) : (
             <button className="empty-lyrics" onClick={() => setEditing(true)}>
@@ -787,6 +826,26 @@ function HymnWorkspace({
           </p>
         </aside>
       </div>
+      {hymn.lyrics && printSettings.textMode !== "screen" && (
+        <div className="print-presentations" aria-hidden="true">
+          {(printSettings.textMode === "greek" || printSettings.textMode === "both") && (
+            <PrintPresentation
+              hymn={hymn}
+              segments={segments}
+              transliterated={false}
+              label={printSettings.textMode === "both" ? "Grego" : undefined}
+            />
+          )}
+          {(printSettings.textMode === "transliterated" || printSettings.textMode === "both") && (
+            <PrintPresentation
+              hymn={hymn}
+              segments={transliteratedSegments}
+              transliterated
+              label={printSettings.textMode === "both" ? "Transliteração" : undefined}
+            />
+          )}
+        </div>
+      )}
     </section>
   );
 }
@@ -798,6 +857,8 @@ function LocalWorkspace() {
     { kind: "read"; raw: string | null; writeFailed?: boolean } | { kind: "write" } | null
   >(null);
   const [printRequest, setPrintRequest] = useState(0);
+  const [printSettings, setPrintSettings] = useState<PdfExportSettings>(DEFAULT_PDF_EXPORT_SETTINGS);
+  const [pdfTrigger, setPdfTrigger] = useState<HTMLButtonElement | null>(null);
   const [cloudOpen, setCloudOpen] = useState(
     () => new URLSearchParams(window.location.hash.slice(1)).has("psaltikon_token"),
   );
@@ -849,8 +910,10 @@ function LocalWorkspace() {
     }, 40);
   }
 
-  function exportLyricsPdf() {
+  function exportLyricsPdf(settings: PdfExportSettings) {
+    setPrintSettings(settings);
     setPrintRequest((current) => current + 1);
+    setPdfTrigger(null);
     window.setTimeout(async () => {
       await document.fonts.ready;
       window.print();
@@ -914,8 +977,9 @@ function LocalWorkspace() {
           />
           <button
             className="export-pdf"
-            onClick={exportLyricsPdf}
+            onClick={(event) => setPdfTrigger(event.currentTarget)}
             title="PDF em formato vertical para leitura confortável no celular"
+            aria-haspopup="dialog"
           >
             <span aria-hidden="true">↓</span>
             Exportar PDF para celular
@@ -971,6 +1035,7 @@ function LocalWorkspace() {
             index={index}
             canDelete={index > 0}
             printRequest={printRequest}
+            printSettings={printSettings}
             onChange={updateHymn}
             onOpenGuide={(trigger) => setHelp({ page: "guide", trigger })}
             onDelete={() => setHymns((current) => current.filter((item) => item.id !== hymn.id))}
@@ -1014,6 +1079,13 @@ function LocalWorkspace() {
       </footer>
 
       {help && <HelpDialog page={help.page} trigger={help.trigger} onClose={() => setHelp(null)} />}
+      {pdfTrigger && (
+        <PdfExportDialog
+          trigger={pdfTrigger}
+          onClose={() => setPdfTrigger(null)}
+          onExport={exportLyricsPdf}
+        />
+      )}
       {reorderTrigger && (
         <ReorderHymnsDialog
           hymns={hymns}
@@ -1054,6 +1126,8 @@ function SharedWorkspace({ route }: { route: SharedRoute }) {
   const [copying, setCopying] = useState(false);
   const [attempt, setAttempt] = useState(0);
   const [printRequest, setPrintRequest] = useState(0);
+  const [printSettings, setPrintSettings] = useState<PdfExportSettings>(DEFAULT_PDF_EXPORT_SETTINGS);
+  const [pdfTrigger, setPdfTrigger] = useState<HTMLButtonElement | null>(null);
   const [help, setHelp] = useState<{ page: HelpPage; trigger: HTMLButtonElement } | null>(null);
   const localUrl = workspaceUrl(window.location.href);
 
@@ -1096,8 +1170,10 @@ function SharedWorkspace({ route }: { route: SharedRoute }) {
     }
   }
 
-  function exportPdf() {
+  function exportPdf(settings: PdfExportSettings) {
+    setPrintSettings(settings);
     setPrintRequest((current) => current + 1);
+    setPdfTrigger(null);
     window.setTimeout(async () => { await document.fonts.ready; window.print(); }, 180);
   }
 
@@ -1111,7 +1187,13 @@ function SharedWorkspace({ route }: { route: SharedRoute }) {
           <a className="backup-button" href={localUrl}>Meu espaço</a>
           {!!hymns.length && <>
             <button className="backup-button" onClick={() => downloadBackup(hymns)}>Exportar cópia de segurança</button>
-            <button className="export-pdf" onClick={exportPdf}>Exportar PDF para celular</button>
+            <button
+              className="export-pdf"
+              onClick={(event) => setPdfTrigger(event.currentTarget)}
+              aria-haspopup="dialog"
+            >
+              Exportar PDF para celular
+            </button>
           </>}
         </div>
       </header>
@@ -1132,7 +1214,8 @@ function SharedWorkspace({ route }: { route: SharedRoute }) {
       </section>
       <div className="hymn-list">
         {hymns.map((hymn, index) => (
-          <HymnWorkspace key={hymn.id} hymn={hymn} index={index} canDelete={false} printRequest={printRequest}
+          <HymnWorkspace key={hymn.id} hymn={hymn} index={index} canDelete={false}
+            printRequest={printRequest} printSettings={printSettings}
             onChange={(updated) => setHymns((current) => current.map((item) => item.id === updated.id ? updated : item))}
             onDelete={() => {}}
             onOpenGuide={(trigger) => setHelp({ page: "guide", trigger })} />
@@ -1143,6 +1226,13 @@ function SharedWorkspace({ route }: { route: SharedRoute }) {
         <button className="about-link" onClick={(event) => setHelp({ page: "guide", trigger: event.currentTarget })} aria-haspopup="dialog">Guia de estudo</button>
       </footer>
       {help && <HelpDialog page={help.page} trigger={help.trigger} onClose={() => setHelp(null)} />}
+      {pdfTrigger && (
+        <PdfExportDialog
+          trigger={pdfTrigger}
+          onClose={() => setPdfTrigger(null)}
+          onExport={exportPdf}
+        />
+      )}
     </main>
   );
 }
