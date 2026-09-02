@@ -7,7 +7,7 @@ const source = await readFile(new URL("../src/transliteration.ts", import.meta.u
 const javascript = ts.transpileModule(source, {
   compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 },
 }).outputText;
-const { transliterateGreek, projectTransliteration } = await import(
+const { transliterateGreek, projectTransliteration, sourceRangeForTransliteration } = await import(
   `data:text/javascript;base64,${Buffer.from(javascript).toString("base64")}`
 );
 const convert = (greek) => transliterateGreek(greek).map((unit) => unit.text).join("");
@@ -81,6 +81,44 @@ test("marks on expanded and contracted letters appear on their full Latin equiva
     { text: " ", color: undefined, melisma: undefined },
     { text: "ps", color: undefined, melisma: "complex" },
   ]);
+});
+
+test("Latin selections map back to complete Greek source units", () => {
+  const units = transliterateGreek("δαι ψ"); // dh, e, space, ps
+  assert.deepEqual(sourceRangeForTransliteration(units, 1, 2), { start: 0, end: 1 },
+    "selecting only h expands to the whole δ");
+  assert.deepEqual(sourceRangeForTransliteration(units, 2, 3), { start: 1, end: 3 },
+    "a contracted e expands to the whole αι");
+  assert.deepEqual(sourceRangeForTransliteration(units, 5, 6), { start: 4, end: 5 },
+    "selecting only s expands to the whole ψ");
+  assert.deepEqual(sourceRangeForTransliteration(units, 1, 5), { start: 0, end: 5 });
+});
+
+test("selection boundaries do not include adjacent transliteration units", () => {
+  const units = transliterateGreek("χαι"); // ch, e
+  assert.deepEqual(sourceRangeForTransliteration(units, 0, 2), { start: 0, end: 1 });
+  assert.deepEqual(sourceRangeForTransliteration(units, 2, 3), { start: 1, end: 3 });
+});
+
+test("selection mapping follows UTF-16 offsets across emoji, accents and line breaks", () => {
+  const input = "😀 χ\nαί";
+  const units = transliterateGreek(input);
+  const output = units.map((unit) => unit.text).join("");
+  const h = output.indexOf("h");
+  const accentedE = output.indexOf("é");
+  assert.deepEqual(sourceRangeForTransliteration(units, h, h + 1), { start: 3, end: 4 });
+  assert.deepEqual(sourceRangeForTransliteration(units, accentedE, accentedE + 1), {
+    start: input.indexOf("α"), end: input.length,
+  });
+  assert.deepEqual(sourceRangeForTransliteration(units, 0, 2), { start: 0, end: 2 });
+});
+
+test("invalid or empty Latin selections are rejected", () => {
+  const units = transliterateGreek("αι");
+  for (const range of [[0, 0], [1, 0], [-1, 1], [0, 2], [0.5, 1], [0, Number.NaN]]) {
+    assert.equal(sourceRangeForTransliteration(units, ...range), null);
+  }
+  assert.equal(sourceRangeForTransliteration([], 0, 1), null);
 });
 
 test("conflicting marks on an indivisible pair use first-mark precedence without changing data", () => {
