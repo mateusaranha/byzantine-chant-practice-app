@@ -186,6 +186,7 @@ test("the production build contains the app shell and migration features", async
   const stateSource = await readFile(new URL("../src/hymnState.ts", import.meta.url), "utf8");
   const stylesSource = await readFile(new URL("../src/styles.css", import.meta.url), "utf8");
   const librarySource = await readFile(new URL("../src/CloudLibrary.tsx", import.meta.url), "utf8");
+  const helpSource = await readFile(new URL("../src/HelpDialog.tsx", import.meta.url), "utf8");
   const reorderSource = await readFile(new URL("../src/ReorderHymnsDialog.tsx", import.meta.url), "utf8");
   const pullRequestWorkflow = await readFile(new URL("../.github/workflows/test.yml", import.meta.url), "utf8");
   const pagesWorkflow = await readFile(new URL("../.github/workflows/deploy-pages.yml", import.meta.url), "utf8");
@@ -247,6 +248,24 @@ test("the production build contains the app shell and migration features", async
   assert.match(javascript, /As cores não têm significados próprios/);
   assert.match(javascript, /1,1×, 1,15× ou 1,25×/);
   assert.match(javascript, /Não há uma proporção fixa nem uma velocidade necessariamente correta/);
+  assert.match(javascript, /5\. Salvar e recuperar seu trabalho/);
+  assert.match(javascript, /6\. Usar a biblioteca e compartilhar conjuntos/);
+  assert.match(javascript, /não publica nem compartilha os hinos/);
+  assert.match(javascript, /a importação substitui todos os hinos/);
+  assert.match(javascript, /Abrir.*pede confirmação e substitui o espaço atual/);
+  assert.match(javascript, /Adicionar ao meu espaço/);
+  const practiceGuideIndex = helpSource.indexOf('title="4. Praticar o hino"');
+  const storageGuideIndex = helpSource.indexOf('title="5. Salvar e recuperar seu trabalho"');
+  const libraryGuideIndex = helpSource.indexOf('title="6. Usar a biblioteca e compartilhar conjuntos"');
+  assert.ok(
+    practiceGuideIndex >= 0 && practiceGuideIndex < storageGuideIndex && storageGuideIndex < libraryGuideIndex,
+    "operational guidance must follow the four study sections",
+  );
+  assert.match(helpSource, /salvos automaticamente neste navegador/);
+  assert.match(helpSource, /ele não sincroniza o trabalho com outros aparelhos/);
+  assert.match(helpSource, /Alterações feitas depois apenas no seu espaço não aparecem na versão pública/);
+  assert.match(helpSource, /área temporária, sem alterar seu espaço/);
+  assert.match(helpSource, /cópia local independente aos seus hinos/);
   assert.match(javascript, /Nikolaos Karachalis: interpretação e coordenação do coro/);
   assert.match(javascript, /MijzkvxD_K8/);
   assert.match(javascript, /Χαῖρε Νύμφη Ἀνύμφευτε/);

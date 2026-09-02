@@ -897,7 +897,11 @@ function LocalWorkspace() {
           <button className="backup-button" onClick={exportBackup} title="Salvar todos os hinos e marcações em um arquivo">
             Exportar cópia de segurança
           </button>
-          <button className="backup-button" onClick={() => backupInputRef.current?.click()}>
+          <button
+            className="backup-button"
+            onClick={() => backupInputRef.current?.click()}
+            title="Substituir o espaço atual por uma cópia de segurança do Psaltikon"
+          >
             Importar cópia de segurança
           </button>
           <input
