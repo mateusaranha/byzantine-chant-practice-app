@@ -16,6 +16,7 @@ O Psaltikon é um auxílio intermediário de escuta e memorização. Ele não su
 - tamanho e espaçamento do texto ajustáveis;
 - backup em JSON e PDF para celular em grego, transliteração ou nas duas leituras, com marcações opcionais;
 - biblioteca pública, publicação por usuários aprovados e links de compartilhamento;
+- central de ajuda com guia de estudo, orientações de uso e referências;
 - interface responsiva e instalável como PWA.
 
 YouTube, login e biblioteca dependem de conexão. O restante do espaço de estudo funciona localmente e o shell do aplicativo fica disponível offline depois de carregado.
@@ -61,6 +62,9 @@ Cada publicação aceita de 1 a 80 hinos e até 1,5 MB de dados de hinos. Os JSO
 
 ```text
 src/App.tsx                     espaço de trabalho e persistência local
+src/HelpDialog.tsx              navegação da central de ajuda
+src/StudyGuide.tsx              preparação e prática dos hinos
+src/AppGuide.tsx                backup, PDF, biblioteca e compartilhamento
 src/CloudLibrary.tsx            biblioteca e administração
 src/ShareDialog.tsx             compartilhamento de conjuntos e hinos
 src/sharedHymns.ts              leitura pública e cópias compartilhadas

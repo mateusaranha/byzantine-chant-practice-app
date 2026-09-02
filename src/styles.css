@@ -252,8 +252,11 @@ footer { max-width:1500px; margin:15px auto 0; display:flex; align-items:center;
 .help-section > summary:focus-visible { outline:2px solid var(--red); outline-offset:2px; border-radius:3px; }
 .help-section[open] > summary { border-bottom:1px solid #d8cbb8; background:#f1e7d7; }
 .help-section-copy { padding:16px; }
-.help-navigation { flex:none; padding:4px 28px; border-bottom:1px solid #ded2c1; font:14px/1.4 Arial,sans-serif; }
-.help-navigation .help-link { min-height:44px; text-align:left; }
+.help-navigation { flex:none; display:flex; flex-wrap:wrap; gap:6px; padding:8px 28px; border-bottom:1px solid #ded2c1; font:600 13px/1.4 Arial,sans-serif; }
+.help-navigation-button { min-height:40px; padding:8px 12px; border:1px solid transparent; border-radius:3px; background:transparent; color:#675b50; font:inherit; }
+.help-navigation-button:hover { border-color:#cdbfae; background:#fffdf8; color:var(--red); }
+.help-navigation-button[aria-current="page"] { border-color:rgba(180,139,71,.72); background:#f1e7d7; color:var(--red); }
+.help-navigation-button:focus-visible { outline:2px solid var(--red); outline-offset:2px; }
 .reorder-dialog { width:min(720px,calc(100% - 40px)); }
 .reorder-copy { padding-top:20px; }
 .reorder-intro { color:#675b50; }
@@ -310,6 +313,7 @@ footer { max-width:1500px; margin:15px auto 0; display:flex; align-items:center;
   .help-dialog,.help-dialog.study-guide { width:calc(100% - 20px); max-height:calc(100vh - 20px); max-height:calc(100dvh - 20px); }
   .help-heading { gap:10px; padding:14px 16px; }
   .help-navigation { padding-inline:16px; }
+  .help-navigation-button { flex:1 1 140px; }
   .help-copy { padding:18px 20px 24px; }
   .help-copy h3 { font-size:18px; }
   .help-section > summary h3 { font-size:16px; }

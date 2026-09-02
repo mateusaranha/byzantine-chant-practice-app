@@ -187,6 +187,8 @@ test("the production build contains the app shell and migration features", async
   const stylesSource = await readFile(new URL("../src/styles.css", import.meta.url), "utf8");
   const librarySource = await readFile(new URL("../src/CloudLibrary.tsx", import.meta.url), "utf8");
   const helpSource = await readFile(new URL("../src/HelpDialog.tsx", import.meta.url), "utf8");
+  const studyGuideSource = await readFile(new URL("../src/StudyGuide.tsx", import.meta.url), "utf8");
+  const appGuideSource = await readFile(new URL("../src/AppGuide.tsx", import.meta.url), "utf8");
   const pdfDialogSource = await readFile(new URL("../src/PdfExportDialog.tsx", import.meta.url), "utf8");
   const reorderSource = await readFile(new URL("../src/ReorderHymnsDialog.tsx", import.meta.url), "utf8");
   const pullRequestWorkflow = await readFile(new URL("../.github/workflows/test.yml", import.meta.url), "utf8");
@@ -261,29 +263,51 @@ test("the production build contains the app shell and migration features", async
   assert.match(javascript, /O Psaltikon é um projeto independente/);
   assert.match(javascript, /não constituem um método formal de ensino nem uma orientação oficial/);
   assert.match(javascript, /não substituem o aprendizado da notação musical bizantina/);
+  assert.match(javascript, /Ajuda e guia/);
   assert.match(javascript, /Guia de estudo/);
+  assert.match(javascript, /Como usar o Psaltikon/);
+  assert.match(javascript, /Referências para explorar/);
   assert.match(javascript, /último dos hinos cantados após a Pequena Entrada/);
   assert.match(javascript, /As cores não têm significados próprios/);
   assert.match(javascript, /1,1×, 1,15× ou 1,25×/);
   assert.match(javascript, /Não há uma proporção fixa nem uma velocidade necessariamente correta/);
-  assert.match(javascript, /5\. Salvar e recuperar seu trabalho/);
-  assert.match(javascript, /6\. Usar a biblioteca e compartilhar conjuntos/);
+  assert.match(javascript, /Salvar e recuperar seu trabalho/);
+  assert.match(javascript, /Exportar PDF para leitura ou impressão/);
+  assert.match(javascript, /Usar a biblioteca e compartilhar conjuntos/);
+  assert.doesNotMatch(javascript, /5\. Salvar e recuperar seu trabalho/);
+  assert.doesNotMatch(javascript, /6\. Usar a biblioteca e compartilhar conjuntos/);
   assert.match(javascript, /não publica nem compartilha os hinos/);
   assert.match(javascript, /a importação substitui todos os hinos/);
   assert.match(javascript, /Abrir.*pede confirmação e substitui o espaço atual/);
   assert.match(javascript, /Adicionar ao meu espaço/);
-  const practiceGuideIndex = helpSource.indexOf('title="4. Praticar o hino"');
-  const storageGuideIndex = helpSource.indexOf('title="5. Salvar e recuperar seu trabalho"');
-  const libraryGuideIndex = helpSource.indexOf('title="6. Usar a biblioteca e compartilhar conjuntos"');
+  assert.match(helpSource, /type HelpArea = "study" \| "app" \| "references"/);
+  assert.match(helpSource, /aria-label="Áreas de ajuda"/);
+  assert.match(helpSource, /aria-current=\{area === item\.id \? "page" : undefined\}/);
+  assert.match(helpSource, /scrollPositions\.current\[area\]/);
+  assert.match(helpSource, /area === "study" \? <StudyGuide \/>/);
+  assert.match(helpSource, /area === "app" \? <AppGuide \/>/);
+  assert.match(studyGuideSource, /title="4\. Praticar o hino"/);
+  assert.doesNotMatch(studyGuideSource, /Salvar e recuperar seu trabalho/);
+  assert.doesNotMatch(studyGuideSource, /Usar a biblioteca e compartilhar conjuntos/);
+  const storageGuideIndex = appGuideSource.indexOf('title="Salvar e recuperar seu trabalho"');
+  const pdfGuideIndex = appGuideSource.indexOf('title="Exportar PDF para leitura ou impressão"');
+  const libraryGuideIndex = appGuideSource.indexOf('title="Usar a biblioteca e compartilhar conjuntos"');
   assert.ok(
-    practiceGuideIndex >= 0 && practiceGuideIndex < storageGuideIndex && storageGuideIndex < libraryGuideIndex,
-    "operational guidance must follow the four study sections",
+    storageGuideIndex >= 0 && storageGuideIndex < pdfGuideIndex && pdfGuideIndex < libraryGuideIndex,
+    "operational guidance must keep backup, PDF and library in a clear order",
   );
-  assert.match(helpSource, /salvos automaticamente neste navegador/);
-  assert.match(helpSource, /ele não sincroniza o trabalho com outros aparelhos/);
-  assert.match(helpSource, /Alterações feitas depois apenas no seu espaço não aparecem na versão pública/);
-  assert.match(helpSource, /área temporária, sem alterar seu espaço/);
-  assert.match(helpSource, /cópia local independente aos seus hinos/);
+  assert.match(appGuideSource, /salvos automaticamente neste navegador/);
+  assert.match(appGuideSource, /ele não sincroniza o trabalho com outros aparelhos/);
+  assert.match(appGuideSource, /não substitui uma cópia de segurança/);
+  assert.match(appGuideSource, /não pode ser importado para recuperar seu espaço/);
+  assert.match(appGuideSource, /Como está na tela/);
+  assert.match(appGuideSource, /Grego e transliterado/);
+  assert.match(appGuideSource, /não dependem de as marcações estarem visíveis ou ocultas no modo de treino/);
+  assert.match(appGuideSource, /salvar como PDF ou imprimir/);
+  assert.match(appGuideSource, /conjunto compartilhado/);
+  assert.match(appGuideSource, /Alterações feitas depois apenas no seu espaço não aparecem na versão pública/);
+  assert.match(appGuideSource, /área temporária, sem alterar seu espaço/);
+  assert.match(appGuideSource, /cópia local independente aos seus hinos/);
   assert.match(javascript, /Nikolaos Karachalis: interpretação e coordenação do coro/);
   assert.match(javascript, /MijzkvxD_K8/);
   assert.match(javascript, /Χαῖρε Νύμφη Ἀνύμφευτε/);
@@ -292,6 +316,7 @@ test("the production build contains the app shell and migration features", async
   assert.match(javascript, /canal de Savvas Iliadis/);
   assert.match(javascript, /k8H7q4v926s/);
   assert.match(stylesheet, /\.help-dialog/);
+  assert.match(stylesSource, /\.help-navigation-button\[aria-current="page"\]/);
   assert.match(stylesheet, /\.pdf-export-dialog/);
   assert.match(stylesSource, /@media print \{[\s\S]*\.print-presentation \+ \.print-presentation \{ break-before:page; page-break-before:always; \}/);
   assert.match(stylesSource, /@media print \{[\s\S]*\.print-hide-colours \.lyrics span\[class\*="mark-"\]/);
