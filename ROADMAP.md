@@ -45,7 +45,6 @@ Itens úteis, ainda sem prioridade fechada:
 - recuperação simplificada de versões anteriores;
 - correção manual opcional da transliteração;
 - exemplo clicável que demonstre texto, vídeo, cores e sublinhados;
-- orientações mais diretas de salvamento e recuperação no guia;
 - biblioteca curada com festas e exemplos completos;
 - agrupamento de versões de uma mesma obra, depois de definir o que constitui uma versão;
 - verificar em uso real se o botão de velocidade muda de posição quando **Restaurar** aparece.

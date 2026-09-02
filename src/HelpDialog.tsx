@@ -166,6 +166,30 @@ function StudyGuide() {
           Com o tempo, o progresso pode aparecer na familiaridade com os movimentos melódicos e na maior facilidade para aprender outros hinos. Não é preciso esperar uma execução perfeita para reconhecê-lo.
         </p>
       </HelpSection>
+
+      <HelpSection title="5. Salvar e recuperar seu trabalho">
+        <p>
+          Os hinos, as gravações escolhidas, as marcações e os ajustes são salvos automaticamente neste navegador. Não é preciso apertar um botão a cada alteração. Esse salvamento pertence a este navegador e dispositivo: ele não sincroniza o trabalho com outros aparelhos e pode ser perdido se os dados do site forem apagados.
+        </p>
+        <p>
+          <strong>Exportar cópia de segurança</strong> baixa um arquivo com todos os hinos do seu espaço. Guarde-o em um local conhecido para recuperar o trabalho, levá-lo a outro dispositivo ou se proteger antes de uma mudança importante. A exportação não precisa de login e não publica nem compartilha os hinos.
+        </p>
+        <p>
+          <strong>Importar cópia de segurança</strong> recupera um arquivo exportado pelo Psaltikon. Depois de validar o arquivo e pedir confirmação, a importação substitui todos os hinos que estão no espaço atual. Se quiser conservar o trabalho atual, exporte uma cópia dele antes de importar outra.
+        </p>
+      </HelpSection>
+
+      <HelpSection title="6. Usar a biblioteca e compartilhar conjuntos">
+        <p>
+          A <strong>Biblioteca online</strong> reúne conjuntos públicos salvos no GitHub. Qualquer pessoa pode consultá-los e abri-los sem entrar com uma conta; somente pessoas autorizadas podem publicar. Na biblioteca, <strong>Abrir</strong> pede confirmação e substitui o espaço atual pelo conjunto escolhido. Exporte antes uma cópia de segurança se houver hinos que você queira preservar.
+        </p>
+        <p>
+          Publicar é diferente de fazer uma cópia de segurança: a publicação torna públicos todos os hinos que estão abertos naquele momento. Alterações feitas depois apenas no seu espaço não aparecem na versão pública até que o conjunto seja salvo novamente na biblioteca.
+        </p>
+        <p>
+          Um link de compartilhamento abre a versão publicada mais recente em uma área temporária, sem alterar seu espaço. Os ajustes feitos ali são descartados ao sair ou atualizar a página. <strong>Adicionar ao meu espaço</strong> acrescenta uma cópia local independente aos seus hinos; essa cópia pode ser modificada sem alterar a publicação original.
+        </p>
+      </HelpSection>
     </>
   );
 }
