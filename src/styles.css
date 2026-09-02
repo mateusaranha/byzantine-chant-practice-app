@@ -123,7 +123,7 @@ button,input,textarea { font:inherit; } button { cursor:pointer; }
 .transliteration-help > summary:focus-visible,.text-button:focus-visible { outline:2px solid var(--red); outline-offset:2px; }
 .transliteration-help p { margin:6px 0; }
 .lyrics.lyrics-transliterated { overflow-wrap:anywhere; font-family:"Noto Serif Transliteration",var(--font-noto-serif),"Noto Serif","Palatino Linotype",serif; font-weight:450; font-synthesis:weight; letter-spacing:-.015em; }
-.lyrics-print-original { display:none; }
+.print-presentations { display:none; }
 .tools-panel { position:relative; z-index:2; padding-top:10px; }
 .tools-panel-heading { min-height:32px; display:flex; align-items:center; justify-content:space-between; gap:12px; }
 .tools-panel.collapsed { padding-bottom:2px; border-bottom:1px solid #ded3c3; }
@@ -273,6 +273,25 @@ footer { max-width:1500px; margin:15px auto 0; display:flex; align-items:center;
 .share-form select,.share-form input { width:100%; min-width:0; min-height:44px; padding:10px; border:1px solid #c4b5a2; border-radius:3px; background:#fffdf8; color:var(--ink); font:14px Arial,sans-serif; }
 .share-dialog .cloud-primary,.share-dialog .cloud-secondary { min-height:44px; }
 .share-form :focus-visible,.share-dialog button:focus-visible,.shared-notice button:focus-visible,.cloud-set-row button:focus-visible,.library-sort-controls button:focus-visible { outline:2px solid var(--red); outline-offset:3px; }
+.pdf-export-dialog { width:min(680px,calc(100% - 40px)); }
+.pdf-export-form { display:grid; gap:18px; }
+.pdf-export-form > p { margin:0; }
+.pdf-choice-group { display:grid; gap:8px; margin:0; padding:0; border:0; }
+.pdf-choice-group legend { margin-bottom:8px; color:var(--red); font:600 17px/1.4 Arial,sans-serif; }
+.pdf-option { min-height:54px; display:flex; align-items:flex-start; gap:12px; padding:10px 12px; border:1px solid #d8cbb8; border-radius:3px; background:#fffdf8; cursor:pointer; }
+.pdf-option:hover { border-color:#b99b72; background:#f7efe2; }
+.pdf-option:has(input:checked) { border-color:var(--red); background:#f7ede5; }
+.pdf-option input { flex:none; width:18px; height:18px; margin:3px 0 0; accent-color:var(--red); }
+.pdf-option span { min-width:0; }
+.pdf-option strong,.pdf-option small { display:block; }
+.pdf-option strong { color:var(--ink); font:600 14px/1.4 Arial,sans-serif; }
+.pdf-option small { margin-top:3px; color:var(--muted); font:13px/1.45 Arial,sans-serif; }
+.pdf-annotation-options { grid-template-columns:1fr 1fr; }
+.pdf-annotation-options legend { grid-column:1/-1; }
+.pdf-export-note { color:var(--muted); font-size:13px; }
+.pdf-dialog-actions { display:flex; justify-content:flex-end; gap:10px; }
+.pdf-dialog-actions button { min-height:44px; }
+.pdf-export-form input:focus-visible,.pdf-dialog-actions button:focus-visible { outline:2px solid var(--red); outline-offset:3px; }
 .shared-notice { max-width:1500px; margin:0 auto 24px; padding:20px; border:1px solid #c4b5a2; border-radius:4px; background:var(--paper); color:#5f554d; font:14px/1.6 Arial,sans-serif; overflow-wrap:anywhere; }
 .shared-notice h2 { margin:6px 0 10px; color:var(--red); font-size:22px; }
 .shared-notice p { margin:0 0 10px; }
@@ -295,6 +314,10 @@ footer { max-width:1500px; margin:15px auto 0; display:flex; align-items:center;
   .help-copy h3 { font-size:18px; }
   .help-section > summary h3 { font-size:16px; }
   .about-link,.help-link { min-height:44px; }
+  .pdf-annotation-options { grid-template-columns:1fr; }
+  .pdf-annotation-options legend { grid-column:auto; }
+  .pdf-dialog-actions { flex-direction:column-reverse; }
+  .pdf-dialog-actions button { width:100%; }
 }
 @media (prefers-reduced-motion:reduce) { * { scroll-behavior:auto!important; transition:none!important; } }
 
@@ -307,8 +330,10 @@ footer { max-width:1500px; margin:15px auto 0; display:flex; align-items:center;
   html,body { background:#fff!important; color:#231d19!important; }
   body { -webkit-print-color-adjust:exact!important; print-color-adjust:exact!important; }
   .app-shell { min-height:0; padding:0; background:none!important; }
-  .reading-controls,.lyrics-transliterated { display:none!important; }
-  .lyrics-print-original { display:block; }
+  .reading-controls { display:none!important; }
+  .print-text-greek .screen-workspace,.print-text-transliterated .screen-workspace,.print-text-both .screen-workspace { display:none!important; }
+  .print-presentations { display:block; }
+  .print-presentation + .print-presentation { break-before:page; page-break-before:always; }
   .shared-notice,.help-dialog,.help-dialog::backdrop,.topbar,.cloud-library,.workspace-storage-notice,.hymn-strip,.video-panel,.tools-panel,.text-button,.practice-hint,.empty-lyrics,.hymn-list-actions,footer { display:none!important; }
   .empty-hymn-block { display:none!important; }
   .hymn-list { display:block; max-width:none; margin:0; }
@@ -330,5 +355,8 @@ footer { max-width:1500px; margin:15px auto 0; display:flex; align-items:center;
   .melisma-simple,.melisma-complex { position:relative; z-index:1; text-decoration-color:#3f3731!important; }
   .melisma-simple { text-underline-offset:.17em!important; }
   .melisma-complex { text-underline-offset:.11em!important; text-decoration-thickness:1.25px!important; }
+  .print-hide-colours .lyrics span[class*="mark-"] { background:transparent!important; padding:0!important; }
+  .print-hide-melismas .melisma-simple,.print-hide-melismas .melisma-complex { text-decoration:none!important; }
+  .print-script-label { margin:0 0 1mm; color:#6f6257!important; font:600 7.5pt/1.25 Arial,sans-serif; letter-spacing:.08em; text-transform:uppercase; }
   .print-meta { display:block; margin:3mm 0 0; color:#74665a; text-align:right; font:7.5pt Arial,sans-serif; break-before:avoid; page-break-before:avoid; }
 }

@@ -14,7 +14,7 @@ O Psaltikon é um auxílio intermediário de escuta e memorização. Ele não su
 - controles de treino para ocultar temporariamente cores ou sublinhados;
 - YouTube, velocidade-alvo e repetição 1x, 3x ou contínua;
 - tamanho e espaçamento do texto ajustáveis;
-- backup em JSON e impressão/PDF para celular;
+- backup em JSON e PDF para celular em grego, transliteração ou nas duas leituras, com marcações opcionais;
 - biblioteca pública, publicação por usuários aprovados e links de compartilhamento;
 - interface responsiva e instalável como PWA.
 
