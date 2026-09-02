@@ -16,7 +16,11 @@ import {
 import type { Highlight, Hymn, Melisma, RepeatMode } from "./hymnState";
 import { addSharedToWorkspace, loadPublishedSet, parseShareRequest, selectSharedHymns, workspaceUrl } from "./sharedHymns";
 import type { SharedRoute } from "./sharedHymns";
-import { projectTransliteration, transliterateGreek } from "./transliteration";
+import {
+  projectTransliteration,
+  sourceRangeForTransliteration,
+  transliterateGreek,
+} from "./transliteration";
 
 type ActiveTool =
   | "sage"
@@ -289,7 +293,6 @@ function HymnWorkspace({
   }
 
   function markSelection() {
-    if (transliterated) return;
     if (!activeTool) return;
     if (!coloursVisible && (isColourTool(activeTool) || activeTool === "eraser")) return;
     if (!melismasVisible && (isMelismaTool(activeTool) || activeTool === "eraser")) return;
@@ -304,9 +307,14 @@ function HymnWorkspace({
     const beforeEnd = range.cloneRange();
     beforeEnd.selectNodeContents(container);
     beforeEnd.setEnd(range.endContainer, range.endOffset);
-    const start = beforeStart.toString().length;
-    const end = beforeEnd.toString().length;
+    let start = beforeStart.toString().length;
+    let end = beforeEnd.toString().length;
     if (start === end) return;
+    if (transliterated) {
+      const sourceRange = sourceRangeForTransliteration(transliteration, start, end);
+      if (!sourceRange) return;
+      ({ start, end } = sourceRange);
+    }
 
     remember();
     let highlights = hymn.highlights;
@@ -484,7 +492,8 @@ function HymnWorkspace({
               {transliterated && (
                 <>
                   <p className="transliteration-note" id={`${lyricsId}-note`}>
-                    Para editar o texto ou as marcações, volte para Grego.
+                    As marcações feitas aqui também são aplicadas ao grego. Para alterar a letra ou fazer
+                    ajustes mais precisos, use Editar grego.
                   </p>
                   <details className="transliteration-help">
                     <summary>Como ler a transliteração</summary>
@@ -492,6 +501,10 @@ function HymnWorkspace({
                       Convenção baseada no livrinho da paróquia: <strong>y</strong> soa como <strong>i</strong>;
                       {" "}<strong>ch</strong> representa o χ grego, não o “ch” de “chuva”.
                       É um auxílio de leitura; continue usando a gravação como referência.
+                    </p>
+                    <p>
+                      Quando uma ou mais letras latinas formam uma unidade do grego, a seleção se ajusta à
+                      unidade inteira. Por exemplo, selecionar apenas o “h” de <strong>ch</strong> marca todo o χ.
                     </p>
                     <p>Ao exportar o PDF, você pode escolher o grego, a transliteração ou as duas leituras.</p>
                   </details>
@@ -544,7 +557,7 @@ function HymnWorkspace({
                   </label>
                 </div>
 
-                {!editing && !transliterated && (
+                {!editing && (
                   <div
                     className="highlighter-bar"
                     role="toolbar"

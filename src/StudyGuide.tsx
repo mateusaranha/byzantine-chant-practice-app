@@ -48,6 +48,11 @@ export default function StudyGuide() {
           Nesta proposta de uso, as marcações são feitas a partir da gravação escolhida. Diferentes interpretações de um mesmo tropário podem levar a divisões diferentes do texto.
         </p>
         <p>
+          As mesmas ferramentas podem ser usadas na leitura grega ou transliterada. Na transliteração,
+          a marcação continua ligada ao trecho grego correspondente; quando não há correspondência exata
+          entre as letras, a seleção se ajusta à unidade inteira.
+        </p>
+        <p>
           As cores destacam trechos percebidos pela escuta como uma unidade: algo com início, desenvolvimento e conclusão. Reconhecê-los visualmente ajuda a recordar como cantá-los. Essa divisão nasce da escuta e da experimentação, sem pretender ser uma análise formal da estrutura musical.
         </p>
         <p>

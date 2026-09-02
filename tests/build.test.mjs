@@ -308,6 +308,8 @@ test("the production build contains the app shell and migration features", async
   assert.match(appGuideSource, /Alterações feitas depois apenas no seu espaço não aparecem na versão pública/);
   assert.match(appGuideSource, /área temporária, sem alterar seu espaço/);
   assert.match(appGuideSource, /cópia local independente aos seus hinos/);
+  assert.match(studyGuideSource, /As mesmas ferramentas podem ser usadas na leitura grega ou transliterada/);
+  assert.match(studyGuideSource, /a seleção se ajusta à unidade inteira/);
   assert.match(javascript, /Nikolaos Karachalis: interpretação e coordenação do coro/);
   assert.match(javascript, /MijzkvxD_K8/);
   assert.match(javascript, /Χαῖρε Νύμφη Ἀνύμφευτε/);
@@ -340,6 +342,11 @@ test("the production build contains the app shell and migration features", async
   assert.match(stylesheet, /max-height:calc\(100d?vh\s*-\s*20px\)/);
   assert.match(source, /useState<ActiveTool>\(null\)/);
   assert.match(source, /if \(!activeTool\) return;/);
+  assert.doesNotMatch(source, /if \(transliterated\) return;/);
+  assert.match(source, /sourceRangeForTransliteration\(transliteration, start, end\)/);
+  assert.match(source, /As marcações feitas aqui também são aplicadas ao grego/);
+  assert.match(source, /selecionar apenas o “h” de <strong>ch<\/strong> marca todo o χ/);
+  assert.match(source, /\{!editing && \(/);
   assert.match(source, /if \(!coloursVisible && \(isColourTool\(activeTool\) \|\| activeTool === "eraser"\)\) return;/);
   assert.match(source, /if \(!melismasVisible && \(isMelismaTool\(activeTool\) \|\| activeTool === "eraser"\)\) return;/);
   assert.match(source, /if \(toolsOpen\) setActiveTool\(null\)/);

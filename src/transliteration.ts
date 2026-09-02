@@ -123,6 +123,36 @@ export function transliterateGreek(source: string): TransliterationUnit[] {
   return units;
 }
 
+/**
+ * Converts a selection in the rendered transliteration back to its source
+ * Greek offsets. A partial selection of an indivisible conversion expands to
+ * the complete source unit (for example, the h in ch selects the whole χ).
+ */
+export function sourceRangeForTransliteration(
+  units: TransliterationUnit[], start: number, end: number,
+): { start: number; end: number } | null {
+  const renderedLength = units.reduce((length, unit) => length + unit.text.length, 0);
+  if (!Number.isInteger(start) || !Number.isInteger(end)
+    || start < 0 || end <= start || end > renderedLength) return null;
+
+  let renderedOffset = 0;
+  let sourceStart: number | undefined;
+  let sourceEnd: number | undefined;
+  for (const unit of units) {
+    const unitStart = renderedOffset;
+    const unitEnd = unitStart + unit.text.length;
+    if (start < unitEnd && end > unitStart) {
+      sourceStart ??= unit.start;
+      sourceEnd = unit.end;
+    }
+    renderedOffset = unitEnd;
+  }
+
+  return sourceStart === undefined || sourceEnd === undefined
+    ? null
+    : { start: sourceStart, end: sourceEnd };
+}
+
 export function projectTransliteration(
   units: TransliterationUnit[], highlights: Highlight[], melismas: Melisma[],
 ) {

@@ -31,7 +31,7 @@ YouTube, login e biblioteca dependem de conexão. O restante do espaço de estud
 
 ### Leitura transliterada
 
-**Transliterado** converte a letra grega no navegador segundo a convenção aprovada a partir do livrinho da paróquia. A opção é temporária: somente o grego é salvo, e voltar para **Grego** recupera o texto e todas as marcações originais. Cores e sublinhados são projetados sobre a leitura latina sem modificar seus intervalos.
+**Transliterado** converte a letra grega no navegador segundo a convenção aprovada a partir do livrinho da paróquia. A opção é temporária: somente o grego é salvo, e voltar para **Grego** recupera o texto e todas as marcações originais. Cores e sublinhados podem ser criados ou editados em qualquer uma das leituras, mas continuam armazenados como intervalos do texto grego. Quando a seleção atinge apenas parte de uma unidade indivisível — como o “h” de `ch` — ela é ajustada à unidade inteira.
 
 A transliteração é um auxílio de leitura, não uma transcrição fonética completa. Pronúncia e particularidades da execução devem ser acompanhadas pela gravação; correções manuais ficam para uma etapa futura.
 
