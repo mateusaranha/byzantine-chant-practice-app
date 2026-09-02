@@ -247,7 +247,9 @@ test("the production build contains the app shell and migration features", async
   assert.match(javascript, /As cores não têm significados próprios/);
   assert.match(javascript, /1,1×, 1,15× ou 1,25×/);
   assert.match(javascript, /Não há uma proporção fixa nem uma velocidade necessariamente correta/);
-  assert.match(javascript, /Nikos Karachalis: o caráter das Evlogitárias da Ressurreição/);
+  assert.match(javascript, /Nikolaos Karachalis: interpretação e coordenação do coro/);
+  assert.match(javascript, /MijzkvxD_K8/);
+  assert.match(javascript, /Χαῖρε Νύμφη Ἀνύμφευτε/);
   assert.match(javascript, /Canais com notação e material para a prática/);
   assert.match(javascript, /Georgios Kakoulidis/);
   assert.match(javascript, /canal de Savvas Iliadis/);
