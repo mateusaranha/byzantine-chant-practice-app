@@ -6,7 +6,7 @@
     "name": "Mateus Aranha Martins",
     "avatarUrl": "https://avatars.githubusercontent.com/u/91752012?v=4"
   },
-  "updatedAt": "2026-09-02T22:56:37.503Z",
+  "updatedAt": "2026-09-04T23:26:26.109Z",
   "hymns": [
     {
       "id": "shared-hymn-0",
@@ -117,63 +117,16 @@
     {
       "id": "shared-hymn-1",
       "title": "Θεοτοκίον. 06/09 Matinas",
-      "mode": "Ἦχος δʹ. Mode 4.",
-      "lyrics": "Τὸ ἀπʼ αἰῶνος ἀπόκρυφον, καὶ Ἀγγέλοις ἄγνωστον μυστήριον, διὰ σού Θεοτόκε τοῖς ἐπὶ γῆς πεφανέρωται, Θεὸς ἐν ἀσυγχύτῳ ἑνώσει σαρκούμενος, καὶ Σταυρὸν ἑκουσίως ὑπὲρ ἡμῶν καταδεξάμενος· διʼ οὗ ἀναστήσας τὸν πρωτόπλαστον, ἔσωσεν ἐκ θανάτου τὰς ψυχὰς ἡμῶν.",
-      "videoInput": "https://www.youtube.com/watch?v=ACGVdxenYSw",
-      "videoId": "ACGVdxenYSw",
+      "mode": "Modo Plagal 1º",
+      "lyrics": "Χαίρε πύλη Κυρίου η αδιόδευτος, χαίρε\nτείχος και σκέπη των προστρεχόντων εις\nσε, χαίρε αχείμαστε λιμήν και\nΑπειρόγαμε, η τεκούσα εν σαρκί τον\nΠοιητήν σου και Θεόν, πρεσβεύουσα μη\nελλείπης, υπέρ των ανυμνούντων, και\nπροσκυνούντων τον Τόκον σου.",
+      "videoInput": "https://www.youtube.com/watch?v=d-yKCAYfF8U",
+      "videoId": "d-yKCAYfF8U",
       "targetSpeed": 1,
       "repeatMode": "off",
       "fontSize": 27,
       "lineHeight": 1.9,
-      "highlights": [
-        {
-          "start": 0,
-          "end": 23,
-          "color": "sage"
-        },
-        {
-          "start": 25,
-          "end": 56,
-          "color": "sky"
-        },
-        {
-          "start": 58,
-          "end": 98,
-          "color": "rose"
-        },
-        {
-          "start": 100,
-          "end": 135,
-          "color": "sage"
-        },
-        {
-          "start": 137,
-          "end": 181,
-          "color": "sky"
-        },
-        {
-          "start": 183,
-          "end": 216,
-          "color": "rose"
-        },
-        {
-          "start": 218,
-          "end": 250,
-          "color": "sage"
-        }
-      ],
-      "melismas": [
-        {
-          "start": 208,
-          "end": 209,
-          "kind": "complex"
-        },
-        {
-          "start": 248,
-          "end": 249,
-          "kind": "complex"
-        }
-      ]
+      "highlights": [],
+      "melismas": []
     },
     {
       "id": "shared-hymn-2",
