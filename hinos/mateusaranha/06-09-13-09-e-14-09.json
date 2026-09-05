@@ -6,7 +6,7 @@
     "name": "Mateus Aranha Martins",
     "avatarUrl": "https://avatars.githubusercontent.com/u/91752012?v=4"
   },
-  "updatedAt": "2026-09-04T23:26:26.109Z",
+  "updatedAt": "2026-09-05T21:39:58.817Z",
   "hymns": [
     {
       "id": "shared-hymn-0",
@@ -121,6 +121,20 @@
       "lyrics": "Χαίρε πύλη Κυρίου η αδιόδευτος, χαίρε\nτείχος και σκέπη των προστρεχόντων εις\nσε, χαίρε αχείμαστε λιμήν και\nΑπειρόγαμε, η τεκούσα εν σαρκί τον\nΠοιητήν σου και Θεόν, πρεσβεύουσα μη\nελλείπης, υπέρ των ανυμνούντων, και\nπροσκυνούντων τον Τόκον σου.",
       "videoInput": "https://www.youtube.com/watch?v=d-yKCAYfF8U",
       "videoId": "d-yKCAYfF8U",
+      "targetSpeed": 1,
+      "repeatMode": "off",
+      "fontSize": 27,
+      "lineHeight": 1.9,
+      "highlights": [],
+      "melismas": []
+    },
+    {
+      "id": "hymn-1788635406901-infuk",
+      "title": "Θεοτοκίον.",
+      "mode": "Ἦχος δʹ. Mode 4.",
+      "lyrics": "Τὸ ἀπʼ αἰῶνος ἀπόκρυφον, καὶ Ἀγγέλοις ἄγνωστον μυστήριον, διὰ σού Θεοτόκε τοῖς ἐπὶ γῆς πεφανέρωται, Θεὸς ἐν ἀσυγχύτῳ ἑνώσει σαρκούμενος, καὶ Σταυρὸν ἑκουσίως ὑπὲρ ἡμῶν καταδεξάμενος· διʼ οὗ ἀναστήσας τὸν πρωτόπλαστον, ἔσωσεν ἐκ θανάτου τὰς ψυχὰς ἡμῶν.",
+      "videoInput": "https://www.youtube.com/watch?v=ACGVdxenYSw",
+      "videoId": "ACGVdxenYSw",
       "targetSpeed": 1,
       "repeatMode": "off",
       "fontSize": 27,
@@ -340,13 +354,64 @@
       "title": "Τῶν Ἐγκαινίων. 13/09 Matinas e Pequena entrada",
       "mode": "Ἦχος δʹ. Mode 4.",
       "lyrics": "Ὡς τοῦ ἄνω στερεώματος τὴν εὐπρέπειαν καὶ τὴν κάτω συναπέδειξας ὡραιότητα, τοῦ ἁγίου σκηνώματος τῆς δόξης σου Κύριε. Κραταίωσον αὐτὸ εἰς αἰῶνα αἰῶνος, καὶ πρόσδεξαι ἡμῶν, τὰς ἐν αὐτῷ ἀπαύστως προσαγομένας σοι δεήσεις, πρεσβείαις τῆς Θεοτόκου, ἡ πάντων ζωὴ καὶ ἀνάστασις.",
-      "videoInput": "",
-      "videoId": "",
+      "videoInput": "https://www.youtube.com/watch?v=tr_H3RDyZBE",
+      "videoId": "tr_H3RDyZBE",
       "targetSpeed": 1,
       "repeatMode": "off",
       "fontSize": 27,
       "lineHeight": 1.9,
-      "highlights": [],
+      "highlights": [
+        {
+          "start": 0,
+          "end": 21,
+          "color": "sage"
+        },
+        {
+          "start": 21,
+          "end": 38,
+          "color": "sage"
+        },
+        {
+          "start": 38,
+          "end": 73,
+          "color": "sky"
+        },
+        {
+          "start": 75,
+          "end": 95,
+          "color": "rose"
+        },
+        {
+          "start": 96,
+          "end": 115,
+          "color": "sage"
+        },
+        {
+          "start": 117,
+          "end": 149,
+          "color": "sky"
+        },
+        {
+          "start": 151,
+          "end": 191,
+          "color": "rose"
+        },
+        {
+          "start": 192,
+          "end": 216,
+          "color": "sage"
+        },
+        {
+          "start": 218,
+          "end": 241,
+          "color": "sky"
+        },
+        {
+          "start": 243,
+          "end": 270,
+          "color": "rose"
+        }
+      ],
       "melismas": []
     },
     {
@@ -354,13 +419,44 @@
       "title": "Προεόρτιον. 13/09 Matinas e Pequena entrada",
       "mode": "Ἦχος βʹ. Mode 2.",
       "lyrics": "Τὸν ζωοποιὸν Σταυρὸν τῆς σῆς ἀγαθότητος, ὃν ἐδωρήσω ἡμῖν τοῖς ἀναξίοις Κύριε, σοὶ προσάγομεν εἰς πρεσβείαν. Σῷζε τοὺς βασιλεῖς καὶ τὴν πόλιν σου, εἰρηνεύοντας διὰ τῆς Θεοτόκου, μόνε φιλάνθρωπε.",
-      "videoInput": "",
-      "videoId": "",
+      "videoInput": "https://www.youtube.com/watch?v=nzOaI_Fc3ug",
+      "videoId": "nzOaI_Fc3ug",
       "targetSpeed": 1,
       "repeatMode": "off",
       "fontSize": 27,
       "lineHeight": 1.9,
-      "highlights": [],
+      "highlights": [
+        {
+          "start": 0,
+          "end": 39,
+          "color": "sage"
+        },
+        {
+          "start": 41,
+          "end": 76,
+          "color": "sky"
+        },
+        {
+          "start": 78,
+          "end": 106,
+          "color": "rose"
+        },
+        {
+          "start": 108,
+          "end": 144,
+          "color": "sage"
+        },
+        {
+          "start": 146,
+          "end": 175,
+          "color": "sky"
+        },
+        {
+          "start": 177,
+          "end": 193,
+          "color": "rose"
+        }
+      ],
       "melismas": []
     },
     {
@@ -368,13 +464,49 @@
       "title": "Κοντάκιον. 13/09 Pequena entrada",
       "mode": "Ἦχος δʹ. Mode 4.",
       "lyrics": "Οὐρανὸς πολύφωτος ἡ Ἐκκλησία, ἀνεδείχθη ἅπαντας, φωταγωγοῦσα τοὺς πιστούς· ἐν ᾧ ἑστῶτες κραυγάζομεν· Τοῦτον τὸν οἶκον στερέωσον Κύριε.",
-      "videoInput": "",
-      "videoId": "",
+      "videoInput": "https://www.youtube.com/watch?v=dH1U2aIGgIg",
+      "videoId": "dH1U2aIGgIg",
       "targetSpeed": 1,
       "repeatMode": "off",
       "fontSize": 27,
       "lineHeight": 1.9,
-      "highlights": [],
+      "highlights": [
+        {
+          "start": 0,
+          "end": 17,
+          "color": "sage"
+        },
+        {
+          "start": 18,
+          "end": 28,
+          "color": "sky"
+        },
+        {
+          "start": 30,
+          "end": 47,
+          "color": "rose"
+        },
+        {
+          "start": 49,
+          "end": 73,
+          "color": "sage"
+        },
+        {
+          "start": 75,
+          "end": 99,
+          "color": "sky"
+        },
+        {
+          "start": 101,
+          "end": 117,
+          "color": "rose"
+        },
+        {
+          "start": 118,
+          "end": 134,
+          "color": "sage"
+        }
+      ],
       "melismas": []
     },
     {
@@ -395,14 +527,70 @@
       "id": "shared-hymn-8",
       "title": "Κοντάκιον. 14/09 Pequena entrada",
       "mode": "Ἦχος δʹ. Mode 4.",
-      "lyrics": "Ὁὑψωθεὶς ἐν τῷ Σταυρῷ ἑκουσίως, τῇ ἐπωνύμῳ σου καινῇ πολιτείᾳ, τοὺς οἰκτιρμούς σου δώρησαι, Χριστὲ ὁ Θεός. Εὔφρανον ἐν τῇ δυνάμει σου, τοὺς πιστοὺς βασιλεῖς ἡμῶν, νίκας χορηγῶν αὐτοῖς, κατὰ τῶν πολεμίων· τὴν συμμαχίαν ἔχοιεν τὴν σήν, ὅπλον εἰρήνης, ἀήττητον τρόπαιον.",
-      "videoInput": "",
-      "videoId": "",
+      "lyrics": "Ὁ ὑψωθεὶς ἐν τῷ Σταυρῷ ἑκουσίως, τῇ ἐπωνύμῳ σου καινῇ πολιτείᾳ, τοὺς οἰκτιρμούς σου δώρησαι, Χριστὲ ὁ Θεός. Εὔφρανον ἐν τῇ δυνάμει σου, τοὺς πιστοὺς βασιλεῖς ἡμῶν, νίκας χορηγῶν αὐτοῖς, κατὰ τῶν πολεμίων· τὴν συμμαχίαν ἔχοιεν τὴν σήν, ὅπλον εἰρήνης, ἀήττητον τρόπαιον.",
+      "videoInput": "https://www.youtube.com/watch?v=EspNBnQoS5c",
+      "videoId": "EspNBnQoS5c",
       "targetSpeed": 1,
       "repeatMode": "off",
       "fontSize": 27,
       "lineHeight": 1.9,
-      "highlights": [],
+      "highlights": [
+        {
+          "start": 0,
+          "end": 31,
+          "color": "sage"
+        },
+        {
+          "start": 33,
+          "end": 62,
+          "color": "sky"
+        },
+        {
+          "start": 64,
+          "end": 90,
+          "color": "rose"
+        },
+        {
+          "start": 90,
+          "end": 106,
+          "color": "rose"
+        },
+        {
+          "start": 108,
+          "end": 134,
+          "color": "sage"
+        },
+        {
+          "start": 136,
+          "end": 162,
+          "color": "sky"
+        },
+        {
+          "start": 164,
+          "end": 184,
+          "color": "rose"
+        },
+        {
+          "start": 186,
+          "end": 203,
+          "color": "sage"
+        },
+        {
+          "start": 205,
+          "end": 233,
+          "color": "sky"
+        },
+        {
+          "start": 235,
+          "end": 248,
+          "color": "rose"
+        },
+        {
+          "start": 250,
+          "end": 268,
+          "color": "sage"
+        }
+      ],
       "melismas": []
     }
   ]
