@@ -123,11 +123,21 @@ test("inline categories toggle exclusively and preserve whole-set destinations",
   const dataUrl = js => `data:text/javascript;base64,${Buffer.from(js).toString("base64")}`;
   // Exercise the component's event handlers without adding a DOM dependency.
   const hooksUrl = dataUrl(`
-    let value = null;
+    let values = [];
+    let cursor = 0;
+    export const resetHooks = () => { cursor = 0; };
+    export const resetState = () => { values = []; cursor = 0; };
     export const useEffect = () => {};
     export const useId = () => 'curated-test';
-    export const useState = () => [value, update => { value = update(value); }];
+    export const useState = initial => {
+      const index = cursor++;
+      if (!(index in values)) values[index] = typeof initial === 'function' ? initial() : initial;
+      return [values[index], update => {
+        values[index] = typeof update === 'function' ? update(values[index]) : update;
+      }];
+    };
   `);
+  const hooks = await import(hooksUrl);
   const source = await readFile(new URL("../src/CuratedLibrary.tsx", import.meta.url), "utf8");
   let js = ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.ESNext, jsx: ts.JsxEmit.ReactJSX } }).outputText;
   for (const [dependency, url] of Object.entries({
@@ -149,7 +159,10 @@ test("inline categories toggle exclusively and preserve whole-set destinations",
   try {
     const nodes = value => Array.isArray(value) ? value.flatMap(nodes)
       : value && typeof value === "object" && value.props ? [value, ...nodes(value.props.children)] : [];
-    const render = catalogOverride => nodes(Component({ apiBase: "", catalogOverride }));
+    const render = catalogOverride => {
+      hooks.resetHooks();
+      return nodes(Component({ apiBase: "", catalogOverride }));
+    };
     const buttons = tree => tree.filter(node => node.type === "button");
     const links = tree => tree.filter(node => node.type === "a");
     let tree = render();
@@ -175,6 +188,7 @@ test("inline categories toggle exclusively and preserve whole-set destinations",
     tree = render();
     assert.ok(buttons(tree).every(node => !node.props["aria-expanded"]));
     assert.equal(links(tree).length, 0);
+    hooks.resetState();
     assert.equal(buttons(render({ version: 3, categories: [], subcategories: [] })).length, 0);
   } finally {
     if (previousWindow === undefined) delete globalThis.window;
