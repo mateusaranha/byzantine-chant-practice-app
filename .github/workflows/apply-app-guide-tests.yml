@@ -1,0 +1,41 @@
+name: Apply app guide test update
+
+on:
+  push:
+    branches:
+      - docs/update-app-guide-curated-library
+    paths:
+      - scripts/update-app-guide-tests.mjs
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out branch
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          ref: docs/update-app-guide-curated-library
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 22
+          cache: npm
+      - name: Apply test update
+        run: node scripts/update-app-guide-tests.mjs
+      - name: Test interface
+        run: |
+          npm ci
+          npm test
+      - name: Commit generated test changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add tests/build.test.mjs
+          git diff --cached --quiet && exit 0
+          git commit -m "Update help guide regression tests"
+          git push origin HEAD:docs/update-app-guide-curated-library
