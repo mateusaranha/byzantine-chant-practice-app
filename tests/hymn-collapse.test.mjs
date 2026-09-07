@@ -77,6 +77,12 @@ test("collapsing a hymn is local-only, accessible, pauses video and stays printa
   assert.match(localWorkspace, /writeHymnPanelsOpen\(localStorage, hymnIds, open\)/);
   assert.match(localWorkspace, /Recolher todos/);
   assert.match(localWorkspace, /Expandir todos/);
+  assert.match(localWorkspace, /closeDisplayMenuOnOutsidePointer/);
+  assert.match(localWorkspace, /document\.addEventListener\("pointerdown"/);
+  assert.match(localWorkspace, /menu\?\.removeAttribute\("open"\)/);
+  assert.match(localWorkspace, /focus\(\{ preventScroll: true \}\)/);
+  assert.match(localWorkspace, /displayAnchorTopRef\.current = actions\.getBoundingClientRect\(\)\.top/);
+  assert.match(localWorkspace, /window\.scrollBy\(\{ top: offset, left: 0, behavior: "auto" \}\)/);
   assert.doesNotMatch(sharedWorkspace, /persistHymnPanel/);
   assert.doesNotMatch(sharedWorkspace, /writeHymnPanelsOpen/);
 
