@@ -21,6 +21,7 @@ import {
   sourceRangeForTransliteration,
   transliterateGreek,
 } from "./transliteration";
+import { readToolsPanelOpen, writeToolsPanelOpen } from "./workspacePreferences";
 
 type ActiveTool =
   | "sage"
@@ -214,6 +215,7 @@ function HymnWorkspace({
   canDelete,
   printRequest,
   printSettings,
+  persistToolsPanel = false,
   onChange,
   onDelete,
   onOpenGuide,
@@ -223,6 +225,7 @@ function HymnWorkspace({
   canDelete: boolean;
   printRequest: number;
   printSettings: PdfExportSettings;
+  persistToolsPanel?: boolean;
   onChange: (hymn: Hymn) => void;
   onDelete: () => void;
   onOpenGuide: (trigger: HTMLButtonElement) => void;
@@ -230,7 +233,9 @@ function HymnWorkspace({
   const [editing, setEditing] = useState(!hymn.lyrics);
   const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [activeTool, setActiveTool] = useState<ActiveTool>(null);
-  const [toolsOpen, setToolsOpen] = useState(true);
+  const [toolsOpen, setToolsOpen] = useState(() =>
+    persistToolsPanel ? readToolsPanelOpen(localStorage, hymn.id) : true,
+  );
   const [coloursVisible, setColoursVisible] = useState(true);
   const [melismasVisible, setMelismasVisible] = useState(true);
   const [transliterated, setTransliterated] = useState(false);
@@ -419,8 +424,10 @@ function HymnWorkspace({
   }
 
   function toggleTools() {
+    const nextOpen = !toolsOpen;
     if (toolsOpen) setActiveTool(null);
-    setToolsOpen(!toolsOpen);
+    setToolsOpen(nextOpen);
+    if (persistToolsPanel) writeToolsPanelOpen(localStorage, hymn.id, nextOpen);
   }
 
   function changeReading(showTransliteration: boolean) {
@@ -1132,6 +1139,7 @@ function LocalWorkspace() {
             canDelete={index > 0}
             printRequest={printRequest}
             printSettings={printSettings}
+            persistToolsPanel
             onChange={updateHymn}
             onOpenGuide={(trigger) => setHelp({ page: "guide", trigger })}
             onDelete={() => setHymns((current) => current.filter((item) => item.id !== hymn.id))}
