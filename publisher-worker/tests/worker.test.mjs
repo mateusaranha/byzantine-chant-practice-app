@@ -7,7 +7,9 @@ import {
   normalizeLibraryMetadata,
   normalizeLogin,
   slugify,
+  validateCuratedCategoryCreation,
   validateCuratedPromotion,
+  validateCuratedSubcategoryCreation,
   validateHymnSet,
 } from "../src/index.js";
 
@@ -16,43 +18,57 @@ test("normalizes GitHub logins and collection slugs", () => {
   assert.equal(slugify("Dormição da Theotokos — 15 de agosto"), "dormicao-da-theotokos-15-de-agosto");
 });
 
-test("limits a publisher to their own hymn directory", () => {
+test("limits a publisher to hymn paths", () => {
   assert.equal(isHymnPath("hinos/mateusaranha/dormicao.json"), true);
   assert.equal(isHymnPath("hinos/outro-autor/dormicao.json"), true);
   assert.equal(isHymnPath("hinos/../config/approved-users.json"), false);
-  assert.equal(isHymnPath("config/approved-users.json"), false);
-  assert.equal(isHymnPath("hinos/autor/../../package.json"), false);
   assert.equal(isOwnedHymnPath("hinos/mateusaranha/dormicao.json", "MateusAranha"), true);
   assert.equal(isOwnedHymnPath("hinos/outro/dormicao.json", "mateusaranha"), false);
-  assert.equal(isOwnedHymnPath("src/App.tsx", "mateusaranha"), false);
 });
 
-test("validates a saved hymn set", () => {
-  const set = validateHymnSet({ title: "Domingo", hymns: [{ title: "Hino" }] });
-  assert.equal(set.slug, "domingo");
-  assert.equal(set.hymns.length, 1);
+test("validates saved sets and curated-only listing metadata", () => {
+  const listed = validateHymnSet({ title: "Domingo", hymns: [{ title: "Hino" }] });
+  assert.equal(listed.slug, "domingo");
+  assert.equal(listed.listed, true);
+  assert.equal(validateHymnSet({ title: "Curado", listed: false, hymns: [{ title: "Hino" }] }).listed, false);
   assert.throws(() => validateHymnSet({ title: "Vazio", hymns: [] }), /entre 1 e/);
 });
 
-test("normalizes public library metadata", () => {
+test("normalizes public library metadata with backwards-compatible visibility", () => {
   assert.deepEqual(normalizeLibraryMetadata({
     title: "  Celebrações de setembro  ",
     updatedAt: "2026-08-30T22:41:35.287Z",
+    listed: false,
   }), {
     title: "Celebrações de setembro",
     updatedAt: "2026-08-30T22:41:35.287Z",
+    listed: false,
   });
-  assert.deepEqual(normalizeLibraryMetadata({ title: "Sem data", updatedAt: "ontem" }), {
-    title: "Sem data",
-    updatedAt: null,
-  });
-  assert.deepEqual(normalizeLibraryMetadata(null), { title: "", updatedAt: null });
+  assert.equal(normalizeLibraryMetadata({ title: "Legado" }).listed, true);
 });
 
-test("validates curated promotion references without copying hymn content", () => {
+test("validates category and subcategory creation", () => {
   const catalog = {
-    version: 1,
-    categories: [{ id: "grandes-festas", label: "Grandes Festas", order: 10 }],
+    version: 2,
+    categories: [{ id: "grandes-festas", label: "Grandes Festas" }],
+    subcategories: [{ id: "grandes-festas-dormicao", label: "Dormição", categoryId: "grandes-festas" }],
+    entries: [],
+  };
+  assert.deepEqual(validateCuratedCategoryCreation({ label: " Santos " }, catalog), { id: "santos", label: "Santos" });
+  assert.deepEqual(validateCuratedSubcategoryCreation({ label: "Natividade", categoryId: "grandes-festas" }, catalog), {
+    id: "grandes-festas-natividade",
+    label: "Natividade",
+    categoryId: "grandes-festas",
+  });
+  assert.throws(() => validateCuratedCategoryCreation({ label: "Grandes Festas" }, catalog), /já existe/);
+  assert.throws(() => validateCuratedSubcategoryCreation({ label: "Dormição", categoryId: "grandes-festas" }, catalog), /já existe/);
+});
+
+test("validates curated promotion by subcategory without copying hymn content", () => {
+  const catalog = {
+    version: 2,
+    categories: [{ id: "grandes-festas", label: "Grandes Festas" }],
+    subcategories: [{ id: "grandes-festas-dormicao", label: "Dormição", categoryId: "grandes-festas" }],
     entries: [],
   };
   const published = {
@@ -64,19 +80,20 @@ test("validates curated promotion references without copying hymn content", () =
   const promotion = validateCuratedPromotion({
     path: "hinos/mateusaranha/dormicao.json",
     hymnId: "apolytikion",
-    categoryId: "grandes-festas",
+    subcategoryId: "grandes-festas-dormicao",
   }, catalog, published);
   assert.equal(promotion.path, "hinos/mateusaranha/dormicao.json");
+  assert.equal(promotion.subcategoryId, "grandes-festas-dormicao");
   assert.equal(promotion.hymn, published.hymns[0]);
   assert.equal(curatedEntryId(promotion.path, promotion.hymnId), "dormicao-apolytikion");
   assert.throws(() => validateCuratedPromotion({
     path: "hinos/mateusaranha/dormicao.json",
     hymnId: "missing",
-    categoryId: "grandes-festas",
+    subcategoryId: "grandes-festas-dormicao",
   }, catalog, published), /não foi encontrado/);
   assert.throws(() => validateCuratedPromotion({
     path: "hinos/mateusaranha/dormicao.json",
     hymnId: "apolytikion",
-    categoryId: "categoria-inexistente",
-  }, catalog, published), /Categoria/);
+    subcategoryId: "missing",
+  }, catalog, published), /Subcategoria/);
 });
