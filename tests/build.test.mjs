@@ -314,11 +314,12 @@ test("the production build contains the app shell and migration features", async
   assert.match(appGuideSource, /salvar como PDF ou imprimir/);
   assert.match(appGuideSource, /conjunto compartilhado/);
   assert.match(appGuideSource, /Alterações feitas depois apenas no seu espaço não aparecem na versão publicada/);
-  assert.match(appGuideSource, /categoria → subcategoria → hinos/);
-  assert.match(appGuideSource, /Todos os hinos do conjunto/);
-  assert.match(appGuideSource, /Selecionar hinos individualmente/);
+  assert.match(appGuideSource, /categoria → subcategoria/);
+  assert.match(appGuideSource, /abre diretamente o conjunto completo associado/);
+  assert.match(appGuideSource, /O conjunto inteiro que está aberto é associado à subcategoria/);
+  assert.match(appGuideSource, /não é necessário cadastrar cada hino separadamente/);
+  assert.match(appGuideSource, /pede confirmação antes de substituir essa associação/);
   assert.match(appGuideSource, /não aparece também em Meus conjuntos/);
-  assert.match(appGuideSource, /adicionado à curadoria mais tarde/);
   assert.match(appGuideSource, /área temporária, sem alterar seu espaço/);
   assert.match(appGuideSource, /cópia local independente aos seus hinos/);
   assert.match(studyGuideSource, /As mesmas ferramentas podem ser usadas na leitura grega ou transliterada/);

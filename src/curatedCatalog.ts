@@ -1,41 +1,35 @@
-import { parseShareRequest, selectSharedHymns } from "./sharedHymns";
+import { parseShareRequest } from "./sharedHymns";
 import type { PublishedSet } from "./sharedHymns";
 
 export type CuratedCategory = { id: string; label: string };
-export type CuratedSubcategory = { id: string; label: string; categoryId: string };
-export type CuratedEntry = {
+export type CuratedSubcategory = {
   id: string;
-  title: string;
-  subcategoryId: string;
-  order: number;
-  source: { path: string; hymnId: string };
-  note?: string;
+  label: string;
+  categoryId: string;
+  source?: { path: string };
 };
 export type CuratedCatalog = {
-  version: 2;
+  version: 3;
   categories: CuratedCategory[];
   subcategories: CuratedSubcategory[];
-  entries: CuratedEntry[];
 };
 
 const record = (value: unknown): value is Record<string, unknown> =>
   Boolean(value && typeof value === "object" && !Array.isArray(value));
 const text = (value: unknown): value is string => typeof value === "string" && Boolean(value.trim());
-const order = (value: unknown): value is number => typeof value === "number" && Number.isFinite(value);
 const id = (value: unknown): value is string => text(value) && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(value);
 const byLabel = <T extends { label: string }>(a: T, b: T) =>
   a.label.localeCompare(b.label, "pt-BR", { sensitivity: "base" });
 
-// Keep valid entries available at runtime, but expose every editorial error to CI.
+// Keep valid subcategories available at runtime, but expose editorial errors to CI.
 export function readCuratedCatalog(value: unknown): { catalog: CuratedCatalog; errors: string[] } {
-  const catalog: CuratedCatalog = { version: 2, categories: [], subcategories: [], entries: [] };
+  const catalog: CuratedCatalog = { version: 3, categories: [], subcategories: [] };
   const errors: string[] = [];
   if (
     !record(value) ||
-    value.version !== 2 ||
+    value.version !== 3 ||
     !Array.isArray(value.categories) ||
-    !Array.isArray(value.subcategories) ||
-    !Array.isArray(value.entries)
+    !Array.isArray(value.subcategories)
   ) {
     return { catalog, errors: ["Catálogo: versão ou estrutura inválida."] };
   }
@@ -73,54 +67,32 @@ export function readCuratedCatalog(value: unknown): { catalog: CuratedCatalog; e
       errors.push(`Subcategoria ${index + 1}: campos, categoria ou ID inválidos/duplicados.`);
       continue;
     }
+
+    let source: { path: string } | undefined;
+    if (subcategory.source !== undefined) {
+      if (!record(subcategory.source) || !text(subcategory.source.path)) {
+        errors.push(`Subcategoria ${subcategory.id}: referência de conjunto inválida.`);
+        continue;
+      }
+      const path = subcategory.source.path.trim();
+      const route = parseShareRequest(`?${new URLSearchParams({ conjunto: path })}`);
+      if (!route || "error" in route || route.hymnId !== null) {
+        errors.push(`Subcategoria ${subcategory.id}: referência de conjunto inválida.`);
+        continue;
+      }
+      source = { path };
+    }
+
     catalog.subcategories.push({
       id: subcategory.id,
       label: subcategory.label.trim(),
       categoryId: subcategory.categoryId,
-    });
-  }
-
-  const subcategoryIds = new Set(catalog.subcategories.map(subcategory => subcategory.id));
-  const entryDuplicates = duplicateIds(value.entries);
-  const sources = new Set<string>();
-  for (const [index, entry] of value.entries.entries()) {
-    if (
-      !record(entry) ||
-      !id(entry.id) ||
-      entryDuplicates.has(entry.id) ||
-      !text(entry.title) ||
-      !order(entry.order) ||
-      !id(entry.subcategoryId) ||
-      !subcategoryIds.has(entry.subcategoryId) ||
-      (entry.note !== undefined && !text(entry.note)) ||
-      !record(entry.source) ||
-      !text(entry.source.path) ||
-      !text(entry.source.hymnId)
-    ) {
-      errors.push(`Hino ${index + 1}: campos, subcategoria ou ID inválidos/duplicados.`);
-      continue;
-    }
-    const { path, hymnId } = entry.source;
-    const route = parseShareRequest(`?${new URLSearchParams({ conjunto: path, hino: hymnId })}`);
-    const sourceKey = JSON.stringify([path, hymnId]);
-    if (!route || "error" in route || sources.has(sourceKey)) {
-      errors.push(`Hino ${entry.id}: referência inválida ou repetida.`);
-      continue;
-    }
-    sources.add(sourceKey);
-    catalog.entries.push({
-      id: entry.id,
-      title: entry.title.trim(),
-      subcategoryId: entry.subcategoryId,
-      order: entry.order,
-      source: { path, hymnId },
-      ...(entry.note === undefined ? {} : { note: entry.note as string }),
+      ...(source ? { source } : {}),
     });
   }
 
   catalog.categories.sort(byLabel);
   catalog.subcategories.sort(byLabel);
-  catalog.entries.sort((a, b) => a.order - b.order || a.title.localeCompare(b.title, "pt-BR", { sensitivity: "base" }));
   return { catalog, errors };
 }
 
@@ -128,26 +100,29 @@ export function curatedGroups(catalog: CuratedCatalog) {
   return catalog.categories
     .map(category => ({
       ...category,
-      subcategories: catalog.subcategories
-        .filter(subcategory => subcategory.categoryId === category.id)
-        .map(subcategory => ({
-          ...subcategory,
-          entries: catalog.entries.filter(entry => entry.subcategoryId === subcategory.id),
-        }))
-        .filter(subcategory => subcategory.entries.length > 0),
+      subcategories: catalog.subcategories.filter(
+        subcategory => subcategory.categoryId === category.id && Boolean(subcategory.source),
+      ),
     }))
     .filter(category => category.subcategories.length > 0);
 }
 
-export async function validateCuratedSources(catalog: CuratedCatalog, load: (path: string) => Promise<PublishedSet>) {
+export async function validateCuratedSources(
+  catalog: CuratedCatalog,
+  load: (path: string) => Promise<PublishedSet>,
+) {
   const errors: string[] = [];
   const sets = new Map<string, Promise<PublishedSet>>();
-  for (const entry of catalog.entries) {
+  for (const subcategory of catalog.subcategories) {
+    if (!subcategory.source) continue;
     try {
-      if (!sets.has(entry.source.path)) sets.set(entry.source.path, load(entry.source.path));
-      selectSharedHymns(await sets.get(entry.source.path)!, entry.source.hymnId);
+      if (!sets.has(subcategory.source.path)) sets.set(subcategory.source.path, load(subcategory.source.path));
+      const published = await sets.get(subcategory.source.path)!;
+      if (!published.hymns.length) throw new Error("conjunto vazio");
     } catch (reason) {
-      errors.push(`Hino ${entry.id} (${entry.source.path}, ${entry.source.hymnId}): ${reason instanceof Error ? reason.message : "referência inválida"}`);
+      errors.push(
+        `Subcategoria ${subcategory.id} (${subcategory.source.path}): ${reason instanceof Error ? reason.message : "referência inválida"}`,
+      );
     }
   }
   return errors;

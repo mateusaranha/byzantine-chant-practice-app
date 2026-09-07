@@ -63,16 +63,10 @@ export function normalizeLibraryMetadata(value) {
   return { title, updatedAt, listed: value.listed !== false };
 }
 
-export function curatedEntryId(path, hymnId) {
-  const file = String(path || "").split("/").pop()?.replace(/\.json$/, "") || "hino";
-  const hymn = slugify(String(hymnId || "hino")).slice(0, 40);
-  return `${file}-${hymn}`.slice(0, 96).replace(/-+$/g, "") || `hino-${Date.now()}`;
-}
-
 function validCuratedCatalog(catalog) {
   return Boolean(
-    catalog && catalog.version === 2 && Array.isArray(catalog.categories) &&
-    Array.isArray(catalog.subcategories) && Array.isArray(catalog.entries),
+    catalog && catalog.version === 3 && Array.isArray(catalog.categories) &&
+    Array.isArray(catalog.subcategories),
   );
 }
 
@@ -80,22 +74,17 @@ export function validateCuratedPromotion(value, catalog, published) {
   if (!value || typeof value !== "object") throw new HttpError(400, "Dados de curadoria inválidos.");
   const path = String(value.path || "").trim();
   const subcategoryId = String(value.subcategoryId || "").trim();
-  const suppliedIds = Array.isArray(value.hymnIds) ? value.hymnIds : [value.hymnId];
-  const hymnIds = [...new Set(suppliedIds.map((item) => String(item || "").trim()).filter(Boolean))];
-  if (!isHymnPath(path) || !hymnIds.length || hymnIds.length > MAX_HYMNS || !CURATED_ID_PATTERN.test(subcategoryId)) {
+  if (!isHymnPath(path) || !CURATED_ID_PATTERN.test(subcategoryId)) {
     throw new HttpError(400, "Referência ou subcategoria inválida.");
   }
   if (!validCuratedCatalog(catalog)) throw new HttpError(500, "O catálogo curado está inválido.");
   if (!catalog.subcategories.some((subcategory) => subcategory?.id === subcategoryId)) {
     throw new HttpError(400, "Subcategoria da Biblioteca curada não encontrada.");
   }
-  if (!published || !Array.isArray(published.hymns)) throw new HttpError(400, "Conjunto publicado inválido.");
-  const hymns = hymnIds.map((hymnId) => {
-    const matches = published.hymns.filter((hymn) => hymn && hymn.id === hymnId);
-    if (matches.length !== 1) throw new HttpError(400, `O hino publicado “${hymnId}” não foi encontrado de forma única.`);
-    return matches[0];
-  });
-  return { path, hymnIds, subcategoryId, hymns, hymnId: hymnIds[0], hymn: hymns[0] };
+  if (!published || !Array.isArray(published.hymns) || published.hymns.length < 1 || published.hymns.length > MAX_HYMNS) {
+    throw new HttpError(400, "Conjunto publicado inválido.");
+  }
+  return { path, subcategoryId, replace: value.replace === true };
 }
 
 export function validateCuratedCategoryCreation(value, catalog) {
@@ -588,51 +577,20 @@ async function promoteCurated(request, env) {
   const publishedStored = await readRepoJson(env, path);
   if (!publishedStored) throw new HttpError(404, "Conjunto publicado não encontrado.");
   const promotion = validateCuratedPromotion(body, catalog, publishedStored.data);
-  const usedIds = new Set(catalog.entries.map((entry) => entry?.id).filter(Boolean));
-  let nextOrder = catalog.entries
-    .filter((entry) => entry?.subcategoryId === promotion.subcategoryId)
-    .reduce((highest, entry) => Math.max(highest, Number(entry?.order) || 0), 0);
-  const entries = [];
-  let changed = false;
-
-  for (const hymn of promotion.hymns) {
-    const hymnId = hymn.id;
-    const sourceMatch = catalog.entries.find(
-      (entry) => entry?.source?.path === promotion.path && entry?.source?.hymnId === hymnId,
-    );
-    if (sourceMatch) {
-      if (sourceMatch.subcategoryId !== promotion.subcategoryId) {
-        nextOrder += 10;
-        sourceMatch.subcategoryId = promotion.subcategoryId;
-        sourceMatch.order = nextOrder;
-        changed = true;
-      }
-      entries.push(sourceMatch);
-      continue;
-    }
-
-    const baseId = curatedEntryId(promotion.path, hymnId);
-    let entryId = baseId;
-    let suffix = 2;
-    while (usedIds.has(entryId)) entryId = `${baseId}-${suffix++}`;
-    usedIds.add(entryId);
-    nextOrder += 10;
-    const entry = {
-      id: entryId,
-      title: String(hymn.title || "Hino sem título").trim().slice(0, 160) || "Hino sem título",
-      subcategoryId: promotion.subcategoryId,
-      order: nextOrder,
-      source: { path: promotion.path, hymnId },
-    };
-    catalog.entries.push(entry);
-    entries.push(entry);
-    changed = true;
+  const subcategory = catalog.subcategories.find((item) => item?.id === promotion.subcategoryId);
+  const currentPath = String(subcategory?.source?.path || "");
+  if (currentPath === promotion.path) return { changed: false, subcategory, catalog };
+  if (currentPath && !promotion.replace) {
+    throw new HttpError(409, `A subcategoria “${subcategory.label}” já possui um conjunto associado.`);
   }
-
-  if (changed) {
-    await writeRepoJson(env, CURATED_PATH, catalog, `Curate Psaltikon hymns: ${entries.length}`);
-  }
-  return { changed, entries, ...(entries.length === 1 ? { entry: entries[0] } : {}), catalog };
+  subcategory.source = { path: promotion.path };
+  await writeRepoJson(
+    env,
+    CURATED_PATH,
+    catalog,
+    `${currentPath ? "Replace" : "Curate"} Psaltikon set: ${subcategory.label}`,
+  );
+  return { changed: true, replaced: Boolean(currentPath), subcategory, catalog };
 }
 
 async function deleteSet(request, env, path) {

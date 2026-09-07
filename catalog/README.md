@@ -4,61 +4,64 @@
 
 ## Estrutura
 
-A navegação usa três níveis simples:
+A navegação pública usa dois níveis:
 
-**Categoria → Subcategoria → Hinos**
+**Categoria → Subcategoria**
 
 Exemplo:
 
-**Grandes Festas → Dormição da Theotokos → Apolytikion / Megalynarion / outras gravações preparadas**
+**Grandes Festas → Natividade de Cristo**
 
-Categorias e subcategorias aparecem em ordem alfabética automática. Os hinos dentro de uma subcategoria conservam `order` editorial, permitindo uma sequência que não precise ser alfabética.
+A subcategoria aponta diretamente para um conjunto publicado completo. Ao abrir **Natividade de Cristo**, o Psaltikon carrega todos os hinos daquele conjunto na área temporária de estudo; não existe uma etapa intermediária de escolher hinos individuais na Biblioteca curada.
 
-O catálogo usa `version: 2`:
+Categorias e subcategorias aparecem em ordem alfabética automática.
+
+O catálogo usa `version: 3`:
 
 ```json
 {
-  "version": 2,
+  "version": 3,
   "categories": [
     { "id": "grandes-festas", "label": "Grandes Festas" }
   ],
   "subcategories": [
     {
-      "id": "grandes-festas-dormicao",
-      "label": "Dormição da Theotokos",
-      "categoryId": "grandes-festas"
-    }
-  ],
-  "entries": [
-    {
-      "id": "dormicao-apolytikion",
-      "title": "Apolytikion da Dormição",
-      "subcategoryId": "grandes-festas-dormicao",
-      "order": 10,
+      "id": "grandes-festas-natividade",
+      "label": "Natividade de Cristo",
+      "categoryId": "grandes-festas",
       "source": {
-        "path": "hinos/autor/dormicao.json",
-        "hymnId": "id-exato-do-hino-publicado"
+        "path": "hinos/autor/natividade.json"
       }
     }
   ]
 }
 ```
 
-Uma gravação ou preparação diferente, com marcações próprias, continua sendo outro hino publicado e pode ganhar sua própria entrada. Não existe uma camada estrutural chamada “versão”.
+Uma subcategoria sem `source` pode existir enquanto está sendo preparada, mas fica oculta da navegação pública até receber um conjunto.
 
 ## Salvamento pela interface
 
 Para o administrador/curador, a área de publicação oferece três destinos:
 
 - **Meus conjuntos** — publica normalmente e deixa o conjunto visível na listagem pública;
-- **Biblioteca curada** — publica o conteúdo-base em `hinos/`, cria a referência curada e depois o marca como `listed: false`, para que não apareça também em Meus conjuntos/Conjuntos publicados;
+- **Biblioteca curada** — publica o conteúdo-base em `hinos/`, associa o conjunto inteiro à subcategoria escolhida e depois o marca como `listed: false`, para que não apareça também em Meus conjuntos/Conjuntos publicados;
 - **Ambos** — usa o mesmo conteúdo-base, mantendo-o listado e também referenciado pela curadoria.
 
-“Biblioteca curada” não cria uma segunda cópia do hino. `listed: false` muda apenas sua presença na listagem de conjuntos; os links e a referência curada continuam apontando para o mesmo arquivo publicado.
+“Biblioteca curada” não cria uma segunda cópia. `listed: false` muda apenas a presença do conjunto na listagem geral; a subcategoria continua apontando para o mesmo arquivo publicado.
 
-O fluxo de **somente curada** é conservador: primeiro o conteúdo-base é salvo de forma recuperável, depois a promoção é realizada e somente após o sucesso ele é ocultado da listagem. Se a promoção falhar, o conteúdo permanece em **Meus conjuntos**, em vez de ser perdido ou ficar inacessível.
+O fluxo de **somente curada** é conservador: primeiro o conteúdo-base é salvo de forma recuperável, depois a associação curada é realizada e somente após o sucesso ele é ocultado da listagem. Se a associação falhar ou for cancelada, o conteúdo permanece em **Meus conjuntos**, em vez de ser perdido ou ficar inacessível.
 
-Um conjunto já publicado também pode ser carregado e ter um de seus hinos promovido posteriormente.
+Um conjunto já publicado também pode ser carregado e associado posteriormente a uma subcategoria.
+
+## Uma subcategoria, um conjunto
+
+Cada subcategoria possui no máximo um conjunto associado. Isso mantém o modelo editorial simples:
+
+**Grandes Festas → Natividade de Cristo → conjunto completo da Natividade**
+
+Se o curador tentar associar outro conjunto a uma subcategoria que já possui `source`, a interface pede confirmação. O Worker também exige confirmação explícita (`replace: true`) antes de substituir a referência existente.
+
+Atualizar o arquivo publicado preservando o mesmo `path` atualiza automaticamente o material apresentado pela subcategoria, pois a curadoria referencia a publicação mais recente em vez de criar um snapshot.
 
 ## Criar categorias e subcategorias
 
@@ -67,15 +70,15 @@ O administrador não precisa editar o JSON para a operação comum. No próprio 
 - **+ Nova categoria**;
 - **+ Nova subcategoria**.
 
-A subcategoria sempre pertence a uma categoria. Essas operações e a promoção de hinos são restritas ao administrador já definido pelo Psaltikon; ser um publicador aprovado, sozinho, não concede permissão de curadoria.
+A subcategoria sempre pertence a uma categoria. Essas operações e a associação de conjuntos são restritas ao administrador já definido pelo Psaltikon; ser um publicador aprovado, sozinho, não concede permissão de curadoria.
 
 A interface continua deliberadamente pequena: não há sistema de roles adicional, painel CMS, banco de dados, árvore profunda ou formulário editorial complexo.
 
 ## Edição manual
 
-O catálogo continua versionado no repositório e pode ser editado manualmente quando necessário, por exemplo para ajustar `order`, título editorial ou `note`.
+O catálogo continua versionado no repositório e pode ser editado manualmente quando necessário.
 
-Os IDs usam letras minúsculas sem acentos, números e hífens. Categorias, subcategorias e entradas precisam de IDs válidos e únicos. Cada entrada referencia uma única subcategoria e um único `path + hymnId`; referências repetidas são rejeitadas.
+Os IDs usam letras minúsculas sem acentos, números e hífens. Categorias e subcategorias precisam de IDs válidos e únicos. Quando presente, `source.path` deve apontar para um conjunto publicado válido em `hinos/<autor>/<conjunto>.json`.
 
 Depois de edição manual, rode:
 
@@ -88,17 +91,17 @@ O build e os checks do Pages também validam a estrutura e as fontes referenciad
 ## Identidade e manutenção
 
 - A referência acompanha a publicação mais recente do arquivo-base; não é um snapshot imutável.
-- Preserve caminho e `hymnId` ao atualizar material curado sempre que possível.
-- Retirar um hino da curadoria significa remover sua entrada, sem apagar o conteúdo-base.
-- O catálogo rejeita estrutura inválida, IDs duplicados, subcategorias sem categoria, hinos sem subcategoria, referências repetidas e fontes inexistentes ou ambíguas.
-- Categorias ou subcategorias sem hinos ficam ocultas da navegação pública até receberem conteúdo.
+- Preserve o caminho do conjunto ao atualizar material curado sempre que possível.
+- Retirar material da curadoria significa remover o `source` da subcategoria ou remover a própria subcategoria, sem apagar o conteúdo-base.
+- O catálogo rejeita estrutura inválida, IDs duplicados, subcategorias sem categoria e caminhos de conjunto inválidos ou inexistentes.
+- Categorias sem subcategorias associadas e subcategorias sem conjunto ficam ocultas da navegação pública.
 - O Worker ainda pode permitir que o conteúdo-base seja alterado ou excluído conforme as regras dos conjuntos; a validação do catálogo protege os deploys seguintes, não transforma a publicação em snapshot.
 
 ## Experiência
 
 A Biblioteca pública preserva progressive disclosure:
 
-**Biblioteca pública → Biblioteca curada → Categoria → Subcategoria → Hino → Estudar agora**
+**Biblioteca pública → Biblioteca curada → Categoria → Subcategoria → conjunto completo de estudo**
 
 ou
 

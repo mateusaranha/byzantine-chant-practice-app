@@ -20,7 +20,7 @@
   text-align:left;
 }
 .library-entry-card:hover { border-color:#b48b47; background:#fbf5ea; }
-.library-entry-card:focus-visible,.library-back:focus-visible,.curation-publish button:focus-visible,.curation-publish select:focus-visible,.curation-publish input:focus-visible,.save-destination input:focus-visible {
+.library-entry-card:focus-visible,.library-back:focus-visible,.curation-publish button:focus-visible,.curation-publish select:focus-visible,.curation-publish input:focus-visible,.save-destination input:focus-visible,.curated-set-link:focus-visible {
   outline:2px solid var(--red);
   outline-offset:3px;
 }
@@ -102,55 +102,19 @@
   grid-template-columns:minmax(0,1fr) auto;
   gap:8px;
 }
-
-.curated-hymn-selection {
-  display:grid;
-  gap:8px;
-  margin:2px 0 0;
-  padding:11px 12px 12px;
-  border:1px solid #e0d4c3;
-  border-radius:3px;
-  background:#fffdf8;
+.curation-set-note {
+  margin:2px 0;
+  color:#81756a;
+  font:12px/1.5 Arial,sans-serif;
 }
-.curated-hymn-selection legend {
-  padding:0 5px;
-  color:#776c62;
-  font:600 10px Arial,sans-serif;
-  letter-spacing:.08em;
-  text-transform:uppercase;
-}
-.publish-form .curated-selection-option {
+.curated-set-link {
   display:flex;
-  grid-template-columns:none;
-  align-items:flex-start;
-  gap:9px;
-  color:#675b50;
-  font:12px/1.4 Arial,sans-serif;
-  letter-spacing:0;
-  text-transform:none;
-}
-.curated-selection-option input,.curated-hymn-options input { width:17px; height:17px; flex:0 0 auto; margin:1px 0 0; accent-color:var(--red); }
-.curated-selection-option span { display:grid; gap:2px; }
-.curated-selection-option strong { font-size:12px; }
-.curated-selection-option small,.curated-hymn-single { color:#81756a; font:11px/1.45 Arial,sans-serif; }
-.curated-hymn-checklist { display:grid; gap:8px; padding:9px 0 0 26px; }
-.curated-selection-summary { display:flex; align-items:center; justify-content:space-between; gap:8px; color:#776c62; font:11px Arial,sans-serif; }
-.curated-selection-summary > div { display:flex; flex-wrap:wrap; gap:6px; }
-.curated-selection-summary .cloud-secondary { min-height:32px; padding:5px 8px; font-size:11px; }
-.curated-hymn-options { display:grid; gap:4px; max-height:260px; overflow:auto; padding-right:4px; }
-.publish-form .curated-hymn-options label {
-  display:flex;
-  grid-template-columns:none;
-  align-items:flex-start;
-  gap:8px;
-  padding:6px 7px;
-  border:1px solid #eadfce;
-  border-radius:3px;
-  background:#fff;
-  color:#675b50;
-  font:12px/1.35 Arial,sans-serif;
-  letter-spacing:0;
-  text-transform:none;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  min-height:64px;
+  text-align:left;
+  text-decoration:none;
 }
 
 @media (max-width:700px) {
@@ -159,7 +123,5 @@
   .library-entry-card strong { font-size:19px; }
   .curation-field-row,.curation-create-row { grid-template-columns:1fr; }
   .curation-field-row .cloud-secondary,.curation-create-row .cloud-secondary { width:100%; }
-  .curated-hymn-checklist { padding-left:0; }
-  .curated-selection-summary { align-items:flex-start; flex-direction:column; }
 }
 
