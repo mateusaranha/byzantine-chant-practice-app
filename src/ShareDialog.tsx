@@ -1,17 +1,18 @@
 import { useEffect, useRef, useState } from "react";
-import { createShareUrl, loadPublishedSet } from "./sharedHymns";
+import { createShareUrl, loadPublishedSet, selectSharedHymns } from "./sharedHymns";
 import type { PublishedSet } from "./sharedHymns";
 
-export default function ShareDialog({ apiBase, path, trigger, onClose }: {
+export default function ShareDialog({ apiBase, path, initialHymnId, trigger, onClose }: {
   apiBase: string;
   path: string;
+  initialHymnId?: string;
   trigger: HTMLButtonElement;
   onClose: () => void;
 }) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const linkRef = useRef<HTMLInputElement>(null);
   const [published, setPublished] = useState<PublishedSet | null>(null);
-  const [selection, setSelection] = useState("");
+  const [selection, setSelection] = useState(initialHymnId || "");
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [attempt, setAttempt] = useState(0);
@@ -38,12 +39,15 @@ export default function ShareDialog({ apiBase, path, trigger, onClose }: {
       setError("O carregamento demorou demais. Confira sua conexão e tente novamente.");
     }, 20000);
     loadPublishedSet(apiBase, path, controller.signal).then((data) => {
-      if (!controller.signal.aborted) setPublished(data);
+      if (!controller.signal.aborted) {
+        if (initialHymnId) selectSharedHymns(data, initialHymnId);
+        setPublished(data);
+      }
     }).catch((reason) => {
       if (!controller.signal.aborted) setError(reason instanceof Error ? reason.message : "Não foi possível carregar a publicação.");
     }).finally(() => window.clearTimeout(timeout));
     return () => { controller.abort(); window.clearTimeout(timeout); };
-  }, [apiBase, path, attempt]);
+  }, [apiBase, path, initialHymnId, attempt]);
 
   async function copyLink() {
     try {

@@ -6,10 +6,11 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc --noEmit && vite build",
+    "build": "npm run validate:curated && tsc --noEmit && vite build",
     "preview": "vite preview",
     "test:unit": "node --test tests/*.test.mjs",
-    "test": "VITE_PUBLISHER_API_URL=https://publisher.example npm run build && npm run test:unit"
+    "test": "VITE_PUBLISHER_API_URL=https://publisher.example npm run build && npm run test:unit",
+    "validate:curated": "node scripts/validate-curated.mjs"
   },
   "dependencies": {
     "react": "19.2.6",

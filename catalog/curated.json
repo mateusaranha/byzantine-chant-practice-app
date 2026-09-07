@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "categories": [
+    { "id": "paraclisis", "label": "Paráclisis", "order": 10 },
+    { "id": "necrosima", "label": "Necrosima", "order": 20 }
+  ],
+  "entries": [
+    {
+      "id": "paraclisis-papagiannopoulos",
+      "title": "Paráclisis — Dimitrios Papagiannopoulos",
+      "categoryIds": ["paraclisis"],
+      "order": 10,
+      "source": { "path": "hinos/mateusaranha/paraclisis.json", "hymnId": "primary-hymn" },
+      "note": "Amostra inicial, selecionada do conjunto Paráclisis de @mateusaranha."
+    },
+    {
+      "id": "necrosima-ton-agion",
+      "title": "Τῶν Ἁγίων ὁ χορός",
+      "categoryIds": ["necrosima"],
+      "order": 20,
+      "source": { "path": "hinos/mateusaranha/necrosima.json", "hymnId": "primary-hymn" },
+      "note": "Amostra inicial, selecionada do conjunto Necrosima de @mateusaranha."
+    }
+  ]
+}

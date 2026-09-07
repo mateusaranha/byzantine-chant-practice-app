@@ -15,7 +15,7 @@ O Psaltikon é um auxílio intermediário de escuta e memorização. Ele não su
 - YouTube, velocidade-alvo e repetição 1x, 3x ou contínua;
 - tamanho e espaçamento do texto ajustáveis;
 - backup em JSON e PDF para celular em grego, transliteração ou nas duas leituras, com marcações opcionais;
-- biblioteca pública, publicação por usuários aprovados e links de compartilhamento;
+- biblioteca pública, catálogo curado por temas, publicação por usuários aprovados e links de compartilhamento;
 - central de ajuda com guia de estudo, orientações de uso e referências;
 - interface responsiva e instalável como PWA.
 
@@ -54,6 +54,8 @@ Não há servidor da interface, banco de dados próprio, contas próprias do Psa
 
 **Biblioteca e compartilhamento:** qualquer visitante pode abrir os conjuntos públicos sem login. Um link pode apontar para o conjunto inteiro ou para um hino específico e sempre lê a publicação mais recente. O material compartilhado abre em uma área temporária; **Adicionar ao meu espaço** cria uma cópia local independente sem sobrescrever trabalho válido.
 
+**Biblioteca curada:** a área por temas referencia versões individuais já publicadas, sem duplicar os hinos. O catálogo manual em `catalog/curated.json` é incorporado à interface no build e validado contra os arquivos do repositório antes do deploy. Estudar e compartilhar reutilizam os links públicos; adicionar ao espaço local continua criando uma cópia independente. Veja [como acrescentar categorias e versões](catalog/README.md).
+
 **Publicação:** o login usa GitHub OAuth. A interface retira a sessão assinada da URL e a mantém no navegador por até oito horas. Somente contas em `config/approved-users.json` publicam; cada autor grava em `hinos/<seu-login>/`. A administração continua restrita ao administrador e toda exclusão é limitada a caminhos válidos sob `hinos/`.
 
 Cada publicação aceita de 1 a 80 hinos e até 1,5 MB de dados de hinos. Os JSONs, títulos, letras e links publicados são públicos: não inclua informações privadas.
@@ -66,6 +68,9 @@ src/HelpDialog.tsx              navegação da central de ajuda
 src/StudyGuide.tsx              preparação e prática dos hinos
 src/AppGuide.tsx                backup, PDF, biblioteca e compartilhamento
 src/CloudLibrary.tsx            biblioteca e administração
+src/CuratedLibrary.tsx          navegação da biblioteca curada
+catalog/                       metadados editoriais e guia de curadoria
+scripts/validate-curated.mjs    validação de referências antes do build
 src/ShareDialog.tsx             compartilhamento de conjuntos e hinos
 src/sharedHymns.ts              leitura pública e cópias compartilhadas
 src/transliteration.ts          transliteração e projeção das marcações
