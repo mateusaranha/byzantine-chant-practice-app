@@ -237,7 +237,7 @@ test("the production build contains the app shell and migration features", async
   assert.match(javascript, /Atualização:/);
   assert.match(javascript, /Atualizado em/);
   assert.match(javascript, /Solicitar permissão para publicar/);
-  assert.match(javascript, /Salvar conjunto no GitHub/);
+  assert.match(javascript, /Publicar no GitHub/);
   assert.match(javascript, /Salvamento automático pausado/);
   assert.match(javascript, /Baixar dados não lidos/);
   assert.match(javascript, /Alterar a letra removerá todas as cores e todos os sublinhados/);
@@ -364,7 +364,7 @@ test("the production build contains the app shell and migration features", async
   assert.match(source, /writeWorkspace\(localStorage, hymns\)/);
   assert.match(source, /has\("psaltikon_token"\)/);
   assert.match(source, /\{ version: 4, exportedAt: new Date\(\)\.toISOString\(\), hymns \}/);
-  assert.match(librarySource, /JSON\.stringify\(\{ title: name, slug, hymns \}\)/);
+  assert.match(librarySource, /JSON\.stringify\(\{ title: name, slug, hymns, listed \}\)/);
   assert.match(librarySource, /const published = readPublishedSet\(saved\)/);
   assert.match(pullRequestWorkflow, /pull_request:/);
   assert.match(pullRequestWorkflow, /Test interface/);

@@ -51,16 +51,16 @@ export function validateHymnSet(value) {
   if (new TextEncoder().encode(serialized).byteLength > MAX_SET_BYTES) {
     throw new HttpError(413, "O conjunto é grande demais para ser publicado.");
   }
-  return { title, slug, hymns: value.hymns };
+  return { title, slug, hymns: value.hymns, listed: value.listed !== false };
 }
 
 export function normalizeLibraryMetadata(value) {
-  if (!value || typeof value !== "object") return { title: "", updatedAt: null };
+  if (!value || typeof value !== "object") return { title: "", updatedAt: null, listed: true };
   const title = String(value.title || "").trim().slice(0, 120);
   const rawUpdatedAt = typeof value.updatedAt === "string" ? value.updatedAt.trim() : "";
   const timestamp = Date.parse(rawUpdatedAt);
   const updatedAt = rawUpdatedAt && Number.isFinite(timestamp) ? new Date(timestamp).toISOString() : null;
-  return { title, updatedAt };
+  return { title, updatedAt, listed: value.listed !== false };
 }
 
 export function curatedEntryId(path, hymnId) {
@@ -69,24 +69,58 @@ export function curatedEntryId(path, hymnId) {
   return `${file}-${hymn}`.slice(0, 96).replace(/-+$/g, "") || `hino-${Date.now()}`;
 }
 
+function validCuratedCatalog(catalog) {
+  return Boolean(
+    catalog && catalog.version === 2 && Array.isArray(catalog.categories) &&
+    Array.isArray(catalog.subcategories) && Array.isArray(catalog.entries),
+  );
+}
+
 export function validateCuratedPromotion(value, catalog, published) {
   if (!value || typeof value !== "object") throw new HttpError(400, "Dados de curadoria inválidos.");
   const path = String(value.path || "").trim();
   const hymnId = String(value.hymnId || "").trim();
-  const categoryId = String(value.categoryId || "").trim();
-  if (!isHymnPath(path) || !hymnId || !CURATED_ID_PATTERN.test(categoryId)) {
-    throw new HttpError(400, "Referência ou categoria inválida.");
+  const subcategoryId = String(value.subcategoryId || "").trim();
+  if (!isHymnPath(path) || !hymnId || !CURATED_ID_PATTERN.test(subcategoryId)) {
+    throw new HttpError(400, "Referência ou subcategoria inválida.");
   }
-  if (!catalog || catalog.version !== 1 || !Array.isArray(catalog.categories) || !Array.isArray(catalog.entries)) {
-    throw new HttpError(500, "O catálogo curado está inválido.");
-  }
-  if (!catalog.categories.some((category) => category?.id === categoryId)) {
-    throw new HttpError(400, "Categoria da Biblioteca curada não encontrada.");
+  if (!validCuratedCatalog(catalog)) throw new HttpError(500, "O catálogo curado está inválido.");
+  if (!catalog.subcategories.some((subcategory) => subcategory?.id === subcategoryId)) {
+    throw new HttpError(400, "Subcategoria da Biblioteca curada não encontrada.");
   }
   if (!published || !Array.isArray(published.hymns)) throw new HttpError(400, "Conjunto publicado inválido.");
   const matches = published.hymns.filter((hymn) => hymn && hymn.id === hymnId);
   if (matches.length !== 1) throw new HttpError(400, "O hino publicado não foi encontrado de forma única.");
-  return { path, hymnId, categoryId, hymn: matches[0] };
+  return { path, hymnId, subcategoryId, hymn: matches[0] };
+}
+
+export function validateCuratedCategoryCreation(value, catalog) {
+  if (!validCuratedCatalog(catalog)) throw new HttpError(500, "O catálogo curado está inválido.");
+  const label = String(value?.label || "").trim().slice(0, 100);
+  if (!label) throw new HttpError(400, "Informe o nome da categoria.");
+  const id = slugify(label);
+  if (!CURATED_ID_PATTERN.test(id)) throw new HttpError(400, "Nome de categoria inválido.");
+  if (catalog.categories.some((category) => category?.id === id || String(category?.label || "").localeCompare(label, "pt-BR", { sensitivity: "base" }) === 0)) {
+    throw new HttpError(409, "Essa categoria já existe.");
+  }
+  return { id, label };
+}
+
+export function validateCuratedSubcategoryCreation(value, catalog) {
+  if (!validCuratedCatalog(catalog)) throw new HttpError(500, "O catálogo curado está inválido.");
+  const categoryId = String(value?.categoryId || "").trim();
+  const label = String(value?.label || "").trim().slice(0, 100);
+  if (!CURATED_ID_PATTERN.test(categoryId) || !label) throw new HttpError(400, "Informe categoria e subcategoria válidas.");
+  if (!catalog.categories.some((category) => category?.id === categoryId)) {
+    throw new HttpError(400, "Categoria da Biblioteca curada não encontrada.");
+  }
+  const id = `${categoryId}-${slugify(label)}`.slice(0, 120).replace(/-+$/g, "");
+  if (catalog.subcategories.some((subcategory) => subcategory?.id === id || (
+    subcategory?.categoryId === categoryId && String(subcategory?.label || "").localeCompare(label, "pt-BR", { sensitivity: "base" }) === 0
+  ))) {
+    throw new HttpError(409, "Essa subcategoria já existe nessa categoria.");
+  }
+  return { id, label, categoryId };
 }
 
 class HttpError extends Error {
@@ -216,10 +250,7 @@ async function installationToken(env) {
   if (installationTokenCache?.expiresAt > now + 60_000) return installationTokenCache.token;
   const response = await fetch(
     `https://api.github.com/app/installations/${encodeURIComponent(env.GITHUB_INSTALLATION_ID)}/access_tokens`,
-    {
-      method: "POST",
-      headers: githubHeaders(await githubAppJwt(env)),
-    },
+    { method: "POST", headers: githubHeaders(await githubAppJwt(env)) },
   );
   const data = await response.json();
   if (!response.ok || !data.token) throw new Error(`Não foi possível autenticar o aplicativo no GitHub (${response.status}).`);
@@ -344,10 +375,7 @@ async function requireAdmin(request, env) {
 
 function cookieValue(request, name) {
   const cookie = request.headers.get("Cookie") || "";
-  return cookie
-    .split(";")
-    .map((part) => part.trim().split("="))
-    .find(([key]) => key === name)?.[1] || "";
+  return cookie.split(";").map((part) => part.trim().split("=")).find(([key]) => key === name)?.[1] || "";
 }
 
 async function beginLogin(request, env) {
@@ -388,9 +416,7 @@ async function finishLogin(request, env) {
   });
   const tokenData = await response.json();
   if (!response.ok || !tokenData.access_token) throw new HttpError(401, "O GitHub não autorizou o acesso.");
-  const profileResponse = await fetch("https://api.github.com/user", {
-    headers: githubHeaders(tokenData.access_token),
-  });
+  const profileResponse = await fetch("https://api.github.com/user", { headers: githubHeaders(tokenData.access_token) });
   const profile = await profileResponse.json();
   if (!profileResponse.ok || !profile.login) throw new HttpError(401, "Não foi possível ler o perfil do GitHub.");
   const session = await signSession(
@@ -460,9 +486,7 @@ async function parseBody(request) {
   if (Number(request.headers.get("Content-Length") || 0) > MAX_SET_BYTES * 1.2) {
     throw new HttpError(413, "O envio é grande demais.");
   }
-  return request.json().catch(() => {
-    throw new HttpError(400, "Dados inválidos.");
-  });
+  return request.json().catch(() => { throw new HttpError(400, "Dados inválidos."); });
 }
 
 async function sessionInfo(request, env) {
@@ -489,77 +513,104 @@ async function libraryList(env) {
     });
   const enriched = await Promise.all(items.map(async ({ sha, ...item }) => {
     const blob = await github(env, repoPath(env, `/git/blobs/${sha}`));
-    let metadata = { title: "", updatedAt: null };
-    try {
-      metadata = normalizeLibraryMetadata(JSON.parse(base64ToUtf8(blob.content || "")));
-    } catch {}
+    let metadata = { title: "", updatedAt: null, listed: true };
+    try { metadata = normalizeLibraryMetadata(JSON.parse(base64ToUtf8(blob.content || ""))); } catch {}
     return { ...item, ...metadata };
   }));
-  return enriched.sort((a, b) => a.owner.localeCompare(b.owner) || a.slug.localeCompare(b.slug));
+  return enriched
+    .filter((item) => item.listed)
+    .map(({ listed, ...item }) => item)
+    .sort((a, b) => a.owner.localeCompare(b.owner) || a.slug.localeCompare(b.slug));
 }
 
 async function libraryItem(env, path) {
-  if (!isHymnPath(path)) {
-    throw new HttpError(400, "Caminho de conjunto inválido.");
-  }
+  if (!isHymnPath(path)) throw new HttpError(400, "Caminho de conjunto inválido.");
   const stored = await readRepoJson(env, path);
   if (!stored) throw new HttpError(404, "Conjunto não encontrado.");
   return stored.data;
 }
 
+async function curatedCatalog(env) {
+  const stored = await readRepoJson(env, CURATED_PATH);
+  if (!stored || !validCuratedCatalog(stored.data)) throw new HttpError(500, "Catálogo curado não encontrado ou inválido.");
+  return stored.data;
+}
+
 async function saveSet(request, env) {
-  const { user } = await requireApproved(request, env);
+  const { user, config } = await requireApproved(request, env);
   const value = validateHymnSet(await parseBody(request));
+  if (!value.listed && user.login !== config.admin) {
+    throw new HttpError(403, "Somente o curador pode publicar conteúdo fora da lista de conjuntos.");
+  }
   const path = `hinos/${user.login}/${value.slug}.json`;
   const document = {
     version: 1,
     title: value.title,
     owner: { login: user.login, name: user.name, avatarUrl: user.avatarUrl },
     updatedAt: new Date().toISOString(),
+    listed: value.listed,
     hymns: value.hymns,
   };
   await writeRepoJson(env, path, document, `Save Psaltikon set: ${value.title}`);
-  return { path, title: value.title, updatedAt: document.updatedAt };
+  return { path, title: value.title, updatedAt: document.updatedAt, listed: document.listed };
+}
+
+async function createCuratedCategory(request, env) {
+  await requireAdmin(request, env);
+  const body = await parseBody(request);
+  const catalog = structuredClone(await curatedCatalog(env));
+  const category = validateCuratedCategoryCreation(body, catalog);
+  catalog.categories.push(category);
+  await writeRepoJson(env, CURATED_PATH, catalog, `Create Psaltikon curated category: ${category.label}`);
+  return { category, catalog };
+}
+
+async function createCuratedSubcategory(request, env) {
+  await requireAdmin(request, env);
+  const body = await parseBody(request);
+  const catalog = structuredClone(await curatedCatalog(env));
+  const subcategory = validateCuratedSubcategoryCreation(body, catalog);
+  catalog.subcategories.push(subcategory);
+  await writeRepoJson(env, CURATED_PATH, catalog, `Create Psaltikon curated subcategory: ${subcategory.label}`);
+  return { subcategory, catalog };
 }
 
 async function promoteCurated(request, env) {
-  const { user } = await requireAdmin(request, env);
+  await requireAdmin(request, env);
   const body = await parseBody(request);
-  const catalogStored = await readRepoJson(env, CURATED_PATH);
-  if (!catalogStored) throw new HttpError(500, "Catálogo curado não encontrado.");
+  const catalog = structuredClone(await curatedCatalog(env));
   const path = String(body.path || "").trim();
   if (!isHymnPath(path)) throw new HttpError(400, "Caminho de conjunto inválido.");
   const publishedStored = await readRepoJson(env, path);
   if (!publishedStored) throw new HttpError(404, "Conjunto publicado não encontrado.");
-  const promotion = validateCuratedPromotion(body, catalogStored.data, publishedStored.data);
-  const catalog = structuredClone(catalogStored.data);
+  const promotion = validateCuratedPromotion(body, catalog, publishedStored.data);
   const sourceMatch = catalog.entries.find(
     (entry) => entry?.source?.path === promotion.path && entry?.source?.hymnId === promotion.hymnId,
   );
   if (sourceMatch) {
-    if (sourceMatch.categoryIds.includes(promotion.categoryId)) {
-      return { changed: false, entry: sourceMatch };
-    }
-    sourceMatch.categoryIds = [...sourceMatch.categoryIds, promotion.categoryId];
-    await writeRepoJson(env, CURATED_PATH, catalog, `Curate Psaltikon hymn: ${sourceMatch.title}`);
-    return { changed: true, entry: sourceMatch };
+    if (sourceMatch.subcategoryId === promotion.subcategoryId) return { changed: false, entry: sourceMatch, catalog };
+    sourceMatch.subcategoryId = promotion.subcategoryId;
+    await writeRepoJson(env, CURATED_PATH, catalog, `Move Psaltikon curated hymn: ${sourceMatch.title}`);
+    return { changed: true, entry: sourceMatch, catalog };
   }
   const usedIds = new Set(catalog.entries.map((entry) => entry?.id).filter(Boolean));
   const baseId = curatedEntryId(promotion.path, promotion.hymnId);
   let entryId = baseId;
   let suffix = 2;
   while (usedIds.has(entryId)) entryId = `${baseId}-${suffix++}`;
-  const maxOrder = catalog.entries.reduce((highest, entry) => Math.max(highest, Number(entry?.order) || 0), 0);
+  const maxOrder = catalog.entries
+    .filter((entry) => entry?.subcategoryId === promotion.subcategoryId)
+    .reduce((highest, entry) => Math.max(highest, Number(entry?.order) || 0), 0);
   const entry = {
     id: entryId,
     title: String(promotion.hymn.title || "Hino sem título").trim().slice(0, 160) || "Hino sem título",
-    categoryIds: [promotion.categoryId],
+    subcategoryId: promotion.subcategoryId,
     order: maxOrder + 10,
     source: { path: promotion.path, hymnId: promotion.hymnId },
   };
   catalog.entries.push(entry);
   await writeRepoJson(env, CURATED_PATH, catalog, `Curate Psaltikon hymn: ${entry.title}`);
-  return { changed: true, entry };
+  return { changed: true, entry, catalog };
 }
 
 async function deleteSet(request, env, path) {
@@ -589,7 +640,6 @@ async function adminAction(request, env, action) {
     }
     return { ok: true };
   }
-
   const login = normalizeLogin(body.login);
   if (!/^[a-z\d](?:[a-z\d]|-(?=[a-z\d])){0,38}$/i.test(login)) throw new HttpError(400, "Login inválido.");
   if (action === "add") {
@@ -599,11 +649,7 @@ async function adminAction(request, env, action) {
   }
   if (action === "revoke") {
     if (login === config.admin) throw new HttpError(400, "O administrador não pode ser removido.");
-    await updatePublishers(
-      env,
-      (users) => users.filter((item) => item !== login),
-      `Revoke Psaltikon publisher: ${login}`,
-    );
+    await updatePublishers(env, (users) => users.filter((item) => item !== login), `Revoke Psaltikon publisher: ${login}`);
     return { ok: true };
   }
   throw new HttpError(404, "Ação administrativa desconhecida.");
@@ -635,6 +681,7 @@ async function route(request, env) {
   if (url.pathname === "/api/library/item" && request.method === "GET") {
     return jsonResponse(await libraryItem(env, url.searchParams.get("path")), env);
   }
+  if (url.pathname === "/api/curated" && request.method === "GET") return jsonResponse(await curatedCatalog(env), env);
   if (url.pathname === "/api/session" && request.method === "GET") return jsonResponse(await sessionInfo(request, env), env);
   if (url.pathname === "/api/access/request" && request.method === "POST") {
     return jsonResponse(await requestAccess(request, env), env);
@@ -645,6 +692,12 @@ async function route(request, env) {
   }
   if (url.pathname === "/api/curated" && request.method === "POST") {
     return jsonResponse(await promoteCurated(request, env), env, 201);
+  }
+  if (url.pathname === "/api/curated/categories" && request.method === "POST") {
+    return jsonResponse(await createCuratedCategory(request, env), env, 201);
+  }
+  if (url.pathname === "/api/curated/subcategories" && request.method === "POST") {
+    return jsonResponse(await createCuratedSubcategory(request, env), env, 201);
   }
   const adminMatch = url.pathname.match(/^\/api\/admin\/(approve|reject|add|revoke)$/);
   if (adminMatch && request.method === "POST") {
