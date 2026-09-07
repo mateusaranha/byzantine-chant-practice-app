@@ -1,11 +1,22 @@
 {
   "version": 2,
   "categories": [
-    { "id": "oficios-e-ocasioes", "label": "Ofícios e ocasiões" }
+    {
+      "id": "oficios-e-ocasioes",
+      "label": "Ofícios e ocasiões"
+    }
   ],
   "subcategories": [
-    { "id": "necrosima", "label": "Necrosima", "categoryId": "oficios-e-ocasioes" },
-    { "id": "paraclisis", "label": "Paráclisis", "categoryId": "oficios-e-ocasioes" }
+    {
+      "id": "necrosima",
+      "label": "Necrosima",
+      "categoryId": "oficios-e-ocasioes"
+    },
+    {
+      "id": "paraclisis",
+      "label": "Paráclisis",
+      "categoryId": "oficios-e-ocasioes"
+    }
   ],
   "entries": [
     {
@@ -13,7 +24,10 @@
       "title": "Paráclisis — Dimitrios Papagiannopoulos",
       "subcategoryId": "paraclisis",
       "order": 10,
-      "source": { "path": "hinos/mateusaranha/paraclisis.json", "hymnId": "primary-hymn" },
+      "source": {
+        "path": "hinos/mateusaranha/paraclisis.json",
+        "hymnId": "primary-hymn"
+      },
       "note": "Amostra inicial, selecionada do conjunto Paráclisis de @mateusaranha."
     },
     {
@@ -21,8 +35,111 @@
       "title": "Τῶν Ἁγίων ὁ χορός",
       "subcategoryId": "necrosima",
       "order": 10,
-      "source": { "path": "hinos/mateusaranha/necrosima.json", "hymnId": "primary-hymn" },
+      "source": {
+        "path": "hinos/mateusaranha/necrosima.json",
+        "hymnId": "primary-hymn"
+      },
       "note": "Amostra inicial, selecionada do conjunto Necrosima de @mateusaranha."
+    },
+    {
+      "id": "teste-shared-hymn-0",
+      "title": "Ὁ ὑψωθεὶς ἐν τῷ Σταυρῷ. 06/09 Matinas e pequena entrada",
+      "subcategoryId": "necrosima",
+      "order": 20,
+      "source": {
+        "path": "hinos/mateusaranha/teste.json",
+        "hymnId": "shared-hymn-0"
+      }
+    },
+    {
+      "id": "teste-shared-hymn-1",
+      "title": "Θεοτοκίον. 06/09 Matinas",
+      "subcategoryId": "necrosima",
+      "order": 30,
+      "source": {
+        "path": "hinos/mateusaranha/teste.json",
+        "hymnId": "shared-hymn-1"
+      }
+    },
+    {
+      "id": "teste-hymn-1788635406901-infuk",
+      "title": "Θεοτοκίον.",
+      "subcategoryId": "necrosima",
+      "order": 40,
+      "source": {
+        "path": "hinos/mateusaranha/teste.json",
+        "hymnId": "hymn-1788635406901-infuk"
+      }
+    },
+    {
+      "id": "teste-shared-hymn-2",
+      "title": "Κοντάκιον. 06/09 Pequena entrada",
+      "subcategoryId": "necrosima",
+      "order": 50,
+      "source": {
+        "path": "hinos/mateusaranha/teste.json",
+        "hymnId": "shared-hymn-2"
+      }
+    },
+    {
+      "id": "teste-shared-hymn-3",
+      "title": "Ἀπολυτίκιον τῆς Ἑορτῆς. 08/09 Matinas e Pequena entrada",
+      "subcategoryId": "necrosima",
+      "order": 60,
+      "source": {
+        "path": "hinos/mateusaranha/teste.json",
+        "hymnId": "shared-hymn-3"
+      }
+    },
+    {
+      "id": "teste-shared-hymn-4",
+      "title": "Τῶν Ἐγκαινίων. 13/09 Matinas e Pequena entrada",
+      "subcategoryId": "necrosima",
+      "order": 70,
+      "source": {
+        "path": "hinos/mateusaranha/teste.json",
+        "hymnId": "shared-hymn-4"
+      }
+    },
+    {
+      "id": "teste-shared-hymn-5",
+      "title": "Προεόρτιον. 13/09 Matinas e Pequena entrada",
+      "subcategoryId": "necrosima",
+      "order": 80,
+      "source": {
+        "path": "hinos/mateusaranha/teste.json",
+        "hymnId": "shared-hymn-5"
+      }
+    },
+    {
+      "id": "teste-shared-hymn-6",
+      "title": "Κοντάκιον. 13/09 Pequena entrada",
+      "subcategoryId": "necrosima",
+      "order": 90,
+      "source": {
+        "path": "hinos/mateusaranha/teste.json",
+        "hymnId": "shared-hymn-6"
+      }
+    },
+    {
+      "id": "teste-shared-hymn-7",
+      "title": "Τοῦ Σταυροῦ. 14/09 Matinas e Pequena entrada",
+      "subcategoryId": "necrosima",
+      "order": 100,
+      "source": {
+        "path": "hinos/mateusaranha/teste.json",
+        "hymnId": "shared-hymn-7"
+      }
+    },
+    {
+      "id": "teste-shared-hymn-8",
+      "title": "Κοντάκιον. 14/09 Pequena entrada",
+      "subcategoryId": "necrosima",
+      "order": 110,
+      "source": {
+        "path": "hinos/mateusaranha/teste.json",
+        "hymnId": "shared-hymn-8"
+      }
     }
   ]
 }
