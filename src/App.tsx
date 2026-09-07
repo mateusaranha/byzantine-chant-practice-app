@@ -1332,6 +1332,11 @@ function LocalWorkspace() {
           hymns={hymns}
           trigger={reorderTrigger}
           onMove={(id, direction) => setHymns((current) => moveHymn(current, id, direction))}
+          onDeleteSelected={(ids) => setHymns((current) => {
+            const selectedIds = new Set(ids);
+            if (!selectedIds.size || selectedIds.size >= current.length) return current;
+            return current.filter((hymn) => !selectedIds.has(hymn.id));
+          })}
           onClose={() => setReorderTrigger(null)}
         />
       )}
