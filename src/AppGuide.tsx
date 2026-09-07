@@ -4,12 +4,15 @@ export default function AppGuide() {
   return (
     <>
       <p>
-        Estas orientações explicam onde o trabalho fica guardado e o que acontece ao criar uma cópia de segurança, exportar um PDF ou usar a biblioteca. Elas complementam o Guia de estudo sem fazer parte das etapas de preparação do canto.
+        Estas orientações explicam onde o trabalho fica guardado e o que acontece ao criar uma cópia de segurança, exportar um PDF, publicar ou usar a Biblioteca pública. Elas complementam o Guia de estudo sem fazer parte das etapas de preparação do canto.
       </p>
 
       <HelpSection title="Salvar e recuperar seu trabalho">
         <p>
           Os hinos, as gravações escolhidas, as marcações e os ajustes são salvos automaticamente neste navegador. Não é preciso apertar um botão a cada alteração. Esse salvamento pertence a este navegador e dispositivo: ele não sincroniza o trabalho com outros aparelhos e pode ser perdido se os dados do site forem apagados.
+        </p>
+        <p>
+          Salvar automaticamente no navegador não é o mesmo que publicar em <strong>Meus conjuntos</strong> ou na <strong>Biblioteca curada</strong>. O trabalho local continua separado das versões públicas até que você escolha publicá-las.
         </p>
         <p>
           <strong>Exportar cópia de segurança</strong> baixa um arquivo com todos os hinos do seu espaço. Guarde-o em um local conhecido para recuperar o trabalho, levá-lo a outro dispositivo ou se proteger antes de uma mudança importante. A exportação não precisa de login e não publica nem compartilha os hinos.
@@ -34,15 +37,39 @@ export default function AppGuide() {
         </p>
       </HelpSection>
 
-      <HelpSection title="Usar a biblioteca e compartilhar conjuntos">
+      <HelpSection title="Explorar a Biblioteca pública">
         <p>
-          A <strong>Biblioteca online</strong> reúne conjuntos públicos salvos no GitHub. Qualquer pessoa pode consultá-los e abri-los sem entrar com uma conta; somente pessoas autorizadas podem publicar. Na biblioteca, <strong>Abrir</strong> pede confirmação e substitui o espaço atual pelo conjunto escolhido. Exporte antes uma cópia de segurança se houver hinos que você queira preservar.
+          O botão <strong>Biblioteca online</strong> abre a <strong>Biblioteca pública</strong>. A entrada é dividida em duas áreas: <strong>Biblioteca curada</strong> e <strong>Meus conjuntos</strong> para usuários autorizados a publicar, ou <strong>Conjuntos publicados</strong> para os demais visitantes. Qualquer pessoa pode consultar o conteúdo público sem entrar com uma conta.
         </p>
         <p>
-          Publicar é diferente de fazer uma cópia de segurança: a publicação torna públicos todos os hinos que estão abertos naquele momento. Alterações feitas depois apenas no seu espaço não aparecem na versão pública até que o conjunto seja salvo novamente na biblioteca.
+          A <strong>Biblioteca curada</strong> organiza uma seleção editorial de hinos em três níveis: <strong>categoria → subcategoria → hinos</strong>. Escolha primeiro uma categoria, depois uma subcategoria e, por fim, o hino que deseja estudar. A curadoria não cria outra cópia do hino: ela organiza e referencia o mesmo conteúdo-base publicado.
         </p>
         <p>
-          Um link de compartilhamento abre a versão publicada mais recente em uma área temporária, sem alterar seu espaço. Os ajustes feitos ali são descartados ao sair ou atualizar a página. <strong>Adicionar ao meu espaço</strong> acrescenta uma cópia local independente aos seus hinos; essa cópia pode ser modificada sem alterar a publicação original.
+          Em <strong>Meus conjuntos</strong> ou <strong>Conjuntos publicados</strong>, <strong>Abrir</strong> pede confirmação e substitui o espaço atual pelo conjunto escolhido. Exporte antes uma cópia de segurança se houver hinos no espaço atual que você queira preservar.
+        </p>
+      </HelpSection>
+
+      <HelpSection title="Publicar e adicionar à Biblioteca curada">
+        <p>
+          Publicar é diferente de fazer uma cópia de segurança. Pessoas autorizadas podem salvar os hinos abertos em <strong>Meus conjuntos</strong>; essa publicação fica pública. Alterações feitas depois apenas no seu espaço não aparecem na versão publicada até que ela seja salva novamente.
+        </p>
+        <p>
+          Para o curador, o formulário também oferece <strong>Biblioteca curada</strong> e <strong>Ambos</strong>. Em <strong>Biblioteca curada</strong>, o conteúdo-base é publicado para servir à curadoria, mas não aparece também em Meus conjuntos. Em <strong>Ambos</strong>, o mesmo conteúdo-base aparece nas duas áreas, sem ser duplicado.
+        </p>
+        <p>
+          Ao adicionar à Biblioteca curada, escolha uma <strong>categoria</strong> e uma <strong>subcategoria</strong>. O curador pode criar novas categorias ou subcategorias diretamente nesse fluxo. Por padrão, o Psaltikon seleciona <strong>Todos os hinos do conjunto</strong>; se apenas alguns devem entrar naquela subcategoria, use <strong>Selecionar hinos individualmente</strong> e marque os desejados.
+        </p>
+        <p>
+          Um conjunto também pode ser publicado primeiro e adicionado à curadoria mais tarde. Isso permite preparar rapidamente um material, mantê-lo entre seus conjuntos e decidir depois se ele está suficientemente revisado para integrar a Biblioteca curada.
+        </p>
+      </HelpSection>
+
+      <HelpSection title="Compartilhar e adicionar ao seu espaço">
+        <p>
+          Um link de compartilhamento abre a versão publicada mais recente em uma área temporária, sem alterar seu espaço. Os ajustes feitos ali são descartados ao sair ou atualizar a página, e não modificam a publicação original.
+        </p>
+        <p>
+          <strong>Adicionar ao meu espaço</strong> acrescenta uma cópia local independente aos seus hinos. A partir daí, essa cópia pode ser modificada normalmente sem alterar o material público original.
         </p>
       </HelpSection>
     </>
