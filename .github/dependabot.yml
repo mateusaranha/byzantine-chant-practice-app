@@ -9,25 +9,58 @@ updates:
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
     groups:
       react:
+        applies-to: version-updates
         patterns:
           - "react"
           - "react-dom"
           - "@types/react"
           - "@types/react-dom"
+        update-types:
+          - "minor"
+          - "patch"
       vite:
+        applies-to: version-updates
         patterns:
           - "vite"
           - "@vitejs/*"
+        update-types:
+          - "minor"
+          - "patch"
+      routine-npm:
+        applies-to: version-updates
+        patterns:
+          - "*"
+        exclude-patterns:
+          - "typescript"
+        update-types:
+          - "minor"
+          - "patch"
 
   - package-ecosystem: "npm"
     directory: "/publisher-worker"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
+    groups:
+      routine-worker:
+        applies-to: version-updates
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
 
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
+    groups:
+      routine-actions:
+        applies-to: version-updates
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"

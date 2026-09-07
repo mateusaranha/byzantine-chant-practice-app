@@ -63,7 +63,8 @@ Essas ideias devem permanecer nas Issues enquanto não houver problema concreto,
 
 Camadas possíveis, sem urgência comprovada para o uso atual:
 
-- `dependabot.yml` semanal para npm da interface, npm do Worker e GitHub Actions;
+- `dependabot.yml` mensal para version updates de npm da interface, npm do Worker e GitHub Actions; agrupar atualizações minor/patch rotineiras para reduzir ruído, mantendo majors e TypeScript em PRs individuais;
+- tratar atualizações de segurança do Dependabot de forma independente e com prioridade, sem esperar a rodada mensal de version updates;
 - Content Security Policy testada com YouTube, Worker, GitHub e fontes locais;
 - limitação de requisições no Worker se abuso ou exposição maior justificar;
 - evitar builds do Pages causados apenas por commits em `hinos/` ou `config/`, se o volume crescer;
