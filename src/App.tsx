@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import CloudLibrary from "./CloudLibrary";
 import HelpDialog from "./HelpDialog";
 import PdfExportDialog, { DEFAULT_PDF_EXPORT_SETTINGS } from "./PdfExportDialog";
@@ -1068,6 +1068,9 @@ function LocalWorkspace() {
   const [help, setHelp] = useState<{ page: HelpPage; trigger: HTMLButtonElement } | null>(null);
   const [reorderTrigger, setReorderTrigger] = useState<HTMLButtonElement | null>(null);
   const backupInputRef = useRef<HTMLInputElement>(null);
+  const hymnListActionsRef = useRef<HTMLDivElement>(null);
+  const hymnDisplayMenuRef = useRef<HTMLDetailsElement>(null);
+  const displayAnchorTopRef = useRef<number | null>(null);
 
   useEffect(() => {
     const stored = readWorkspace(localStorage);
@@ -1082,6 +1085,27 @@ function LocalWorkspace() {
     if (stored.status === "unreadable") setStorageProblem({ kind: "read", raw: stored.raw });
     setHydrated(true);
   }, []);
+
+  useEffect(() => {
+    function closeDisplayMenuOnOutsidePointer(event: PointerEvent) {
+      const menu = hymnDisplayMenuRef.current;
+      if (menu?.open && event.target instanceof Node && !menu.contains(event.target)) {
+        menu.removeAttribute("open");
+      }
+    }
+
+    document.addEventListener("pointerdown", closeDisplayMenuOnOutsidePointer);
+    return () => document.removeEventListener("pointerdown", closeDisplayMenuOnOutsidePointer);
+  }, []);
+
+  useLayoutEffect(() => {
+    const previousTop = displayAnchorTopRef.current;
+    const actions = hymnListActionsRef.current;
+    if (previousTop === null || !actions) return;
+    displayAnchorTopRef.current = null;
+    const offset = actions.getBoundingClientRect().top - previousTop;
+    if (offset) window.scrollBy({ top: offset, left: 0, behavior: "auto" });
+  }, [collapsedHymnIds]);
 
   useEffect(() => {
     if (!hydrated || storageProblem) return;
@@ -1123,6 +1147,13 @@ function LocalWorkspace() {
   }
 
   function setAllHymnPanelsOpen(open: boolean) {
+    const actions = hymnListActionsRef.current;
+    if (actions) displayAnchorTopRef.current = actions.getBoundingClientRect().top;
+
+    const menu = hymnDisplayMenuRef.current;
+    menu?.removeAttribute("open");
+    menu?.querySelector<HTMLElement>("summary")?.focus({ preventScroll: true });
+
     const hymnIds = hymns.map((hymn) => hymn.id);
     setCollapsedHymnIds((current) => {
       const next = new Set(current);
@@ -1277,7 +1308,7 @@ function LocalWorkspace() {
         ))}
       </div>
 
-      <div className="hymn-list-actions">
+      <div className="hymn-list-actions" ref={hymnListActionsRef}>
         <button className="add-hymn" onClick={addHymn}>
           <span aria-hidden="true">+</span>
           Adicionar outro hino
@@ -1288,7 +1319,7 @@ function LocalWorkspace() {
             Organizar hinos
           </button>
         )}
-        <details className="hymn-display-menu">
+        <details className="hymn-display-menu" ref={hymnDisplayMenuRef}>
           <summary>Exibição <span aria-hidden="true">⌄</span></summary>
           <div className="hymn-display-menu-options">
             <button type="button" onClick={() => setAllHymnPanelsOpen(false)}>Recolher todos</button>
