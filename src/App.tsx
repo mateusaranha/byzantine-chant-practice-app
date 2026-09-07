@@ -33,6 +33,7 @@ type ActiveTool =
   | "eraser"
   | null;
 type PlayerStateEvent = { data: number };
+type PlayerLoadStatus = "loading" | "ready" | "error";
 type YouTubePlayer = {
   destroy: () => void;
   playVideo: () => void;
@@ -52,7 +53,11 @@ declare global {
         options: {
           videoId: string;
           playerVars: Record<string, number>;
-          events: { onStateChange: (event: PlayerStateEvent) => void };
+          events: {
+            onReady?: () => void;
+            onError?: () => void;
+            onStateChange: (event: PlayerStateEvent) => void;
+          };
         },
       ) => YouTubePlayer;
     };
@@ -77,23 +82,50 @@ function isMelismaTool(tool: ActiveTool) {
 }
 
 const PUBLISHER_API_URL = String(import.meta.env.VITE_PUBLISHER_API_URL || "").replace(/\/$/, "");
+const YOUTUBE_API_URL = "https://www.youtube.com/iframe_api";
+const YOUTUBE_LOAD_TIMEOUT_MS = 15000;
 
 let youtubeApiPromise: Promise<void> | null = null;
 
 function loadYouTubeApi() {
   if (window.YT?.Player) return Promise.resolve();
   if (youtubeApiPromise) return youtubeApiPromise;
-  youtubeApiPromise = new Promise((resolve) => {
+  youtubeApiPromise = new Promise<void>((resolve, reject) => {
     const previous = window.onYouTubeIframeAPIReady;
-    window.onYouTubeIframeAPIReady = () => {
-      previous?.();
-      resolve();
+    const existing = document.querySelector<HTMLScriptElement>(`script[src="${YOUTUBE_API_URL}"]`);
+    const script = existing || document.createElement("script");
+    let settled = false;
+    let timeout = 0;
+
+    const finish = (callback: () => void) => {
+      if (settled) return;
+      settled = true;
+      window.clearTimeout(timeout);
+      script.removeEventListener("error", handleError);
+      if (window.onYouTubeIframeAPIReady === handleReady) window.onYouTubeIframeAPIReady = previous;
+      callback();
     };
-    if (!document.querySelector('script[src="https://www.youtube.com/iframe_api"]')) {
-      const script = document.createElement("script");
-      script.src = "https://www.youtube.com/iframe_api";
+    const handleReady = () => {
+      try {
+        previous?.();
+      } finally {
+        finish(resolve);
+      }
+    };
+    const handleError = () => finish(() => reject(new Error("YouTube API unavailable")));
+
+    window.onYouTubeIframeAPIReady = handleReady;
+    timeout = window.setTimeout(handleError, YOUTUBE_LOAD_TIMEOUT_MS);
+    script.addEventListener("error", handleError, { once: true });
+    if (!existing) {
+      script.src = YOUTUBE_API_URL;
+      script.async = true;
       document.head.appendChild(script);
     }
+  }).catch((error) => {
+    youtubeApiPromise = null;
+    if (!window.YT?.Player) document.querySelector<HTMLScriptElement>(`script[src="${YOUTUBE_API_URL}"]`)?.remove();
+    throw error;
   });
   return youtubeApiPromise;
 }
@@ -202,6 +234,8 @@ function HymnWorkspace({
   const [coloursVisible, setColoursVisible] = useState(true);
   const [melismasVisible, setMelismasVisible] = useState(true);
   const [transliterated, setTransliterated] = useState(false);
+  const [playerStatus, setPlayerStatus] = useState<PlayerLoadStatus>("loading");
+  const [playerAttempt, setPlayerAttempt] = useState(0);
   const lyricsRef = useRef<HTMLDivElement>(null);
   const playerHostRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<YouTubePlayer | null>(null);
@@ -222,16 +256,32 @@ function HymnWorkspace({
   useEffect(() => {
     if (!hymn.videoId || !playerHostRef.current) return;
     let cancelled = false;
+    let readyTimeout = 0;
+    setPlayerStatus("loading");
+
+    const markReady = () => {
+      if (cancelled) return;
+      window.clearTimeout(readyTimeout);
+      setPlayerStatus("ready");
+    };
+    const markError = () => {
+      if (cancelled) return;
+      window.clearTimeout(readyTimeout);
+      setPlayerStatus("error");
+    };
 
     loadYouTubeApi().then(() => {
       if (cancelled || !window.YT || !playerHostRef.current) return;
       playerRef.current?.destroy();
       const mount = document.createElement("div");
       playerHostRef.current.replaceChildren(mount);
+      readyTimeout = window.setTimeout(markError, YOUTUBE_LOAD_TIMEOUT_MS);
       playerRef.current = new window.YT.Player(mount, {
         videoId: hymn.videoId,
         playerVars: { rel: 0, modestbranding: 1 },
         events: {
+          onReady: markReady,
+          onError: markError,
           onStateChange: ({ data }) => {
             if (data !== 0 || !playerRef.current) return;
             const mode = repeatModeRef.current;
@@ -245,14 +295,15 @@ function HymnWorkspace({
           },
         },
       });
-    });
+    }).catch(markError);
 
     return () => {
       cancelled = true;
+      window.clearTimeout(readyTimeout);
       playerRef.current?.destroy();
       playerRef.current = null;
     };
-  }, [hymn.videoId]);
+  }, [hymn.videoId, playerAttempt]);
 
   const segments = useMemo(() => {
     const boundaries = new Set([0, hymn.lyrics.length]);
@@ -349,7 +400,17 @@ function HymnWorkspace({
   }
 
   function loadVideo() {
-    onChange({ ...hymn, videoId: youtubeId(hymn.videoInput) });
+    const videoId = youtubeId(hymn.videoInput);
+    if (videoId) {
+      setPlayerStatus("loading");
+      setPlayerAttempt((current) => current + 1);
+    }
+    onChange({ ...hymn, videoId });
+  }
+
+  function retryVideo() {
+    setPlayerStatus("loading");
+    setPlayerAttempt((current) => current + 1);
   }
 
   function changeTargetSpeed(amount: number) {
@@ -747,11 +808,33 @@ function HymnWorkspace({
           </div>
           <div className="video-frame">
             {hymn.videoId ? (
-              <div
-                ref={playerHostRef}
-                className="youtube-player"
-                aria-label={`Gravação de referência do hino ${index + 1}`}
-              />
+              <>
+                <div
+                  ref={playerHostRef}
+                  className="youtube-player"
+                  aria-label={`Gravação de referência do hino ${index + 1}`}
+                />
+                {playerStatus !== "ready" && (
+                  <div
+                    className={`video-status ${playerStatus}`}
+                    role={playerStatus === "error" ? "alert" : "status"}
+                    aria-live="polite"
+                  >
+                    {playerStatus === "loading" ? (
+                      <>
+                        <div className="video-spinner" aria-hidden="true" />
+                        <span>Carregando gravação…</span>
+                      </>
+                    ) : (
+                      <>
+                        <strong>Não foi possível carregar a gravação.</strong>
+                        <span>Confira sua conexão ou tente novamente.</span>
+                        <button className="video-retry" onClick={retryVideo}>Tentar novamente</button>
+                      </>
+                    )}
+                  </div>
+                )}
+              </>
             ) : (
               <div className="video-empty">
                 <div className="play-icon" aria-hidden="true">▶</div>
