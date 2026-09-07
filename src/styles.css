@@ -364,26 +364,3 @@ footer { max-width:1500px; margin:15px auto 0; display:flex; align-items:center;
   .print-script-label { margin:0 0 1mm; color:#6f6257!important; font:600 7.5pt/1.25 Arial,sans-serif; letter-spacing:.08em; text-transform:uppercase; }
   .print-meta { display:block; margin:3mm 0 0; color:#74665a; text-align:right; font:7.5pt Arial,sans-serif; break-before:avoid; page-break-before:avoid; }
 }
-
-/* Curated navigation shares the existing library palette and controls. */
-.curated-library { margin: 16px 0 20px; }
-.curated-library h3 { margin: 0; font-size: 1.25rem; }
-.curated-library h4 { margin: 20px 0 12px; font-size: 1.1rem; }
-.curated-library > p { line-height: 1.6; }
-.curated-categories {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
-  gap: 12px;
-}
-.curated-categories button,.curated-categories .curated-set-link {
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:16px;
-  text-align:left;
-  min-height:64px;
-}
-.curated-categories strong { min-width: 0; overflow-wrap: anywhere; }
-.curated-categories span { font-size: .875rem; white-space: nowrap; }
-.curated-hint { font-size: .875rem; }
-.curated-library .cloud-primary,.curated-library .cloud-secondary { font-size: .875rem; }

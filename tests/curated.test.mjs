@@ -116,3 +116,66 @@ test("curated UI keeps the public hierarchy compact and opens whole sets", async
   assert.match(source, /curated-set-link/);
   assert.doesNotMatch(source, /subcategory\.entries|curated-entry/);
 });
+
+test("inline categories toggle exclusively and preserve whole-set destinations", async () => {
+  const { default: ts } = await import("typescript");
+  const dataUrl = js => `data:text/javascript;base64,${Buffer.from(js).toString("base64")}`;
+  // Exercise the component's event handlers without adding a DOM dependency.
+  const hooksUrl = dataUrl(`
+    let value = null;
+    export const useId = () => 'curated-test';
+    export const useState = () => [value, update => { value = update(value); }];
+  `);
+  const source = await readFile(new URL("../src/CuratedLibrary.tsx", import.meta.url), "utf8");
+  let js = ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.ESNext, jsx: ts.JsxEmit.ReactJSX } }).outputText;
+  for (const [dependency, url] of Object.entries({
+    react: hooksUrl,
+    "react/jsx-runtime": import.meta.resolve("react/jsx-runtime"),
+    "../catalog/curated.json": dataUrl(`export default ${JSON.stringify(fixture())}`),
+    "./curatedCatalog": curatedModuleUrl,
+    "./sharedHymns": import.meta.resolve("../scripts/catalog-modules.mjs"),
+  })) {
+    // The catalog loader exports shared helpers together, so expose the actual URL builder.
+    const resolved = dependency === "./sharedHymns"
+      ? dataUrl(`import { shared } from ${JSON.stringify(url)}; export const createShareUrl = shared.createShareUrl;`)
+      : url;
+    js = js.replaceAll(JSON.stringify(dependency), JSON.stringify(resolved));
+  }
+  const { default: Component } = await import(dataUrl(js));
+  const previousWindow = globalThis.window;
+  globalThis.window = { location: { href: "https://example.org/psaltikon/" } };
+  try {
+    const nodes = value => Array.isArray(value) ? value.flatMap(nodes)
+      : value && typeof value === "object" && value.props ? [value, ...nodes(value.props.children)] : [];
+    const render = catalogOverride => nodes(Component({ apiBase: "", catalogOverride }));
+    const buttons = tree => tree.filter(node => node.type === "button");
+    const links = tree => tree.filter(node => node.type === "a");
+    let tree = render();
+    assert.equal(buttons(tree).length, 2); // Empty category is not public.
+    assert.ok(buttons(tree).every(node => node.props["aria-expanded"] === false));
+    assert.equal(links(tree).length, 0);
+    buttons(tree)[0].props.onClick();
+    tree = render();
+    assert.deepEqual(buttons(tree).map(node => node.props["aria-expanded"]), [true, false]);
+    const trigger = buttons(tree)[0];
+    const panel = tree.find(node => node.props.id === trigger.props["aria-controls"]);
+    assert.equal(panel.props.hidden, false);
+    assert.equal(panel.props["aria-labelledby"], trigger.props.id);
+    assert.equal(links(tree).length, 2);
+    for (const link of links(tree)) {
+      assert.deepEqual(shared.parseShareRequest(new URL(link.props.href).search), { path, hymnId: null });
+    }
+    buttons(tree)[1].props.onClick();
+    tree = render();
+    assert.deepEqual(buttons(tree).map(node => node.props["aria-expanded"]), [false, true]);
+    assert.equal(links(tree).length, 1);
+    buttons(tree)[1].props.onClick();
+    tree = render();
+    assert.ok(buttons(tree).every(node => !node.props["aria-expanded"]));
+    assert.equal(links(tree).length, 0);
+    assert.equal(buttons(render({ version: 3, categories: [], subcategories: [] })).length, 0);
+  } finally {
+    if (previousWindow === undefined) delete globalThis.window;
+    else globalThis.window = previousWindow;
+  }
+});
