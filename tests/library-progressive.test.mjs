@@ -18,7 +18,7 @@ test("public library keeps progressive disclosure and exposes simple admin curat
   assert.match(source, /\+ Nova categoria/);
   assert.match(source, /\+ Nova subcategoria/);
   assert.match(source, /subcategoryId: curatedSubcategoryId/);
-  assert.match(source, /listed: false/);
+  assert.match(source, /publishBase\(name, slug, false\)/);
   assert.match(source, /conteúdo foi preservado em Meus conjuntos/);
   assert.match(curated, /subcategorias/);
   assert.match(curated, /hino" : "hinos/);
