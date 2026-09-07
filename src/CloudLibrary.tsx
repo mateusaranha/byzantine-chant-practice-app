@@ -42,7 +42,8 @@ type LibraryItem = {
 
 type LibraryView = "home" | "curated" | "sets";
 type SaveDestination = "sets" | "curated" | "both";
-type CuratedWrite = { changed: boolean; entry: { title: string }; catalog: CuratedCatalog };
+type CuratedSelectionMode = "all" | "individual";
+type CuratedWrite = { changed: boolean; entries: { title: string }[]; catalog: CuratedCatalog };
 type CuratedCategoryWrite = { category: CuratedCatalog["categories"][number]; catalog: CuratedCatalog };
 type CuratedSubcategoryWrite = { subcategory: CuratedCatalog["subcategories"][number]; catalog: CuratedCatalog };
 
@@ -124,7 +125,8 @@ export default function CloudLibrary({
   const [curatedCatalog, setCuratedCatalog] = useState<CuratedCatalog>(initialCuratedCatalog);
   const [curatedCategoryId, setCuratedCategoryId] = useState(() => initialCuratedCatalog.categories[0]?.id || "");
   const [curatedSubcategoryId, setCuratedSubcategoryId] = useState("");
-  const [curatedHymnId, setCuratedHymnId] = useState(() => hymns[0]?.id || "");
+  const [curatedSelectionMode, setCuratedSelectionMode] = useState<CuratedSelectionMode>("all");
+  const [selectedCuratedHymnIds, setSelectedCuratedHymnIds] = useState<string[]>(() => hymns.map((hymn) => hymn.id));
   const [newCategoryOpen, setNewCategoryOpen] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState("");
   const [newSubcategoryOpen, setNewSubcategoryOpen] = useState(false);
@@ -149,17 +151,23 @@ export default function CloudLibrary({
       .map(([owner, ownerItems]) => [owner, sortLibraryItems(ownerItems, librarySort)] as const);
   }, [items, librarySort, session?.user.login]);
 
-  const selectedCuratedHymn = hymns.find((hymn) => hymn.id === curatedHymnId) || hymns[0];
   const curatedCategories = curatedCatalog.categories;
   const curatedSubcategories = curatedCatalog.subcategories.filter((subcategory) => subcategory.categoryId === curatedCategoryId);
+  const availableCuratedHymnIds = hymns.map((hymn) => hymn.id);
+  const curatedHymnIds = curatedSelectionMode === "all"
+    ? availableCuratedHymnIds
+    : selectedCuratedHymnIds.filter((id) => availableCuratedHymnIds.includes(id));
+  const curatedHymnCount = curatedHymnIds.length;
+  const curatedHymnSummary = `${curatedHymnCount} ${curatedHymnCount === 1 ? "hino" : "hinos"}`;
   const setsEntryLabel = session?.isApproved ? "Meus conjuntos" : "Conjuntos publicados";
   const wantsCurated = session?.isAdmin && saveDestination !== "sets";
 
   useEffect(() => {
-    if (selectedCuratedHymn && selectedCuratedHymn.id !== curatedHymnId) {
-      setCuratedHymnId(selectedCuratedHymn.id);
-    }
-  }, [selectedCuratedHymn, curatedHymnId]);
+    setSelectedCuratedHymnIds((current) => {
+      const valid = current.filter((id) => hymns.some((hymn) => hymn.id === id));
+      return valid.length ? valid : hymns.map((hymn) => hymn.id);
+    });
+  }, [hymns]);
 
   useEffect(() => {
     if (!curatedCategories.some((category) => category.id === curatedCategoryId)) {
@@ -256,7 +264,9 @@ export default function CloudLibrary({
 
   async function promoteCurated(path: string) {
     if (!session?.isAdmin) throw new Error("Somente o curador pode adicionar itens à Biblioteca curada.");
-    if (!selectedCuratedHymn?.id || !curatedSubcategoryId) throw new Error("Escolha o hino e a subcategoria da curadoria.");
+    if (!curatedHymnIds.length || !curatedSubcategoryId) {
+      throw new Error("Escolha ao menos um hino e a subcategoria da curadoria.");
+    }
     const result = await api<CuratedWrite>(
       apiBase,
       "/api/curated",
@@ -264,7 +274,7 @@ export default function CloudLibrary({
         method: "POST",
         body: JSON.stringify({
           path,
-          hymnId: selectedCuratedHymn.id,
+          hymnIds: curatedHymnIds,
           subcategoryId: curatedSubcategoryId,
         }),
       },
@@ -331,6 +341,10 @@ export default function CloudLibrary({
       setError("Escolha ou crie uma categoria e uma subcategoria para a Biblioteca curada.");
       return;
     }
+    if (wantsCurated && !curatedHymnIds.length) {
+      setError("Selecione pelo menos um hino para adicionar à Biblioteca curada.");
+      return;
+    }
     const updatesOwnSet = Boolean(savedSlug && savedOwner === session?.user.login);
     const slug = updatesOwnSet ? savedSlug : slugify(name);
     void run("save", async () => {
@@ -348,17 +362,17 @@ export default function CloudLibrary({
               await publishBase(name, slug, false);
             } catch (hideError) {
               const detail = hideError instanceof Error ? hideError.message : "Não foi possível ocultar o conjunto da lista.";
-              setError(`O hino foi adicionado à Biblioteca curada, mas também continua em Meus conjuntos. ${detail}`);
+              setError(`A seleção foi adicionada à Biblioteca curada, mas o conjunto também continua em Meus conjuntos. ${detail}`);
               await refreshLibrary();
               return;
             }
           }
           setMessage(
             saveDestination === "curated"
-              ? "Salvo somente na Biblioteca curada. O conteúdo-base não foi duplicado nem listado em Meus conjuntos."
+              ? `${curatedHymnSummary} ${curatedHymnCount === 1 ? "salvo" : "salvos"} somente na Biblioteca curada. O conteúdo-base não foi duplicado nem listado em Meus conjuntos.`
               : promotion.changed
-                ? "Conjunto salvo e hino adicionado à Biblioteca curada."
-                : "Conjunto salvo. O hino já estava nessa subcategoria da Biblioteca curada.",
+                ? `Conjunto salvo e ${curatedHymnSummary} ${curatedHymnCount === 1 ? "adicionado" : "adicionados"} à Biblioteca curada.`
+                : `Conjunto salvo. ${curatedHymnSummary} já ${curatedHymnCount === 1 ? "estava" : "estavam"} nessa subcategoria da Biblioteca curada.`,
           );
         } catch (promotionError) {
           const detail = promotionError instanceof Error ? promotionError.message : "Não foi possível atualizar a curadoria.";
@@ -377,8 +391,8 @@ export default function CloudLibrary({
       const promotion = await promoteCurated(savedPath);
       setMessage(
         promotion.changed
-          ? "Hino adicionado à Biblioteca curada. O conjunto publicado não foi duplicado."
-          : "Este hino já estava nessa subcategoria da Biblioteca curada.",
+          ? `${curatedHymnSummary} ${curatedHymnCount === 1 ? "adicionado" : "adicionados"} à Biblioteca curada. O conjunto publicado não foi duplicado.`
+          : `${curatedHymnSummary} já ${curatedHymnCount === 1 ? "estava" : "estavam"} nessa subcategoria da Biblioteca curada.`,
       );
     });
   }
@@ -393,7 +407,8 @@ export default function CloudLibrary({
       setSavedSlug(item.slug);
       setSavedOwner(item.owner);
       setSavedPath(item.path);
-      setCuratedHymnId(published.hymns[0]?.id || "");
+      setCuratedSelectionMode("all");
+      setSelectedCuratedHymnIds(published.hymns.flatMap((hymn) => hymn.id ? [hymn.id] : []));
       setMessage(`“${published.title}” foi carregado no espaço de trabalho atual.`);
     });
   }
@@ -573,7 +588,7 @@ export default function CloudLibrary({
                           placeholder="Ex.: Dormição da Theotokos"
                         />
                       </label>
-                      <p>Serão publicados os {hymns.length} hinos que estão abertos agora.</p>
+                      <p>O conjunto-base contém os {hymns.length} hinos que estão abertos agora.</p>
 
                       {session.isAdmin && (
                         <fieldset className="save-destination">
@@ -589,7 +604,13 @@ export default function CloudLibrary({
                                 name="save-destination"
                                 value={value}
                                 checked={saveDestination === value}
-                                onChange={() => setSaveDestination(value)}
+                                onChange={() => {
+                                  setSaveDestination(value);
+                                  if (value !== "sets") {
+                                    setCuratedSelectionMode("all");
+                                    setSelectedCuratedHymnIds(hymns.map((hymn) => hymn.id));
+                                  }
+                                }}
                               />
                               <span>{label}</span>
                             </label>
@@ -637,20 +658,70 @@ export default function CloudLibrary({
                             </div>
                           )}
 
-                          {hymns.length > 1 && (
-                            <label>
-                              Hino
-                              <select value={selectedCuratedHymn?.id || ""} onChange={(event) => setCuratedHymnId(event.target.value)}>
-                                {hymns.map((hymn, index) => (
-                                  <option key={hymn.id} value={hymn.id}>{hymn.title || `Hino ${index + 1}`}</option>
-                                ))}
-                              </select>
-                            </label>
-                          )}
+                          <fieldset className="curated-hymn-selection">
+                            <legend>Hinos a adicionar</legend>
+                            {hymns.length > 1 ? (
+                              <>
+                                <label className="curated-selection-option">
+                                  <input
+                                    type="radio"
+                                    name="curated-hymn-selection"
+                                    checked={curatedSelectionMode === "all"}
+                                    onChange={() => {
+                                      setCuratedSelectionMode("all");
+                                      setSelectedCuratedHymnIds(hymns.map((hymn) => hymn.id));
+                                    }}
+                                  />
+                                  <span><strong>Todos os {hymns.length} hinos do conjunto</strong><small>Opção recomendada para publicar o conjunto inteiro nesta subcategoria.</small></span>
+                                </label>
+                                <label className="curated-selection-option">
+                                  <input
+                                    type="radio"
+                                    name="curated-hymn-selection"
+                                    checked={curatedSelectionMode === "individual"}
+                                    onChange={() => {
+                                      setCuratedSelectionMode("individual");
+                                      setSelectedCuratedHymnIds(hymns.map((hymn) => hymn.id));
+                                    }}
+                                  />
+                                  <span><strong>Selecionar hinos individualmente</strong><small>Expanda a lista apenas quando não quiser adicionar o conjunto inteiro.</small></span>
+                                </label>
+                                {curatedSelectionMode === "individual" && (
+                                  <div className="curated-hymn-checklist">
+                                    <div className="curated-selection-summary">
+                                      <span>{curatedHymnSummary} selecionados</span>
+                                      <div>
+                                        <button type="button" className="cloud-secondary" onClick={() => setSelectedCuratedHymnIds(hymns.map((hymn) => hymn.id))}>Selecionar todos</button>
+                                        <button type="button" className="cloud-secondary" onClick={() => setSelectedCuratedHymnIds([])}>Limpar seleção</button>
+                                      </div>
+                                    </div>
+                                    <div className="curated-hymn-options">
+                                      {hymns.map((hymn, index) => (
+                                        <label key={hymn.id}>
+                                          <input
+                                            type="checkbox"
+                                            checked={selectedCuratedHymnIds.includes(hymn.id)}
+                                            onChange={(event) => setSelectedCuratedHymnIds((current) =>
+                                              event.target.checked
+                                                ? [...new Set([...current, hymn.id])]
+                                                : current.filter((id) => id !== hymn.id),
+                                            )}
+                                          />
+                                          <span>{hymn.title || `Hino ${index + 1}`}</span>
+                                        </label>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
+                              </>
+                            ) : (
+                              <p className="curated-hymn-single">O hino aberto será adicionado a esta subcategoria.</p>
+                            )}
+                          </fieldset>
 
                           {savedPath && (
-                            <button className="cloud-secondary" type="button" onClick={promoteLoadedSet} disabled={!curatedSubcategoryId || Boolean(busy)}>
-                              {busy === "curate" ? "Adicionando…" : "Adicionar este hino à curadoria agora"}
+                            <button className="cloud-secondary" type="button" onClick={promoteLoadedSet} disabled={!curatedSubcategoryId || !curatedHymnIds.length || Boolean(busy)}>
+                              {busy === "curate" ? "Adicionando…" : `Adicionar ${curatedHymnSummary} à curadoria agora`}
                             </button>
                           )}
                         </div>
@@ -659,11 +730,15 @@ export default function CloudLibrary({
                       <button className="cloud-primary" onClick={saveSet} disabled={Boolean(busy)}>
                         {busy === "save"
                           ? "Salvando…"
-                          : updatesOwnSet
-                            ? "Atualizar publicação"
-                            : savedSlug
-                              ? "Salvar uma cópia"
-                              : "Salvar"}
+                          : wantsCurated
+                            ? saveDestination === "both"
+                              ? `Salvar conjunto e adicionar ${curatedHymnSummary} à curadoria`
+                              : `Adicionar ${curatedHymnSummary} à Biblioteca curada`
+                            : updatesOwnSet
+                              ? "Atualizar publicação"
+                              : savedSlug
+                                ? "Salvar uma cópia"
+                                : "Salvar"}
                       </button>
                       {updatesOwnSet && (
                         <button
@@ -674,6 +749,8 @@ export default function CloudLibrary({
                             setSavedPath("");
                             setCollectionName("");
                             setSaveDestination("sets");
+                            setCuratedSelectionMode("all");
+                            setSelectedCuratedHymnIds(hymns.map((hymn) => hymn.id));
                           }}
                         >
                           Salvar como novo conjunto

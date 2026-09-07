@@ -96,4 +96,17 @@ test("validates curated promotion by subcategory without copying hymn content", 
     hymnId: "apolytikion",
     subcategoryId: "missing",
   }, catalog, published), /Subcategoria/);
+
+  const batch = validateCuratedPromotion({
+    path: "hinos/mateusaranha/dormicao.json",
+    hymnIds: ["apolytikion", "kontakion", "apolytikion"],
+    subcategoryId: "grandes-festas-dormicao",
+  }, catalog, published);
+  assert.deepEqual(batch.hymnIds, ["apolytikion", "kontakion"]);
+  assert.deepEqual(batch.hymns, published.hymns);
+  assert.throws(() => validateCuratedPromotion({
+    path: "hinos/mateusaranha/dormicao.json",
+    hymnIds: ["apolytikion", "missing"],
+    subcategoryId: "grandes-festas-dormicao",
+  }, catalog, published), /missing/);
 });
