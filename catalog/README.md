@@ -1,66 +1,107 @@
-# Catálogo curado (MVP da #43)
+# Catálogo curado
 
-`curated.json` contém somente metadados editoriais. O conteúdo dos hinos continua exclusivamente em `hinos/<autor>/<conjunto>.json`; o catálogo guarda referências para essas publicações e é incorporado ao build da interface. Alterações no catálogo são validadas antes do deploy do Pages.
+`curated.json` contém somente metadados editoriais. O conteúdo dos hinos continua exclusivamente em `hinos/<autor>/<conjunto>.json`; a Biblioteca curada guarda referências para essas publicações, sem copiar letra, marcações ou links de gravação.
 
-## Acrescentar conteúdo
+## Estrutura
 
-O fluxo preferencial para o administrador é pela própria Biblioteca pública:
+A navegação usa três níveis simples:
 
-1. prepare e publique o conjunto pelo fluxo normal do Psaltikon;
-2. marque **Também adicionar à Biblioteca curada** e escolha uma categoria existente; em conjuntos com vários hinos, escolha também qual hino será promovido;
-3. o conjunto é salvo normalmente em `hinos/`;
-4. o Worker, em uma operação separada e restrita ao administrador, valida o conjunto, o `hymnId` e a categoria e acrescenta somente a referência ao catálogo;
-5. se a promoção falhar, o conjunto já salvo não é desfeito;
-6. um conjunto já publicado também pode ser carregado e promovido posteriormente pela mesma área, sem duplicar conteúdo.
+**Categoria → Subcategoria → Hinos**
 
-A interface deliberadamente não cria categorias novas nem funciona como CMS completo. Categorias e metadados editoriais mais específicos continuam podendo ser mantidos manualmente no JSON.
+Exemplo:
 
-### Edição manual
+**Grandes Festas → Dormição da Theotokos → Apolytikion / Megalynarion / outras gravações preparadas**
 
-Se necessário, acrescente uma categoria em `categories`, com `id` estável, `label` e `order` numérico, e uma entrada em `entries`:
+Categorias e subcategorias aparecem em ordem alfabética automática. Os hinos dentro de uma subcategoria conservam `order` editorial, permitindo uma sequência que não precise ser alfabética.
+
+O catálogo usa `version: 2`:
 
 ```json
 {
-  "id": "identificador-editorial-estavel",
-  "title": "Título para exibição no catálogo",
-  "categoryIds": ["categoria-existente"],
-  "order": 10,
-  "source": {
-    "path": "hinos/autor/conjunto.json",
-    "hymnId": "id-exato-do-hino-publicado"
-  },
-  "note": "Nota opcional sobre a versão, sua origem ou revisão."
+  "version": 2,
+  "categories": [
+    { "id": "grandes-festas", "label": "Grandes Festas" }
+  ],
+  "subcategories": [
+    {
+      "id": "grandes-festas-dormicao",
+      "label": "Dormição da Theotokos",
+      "categoryId": "grandes-festas"
+    }
+  ],
+  "entries": [
+    {
+      "id": "dormicao-apolytikion",
+      "title": "Apolytikion da Dormição",
+      "subcategoryId": "grandes-festas-dormicao",
+      "order": 10,
+      "source": {
+        "path": "hinos/autor/dormicao.json",
+        "hymnId": "id-exato-do-hino-publicado"
+      }
+    }
+  ]
 }
 ```
 
-Depois rode `npm run validate:curated`. O build e os checks do Pages também executam a validação, inclusive quando uma publicação altera um conjunto referenciado.
+Uma gravação ou preparação diferente, com marcações próprias, continua sendo outro hino publicado e pode ganhar sua própria entrada. Não existe uma camada estrutural chamada “versão”.
 
-Os IDs editoriais usam letras minúsculas sem acentos, números e hífens. Cada categoria e entrada precisa de ID único. `categoryIds` aceita várias categorias; não repita a entrada nem sua referência `path + hymnId`. Se a interface promover para uma segunda categoria uma referência que já existe, ela acrescenta a categoria à entrada existente em vez de criar outra cópia.
+## Salvamento pela interface
 
-Uma nova gravação com marcações próprias deve ser publicada como outro hino, com outro ID, e ganhar sua própria entrada. `order` crescente define a ordem de categorias e itens; empates seguem a posição no JSON. O nome do arquivo não determina a ordem. Categorias vazias ficam ocultas. `{ "version": 1, "categories": [], "entries": [] }` é um estado válido.
+Para o administrador/curador, a área de publicação oferece três destinos:
 
-O título é deliberadamente editorial e pode diferir do título de preparação do autor. Não copie letra, marcações, modo ou links de vídeo para o catálogo. `note` é texto simples opcional, mostrado em **Sobre esta versão**. A promoção simples pela interface usa inicialmente o título do hino publicado; ajustes editoriais mais finos podem ser feitos depois no catálogo.
+- **Meus conjuntos** — publica normalmente e deixa o conjunto visível na listagem pública;
+- **Biblioteca curada** — publica o conteúdo-base em `hinos/`, cria a referência curada e depois o marca como `listed: false`, para que não apareça também em Meus conjuntos/Conjuntos publicados;
+- **Ambos** — usa o mesmo conteúdo-base, mantendo-o listado e também referenciado pela curadoria.
+
+“Biblioteca curada” não cria uma segunda cópia do hino. `listed: false` muda apenas sua presença na listagem de conjuntos; os links e a referência curada continuam apontando para o mesmo arquivo publicado.
+
+O fluxo de **somente curada** é conservador: primeiro o conteúdo-base é salvo de forma recuperável, depois a promoção é realizada e somente após o sucesso ele é ocultado da listagem. Se a promoção falhar, o conteúdo permanece em **Meus conjuntos**, em vez de ser perdido ou ficar inacessível.
+
+Um conjunto já publicado também pode ser carregado e ter um de seus hinos promovido posteriormente.
+
+## Criar categorias e subcategorias
+
+O administrador não precisa editar o JSON para a operação comum. No próprio fluxo de curadoria existem:
+
+- **+ Nova categoria**;
+- **+ Nova subcategoria**.
+
+A subcategoria sempre pertence a uma categoria. Essas operações e a promoção de hinos são restritas ao administrador já definido pelo Psaltikon; ser um publicador aprovado, sozinho, não concede permissão de curadoria.
+
+A interface continua deliberadamente pequena: não há sistema de roles adicional, painel CMS, banco de dados, árvore profunda ou formulário editorial complexo.
+
+## Edição manual
+
+O catálogo continua versionado no repositório e pode ser editado manualmente quando necessário, por exemplo para ajustar `order`, título editorial ou `note`.
+
+Os IDs usam letras minúsculas sem acentos, números e hífens. Categorias, subcategorias e entradas precisam de IDs válidos e únicos. Cada entrada referencia uma única subcategoria e um único `path + hymnId`; referências repetidas são rejeitadas.
+
+Depois de edição manual, rode:
+
+```bash
+npm run validate:curated
+```
+
+O build e os checks do Pages também validam a estrutura e as fontes referenciadas antes do deploy.
 
 ## Identidade e manutenção
 
-- A referência acompanha **a publicação mais recente**, como os links já existentes; não é um snapshot revisado e imutável. Mudanças no conteúdo-base aparecem no estudo sem republicar os metadados.
-- Preserve caminho e ID ao atualizar hinos curados. Se precisarem mudar, atualize as referências no mesmo trabalho. IDs só precisam ser únicos dentro do conjunto; `primary-hymn` pode existir em conjuntos diferentes.
-- Promover um hino já publicado significa acrescentar sua referência. Retirar da curadoria significa remover a entrada ou associação de categoria, sem excluir o conjunto.
-- Somente o administrador definido na configuração atual pode usar o endpoint de promoção. A permissão de publicar conjuntos, sozinha, não concede curadoria.
-- O build rejeita catálogo malformado, campos inválidos, IDs duplicados, categorias inexistentes, referências repetidas e conjuntos/hinos inexistentes, ambíguos ou incompatíveis com o leitor público.
-- O Worker continua permitindo alterações/exclusões nos conjuntos dos autores. A validação protege o próximo deploy, **não impede uma exclusão já publicada pelo Worker**. Nesse intervalo, o leitor existente informa indisponibilidade e preserva o trabalho local.
-- Um item inválido em runtime não derruba a biblioteca: erros de metadados geram aviso e os demais itens válidos continuam disponíveis; falhas da fonte aparecem no fluxo de estudo/compartilhamento. O CI nunca aceita silenciosamente os erros.
+- A referência acompanha a publicação mais recente do arquivo-base; não é um snapshot imutável.
+- Preserve caminho e `hymnId` ao atualizar material curado sempre que possível.
+- Retirar um hino da curadoria significa remover sua entrada, sem apagar o conteúdo-base.
+- O catálogo rejeita estrutura inválida, IDs duplicados, subcategorias sem categoria, hinos sem subcategoria, referências repetidas e fontes inexistentes ou ambíguas.
+- Categorias ou subcategorias sem hinos ficam ocultas da navegação pública até receberem conteúdo.
+- O Worker ainda pode permitir que o conteúdo-base seja alterado ou excluído conforme as regras dos conjuntos; a validação do catálogo protege os deploys seguintes, não transforma a publicação em snapshot.
 
 ## Experiência
 
-A entrada da Biblioteca pública usa **progressive disclosure**:
+A Biblioteca pública preserva progressive disclosure:
 
-**Biblioteca pública → Biblioteca curada → categoria → versão → Estudar agora**
+**Biblioteca pública → Biblioteca curada → Categoria → Subcategoria → Hino → Estudar agora**
 
 ou
 
 **Biblioteca pública → Meus conjuntos / Conjuntos publicados**
 
-A tela inicial não expande simultaneamente catálogo, conjuntos, publicação e administração. No estudo temporário, **Adicionar ao meu espaço** cria uma cópia independente com as proteções existentes. **Compartilhar** reutiliza o diálogo atual.
-
-Busca, filtros, agrupamento mais rico de variantes e gestão editorial completa continuam fora deste fluxo mínimo e devem ser adicionados apenas quando o conteúdo real justificar.
+A tela inicial não expande simultaneamente catálogo, conjuntos, publicação e administração. Busca, filtros e gestão editorial mais sofisticada permanecem fora deste fluxo mínimo até que o conteúdo real justifique essa complexidade.
