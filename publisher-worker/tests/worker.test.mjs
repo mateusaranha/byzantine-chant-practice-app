@@ -1,7 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
-  curatedEntryId,
   isHymnPath,
   isOwnedHymnPath,
   normalizeLibraryMetadata,
@@ -49,10 +48,9 @@ test("normalizes public library metadata with backwards-compatible visibility", 
 
 test("validates category and subcategory creation", () => {
   const catalog = {
-    version: 2,
+    version: 3,
     categories: [{ id: "grandes-festas", label: "Grandes Festas" }],
     subcategories: [{ id: "grandes-festas-dormicao", label: "Dormição", categoryId: "grandes-festas" }],
-    entries: [],
   };
   assert.deepEqual(validateCuratedCategoryCreation({ label: " Santos " }, catalog), { id: "santos", label: "Santos" });
   assert.deepEqual(validateCuratedSubcategoryCreation({ label: "Natividade", categoryId: "grandes-festas" }, catalog), {
@@ -64,12 +62,11 @@ test("validates category and subcategory creation", () => {
   assert.throws(() => validateCuratedSubcategoryCreation({ label: "Dormição", categoryId: "grandes-festas" }, catalog), /já existe/);
 });
 
-test("validates curated promotion by subcategory without copying hymn content", () => {
+test("validates curated promotion as one complete published set per subcategory", () => {
   const catalog = {
-    version: 2,
+    version: 3,
     categories: [{ id: "grandes-festas", label: "Grandes Festas" }],
     subcategories: [{ id: "grandes-festas-dormicao", label: "Dormição", categoryId: "grandes-festas" }],
-    entries: [],
   };
   const published = {
     hymns: [
@@ -79,34 +76,27 @@ test("validates curated promotion by subcategory without copying hymn content", 
   };
   const promotion = validateCuratedPromotion({
     path: "hinos/mateusaranha/dormicao.json",
-    hymnId: "apolytikion",
     subcategoryId: "grandes-festas-dormicao",
   }, catalog, published);
-  assert.equal(promotion.path, "hinos/mateusaranha/dormicao.json");
-  assert.equal(promotion.subcategoryId, "grandes-festas-dormicao");
-  assert.equal(promotion.hymn, published.hymns[0]);
-  assert.equal(curatedEntryId(promotion.path, promotion.hymnId), "dormicao-apolytikion");
-  assert.throws(() => validateCuratedPromotion({
+  assert.deepEqual(promotion, {
     path: "hinos/mateusaranha/dormicao.json",
-    hymnId: "missing",
     subcategoryId: "grandes-festas-dormicao",
-  }, catalog, published), /não foi encontrado/);
+    replace: false,
+  });
+
+  const replacement = validateCuratedPromotion({
+    path: "hinos/mateusaranha/dormicao-revisada.json",
+    subcategoryId: "grandes-festas-dormicao",
+    replace: true,
+  }, catalog, published);
+  assert.equal(replacement.replace, true);
+
   assert.throws(() => validateCuratedPromotion({
     path: "hinos/mateusaranha/dormicao.json",
-    hymnId: "apolytikion",
     subcategoryId: "missing",
   }, catalog, published), /Subcategoria/);
-
-  const batch = validateCuratedPromotion({
-    path: "hinos/mateusaranha/dormicao.json",
-    hymnIds: ["apolytikion", "kontakion", "apolytikion"],
-    subcategoryId: "grandes-festas-dormicao",
-  }, catalog, published);
-  assert.deepEqual(batch.hymnIds, ["apolytikion", "kontakion"]);
-  assert.deepEqual(batch.hymns, published.hymns);
   assert.throws(() => validateCuratedPromotion({
     path: "hinos/mateusaranha/dormicao.json",
-    hymnIds: ["apolytikion", "missing"],
     subcategoryId: "grandes-festas-dormicao",
-  }, catalog, published), /missing/);
+  }, catalog, { hymns: [] }), /Conjunto publicado inválido/);
 });

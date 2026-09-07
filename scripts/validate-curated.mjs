@@ -7,7 +7,8 @@ try {
   errors.push(...await curated.validateCuratedSources(catalog, async path =>
     shared.readPublishedSet(JSON.parse(await readFile(new URL(`../${path}`, import.meta.url), "utf8")))));
   if (errors.length) throw new Error(errors.join("\n"));
-  console.log(`Catálogo curado válido: ${catalog.entries.length} itens.`);
+  const associated = catalog.subcategories.filter((subcategory) => subcategory.source).length;
+  console.log(`Catálogo curado válido: ${associated} conjuntos associados.`);
 } catch (error) {
   console.error(error.message);
   process.exitCode = 1;

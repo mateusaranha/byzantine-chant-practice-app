@@ -42,7 +42,7 @@ export default function AppGuide() {
           O botão <strong>Biblioteca online</strong> abre a <strong>Biblioteca pública</strong>. A entrada é dividida em duas áreas: <strong>Biblioteca curada</strong> e <strong>Meus conjuntos</strong> para usuários autorizados a publicar, ou <strong>Conjuntos publicados</strong> para os demais visitantes. Qualquer pessoa pode consultar o conteúdo público sem entrar com uma conta.
         </p>
         <p>
-          A <strong>Biblioteca curada</strong> organiza uma seleção editorial de hinos em três níveis: <strong>categoria → subcategoria → hinos</strong>. Escolha primeiro uma categoria, depois uma subcategoria e, por fim, o hino que deseja estudar. A curadoria não cria outra cópia do hino: ela organiza e referencia o mesmo conteúdo-base publicado.
+          A <strong>Biblioteca curada</strong> usa uma navegação simples em dois níveis: <strong>categoria → subcategoria</strong>. Por exemplo, uma categoria como Grandes Festas pode conter Natividade, Dormição e outras festas. Ao escolher uma subcategoria, o Psaltikon abre diretamente o conjunto completo associado a ela, com todos os hinos daquele material de estudo.
         </p>
         <p>
           Em <strong>Meus conjuntos</strong> ou <strong>Conjuntos publicados</strong>, <strong>Abrir</strong> pede confirmação e substitui o espaço atual pelo conjunto escolhido. Exporte antes uma cópia de segurança se houver hinos no espaço atual que você queira preservar.
@@ -57,10 +57,10 @@ export default function AppGuide() {
           Para o curador, o formulário também oferece <strong>Biblioteca curada</strong> e <strong>Ambos</strong>. Em <strong>Biblioteca curada</strong>, o conteúdo-base é publicado para servir à curadoria, mas não aparece também em Meus conjuntos. Em <strong>Ambos</strong>, o mesmo conteúdo-base aparece nas duas áreas, sem ser duplicado.
         </p>
         <p>
-          Ao adicionar à Biblioteca curada, escolha uma <strong>categoria</strong> e uma <strong>subcategoria</strong>. O curador pode criar novas categorias ou subcategorias diretamente nesse fluxo. Por padrão, o Psaltikon seleciona <strong>Todos os hinos do conjunto</strong>; se apenas alguns devem entrar naquela subcategoria, use <strong>Selecionar hinos individualmente</strong> e marque os desejados.
+          Ao adicionar à Biblioteca curada, escolha uma <strong>categoria</strong> e uma <strong>subcategoria</strong>. O curador pode criar ambas diretamente nesse fluxo. O conjunto inteiro que está aberto é associado à subcategoria; não é necessário cadastrar cada hino separadamente.
         </p>
         <p>
-          Um conjunto também pode ser publicado primeiro e adicionado à curadoria mais tarde. Isso permite preparar rapidamente um material, mantê-lo entre seus conjuntos e decidir depois se ele está suficientemente revisado para integrar a Biblioteca curada.
+          Cada subcategoria aponta para um único conjunto. Se ela já estiver associada a outro conjunto, o Psaltikon pede confirmação antes de substituir essa associação. Um conjunto também pode ser publicado primeiro e adicionado à curadoria mais tarde.
         </p>
       </HelpSection>
 

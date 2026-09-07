@@ -2,14 +2,14 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
 
-test("public library keeps progressive disclosure and exposes simple admin curation", async () => {
+test("public library keeps progressive disclosure and associates whole sets with curated subcategories", async () => {
   const source = await readFile(new URL("../src/CloudLibrary.tsx", import.meta.url), "utf8");
   const curated = await readFile(new URL("../src/CuratedLibrary.tsx", import.meta.url), "utf8");
   const styles = await readFile(new URL("../src/libraryProgressive.css", import.meta.url), "utf8");
 
   assert.match(source, /type LibraryView = "home" \| "curated" \| "sets"/);
   assert.match(source, /type SaveDestination = "sets" \| "curated" \| "both"/);
-  assert.match(source, /type CuratedSelectionMode = "all" \| "individual"/);
+  assert.doesNotMatch(source, /CuratedSelectionMode/);
   assert.match(source, />Biblioteca curada</);
   assert.match(source, /view === "home"/);
   assert.match(source, /view === "curated" && <CuratedLibrary/);
@@ -19,22 +19,23 @@ test("public library keeps progressive disclosure and exposes simple admin curat
   assert.match(source, /\+ Nova categoria/);
   assert.match(source, /\+ Nova subcategoria/);
   assert.match(source, /subcategoryId: curatedSubcategoryId/);
-  assert.match(source, /hymnIds: curatedHymnIds/);
-  assert.match(source, /Todos os \{hymns\.length\} hinos do conjunto/);
-  assert.match(source, /Selecionar hinos individualmente/);
-  assert.match(source, /type="checkbox"/);
-  assert.match(source, /Selecionar todos/);
-  assert.match(source, /Limpar seleção/);
+  assert.match(source, /replace/);
+  assert.match(source, /O conjunto inteiro, com os \{hymns\.length\} hinos abertos/);
+  assert.match(source, /Adicionar conjunto à Biblioteca curada/);
+  assert.match(source, /Associar este conjunto à curadoria agora/);
+  assert.doesNotMatch(source, /Selecionar hinos individualmente/);
+  assert.doesNotMatch(source, /curated-hymn-selection/);
   assert.match(source, /publishBase\(name, slug, false\)/);
   assert.match(source, /conteúdo foi preservado em Meus conjuntos/);
-  assert.match(curated, /subcategorias/);
-  assert.match(curated, /hino" : "hinos/);
-  assert.doesNotMatch(curated, /versão|versões/);
+  assert.match(curated, /hymnId: null/);
+  assert.match(curated, /curated-set-link/);
+  assert.doesNotMatch(curated, /Estudar agora|Compartilhar|curated-entry/);
   assert.match(styles, /\.library-entry-grid/);
   assert.match(styles, /grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/);
   assert.match(styles, /\.save-destination/);
-  assert.match(styles, /\.curated-hymn-selection/);
-  assert.match(styles, /\.curated-hymn-options/);
+  assert.match(styles, /\.curation-set-note/);
+  assert.match(styles, /\.curated-set-link/);
+  assert.doesNotMatch(styles, /\.curated-hymn-selection|\.curated-hymn-options/);
   assert.match(styles, /@media \(max-width:700px\)/);
   assert.match(styles, /\.curation-field-row,.curation-create-row \{ grid-template-columns:1fr;/);
 });
