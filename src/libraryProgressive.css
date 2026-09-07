@@ -116,17 +116,56 @@
   color:#81756a;
   font:12px/1.5 Arial,sans-serif;
 }
-.curated-set-link {
+/* Inline curated navigation follows the entry cards without another outer card. */
+.curated-library { margin:20px 0 0; }
+.curated-library > h3 { margin:0; color:var(--red); font-size:20px; font-weight:600; }
+.curated-library > p { margin:6px 0 16px; color:#7f7063; font:13px/1.5 Arial,sans-serif; }
+.curated-categories { display:grid; gap:10px; }
+.curated-category {
+  min-width:0;
+  border:1px solid #d8cbb8;
+  border-radius:4px;
+  background:#fffdf8;
+}
+.curated-category > h4 { margin:0; font-size:18px; font-weight:600; }
+.curated-category-toggle,.curated-set-link {
   display:flex;
+  width:100%;
   align-items:center;
   justify-content:space-between;
   gap:16px;
-  min-height:64px;
   text-align:left;
+  color:var(--ink);
+}
+.curated-category-toggle {
+  min-height:68px;
+  padding:16px 20px;
+  border:0;
+  border-radius:3px;
+  background:transparent;
+  color:var(--red);
+  font:inherit;
+}
+.curated-category-toggle:hover,.curated-set-link:hover { background:#fbf5ea; }
+.curated-category-toggle:focus-visible { outline:2px solid var(--red); outline-offset:3px; }
+.curated-category-toggle > span:first-child,.curated-set-link > span:first-child {
+  min-width:0;
+  overflow-wrap:anywhere;
+}
+.curated-arrow { flex:none; color:var(--gold); font:20px/1 Arial,sans-serif; }
+.curated-subcategories { list-style:none; margin:0 20px 12px; padding:0; border-top:1px solid #e5dacc; }
+.curated-subcategories > li + li { border-top:1px solid #eee6da; }
+.curated-set-link {
+  min-height:48px;
+  padding:12px 10px;
+  border-radius:3px;
+  font:14px/1.5 Arial,sans-serif;
   text-decoration:none;
 }
 
 @media (max-width:700px) {
+  .curated-category-toggle { min-height:60px; padding:14px 16px; }
+  .curated-subcategories { margin-inline:16px; }
   .library-entry-grid { grid-template-columns:1fr; gap:10px; }
   .library-entry-card { min-height:112px; padding:17px 48px 17px 17px; }
   .library-entry-card strong { font-size:19px; }
