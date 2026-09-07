@@ -1,0 +1,131 @@
+.hymn-strip-actions {
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+.hymn-collapse-toggle {
+  min-height:30px;
+  display:flex;
+  align-items:center;
+  gap:6px;
+  border:0;
+  background:transparent;
+  color:#cdbb9e;
+  padding:4px 6px;
+  font:600 10px Arial,sans-serif;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+}
+
+.hymn-collapse-toggle:hover,
+.hymn-collapse-toggle:focus-visible {
+  color:#fff3df;
+}
+
+.hymn-collapse-toggle:focus-visible,
+.collapsed-hymn-summary:focus-visible {
+  outline:2px solid #d8b36d;
+  outline-offset:2px;
+}
+
+.hymn-collapse-icon {
+  font-size:15px;
+  line-height:1;
+}
+
+.hymn-strip.hymn-strip-collapsed {
+  min-height:56px;
+  gap:10px;
+  padding:8px 10px;
+  border:1px solid rgba(180,139,71,.34);
+  border-radius:4px;
+  background:rgba(255,249,239,.055);
+  box-shadow:0 8px 24px rgba(0,0,0,.16);
+}
+
+.hymn-strip-number {
+  flex:none;
+}
+
+.collapsed-hymn-summary {
+  min-width:0;
+  flex:1;
+  min-height:40px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  border:0;
+  background:transparent;
+  color:#f2e4cf;
+  padding:4px 6px;
+  text-align:left;
+  text-transform:none;
+  letter-spacing:normal;
+}
+
+.collapsed-hymn-copy {
+  min-width:0;
+  display:flex;
+  align-items:baseline;
+  gap:8px 12px;
+  flex-wrap:wrap;
+}
+
+.collapsed-hymn-title {
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  color:#f5ead8;
+  font:600 15px/1.35 var(--font-noto-serif),"Noto Serif","Palatino Linotype",serif;
+}
+
+.collapsed-hymn-mode {
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  color:#bfae98;
+  font:italic 12px/1.35 var(--font-noto-serif),"Noto Serif","Palatino Linotype",serif;
+}
+
+.collapsed-hymn-summary:hover .collapsed-hymn-title {
+  color:#fff8ed;
+}
+
+.hymn-workspace-collapsed {
+  display:none;
+}
+
+@media (max-width:520px) {
+  .hymn-strip.hymn-strip-collapsed {
+    min-height:60px;
+    padding:8px;
+  }
+
+  .hymn-strip.hymn-strip-collapsed .hymn-strip-number {
+    font-size:9px;
+  }
+
+  .collapsed-hymn-copy {
+    display:grid;
+    gap:2px;
+  }
+
+  .collapsed-hymn-title,
+  .collapsed-hymn-mode {
+    max-width:58vw;
+  }
+
+  .hymn-collapse-toggle {
+    min-height:38px;
+    padding-inline:8px;
+  }
+}
+
+@media print {
+  .hymn-workspace-collapsed {
+    display:grid !important;
+  }
+}

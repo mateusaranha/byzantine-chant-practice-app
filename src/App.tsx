@@ -21,7 +21,13 @@ import {
   sourceRangeForTransliteration,
   transliterateGreek,
 } from "./transliteration";
-import { readToolsPanelOpen, writeToolsPanelOpen } from "./workspacePreferences";
+import {
+  readHymnPanelOpen,
+  readToolsPanelOpen,
+  writeHymnPanelOpen,
+  writeToolsPanelOpen,
+} from "./workspacePreferences";
+import "./hymnCollapse.css";
 
 type ActiveTool =
   | "sage"
@@ -37,6 +43,7 @@ type PlayerStateEvent = { data: number };
 type PlayerLoadStatus = "loading" | "ready" | "error";
 type YouTubePlayer = {
   destroy: () => void;
+  pauseVideo: () => void;
   playVideo: () => void;
   seekTo: (seconds: number, allowSeekAhead: boolean) => void;
 };
@@ -216,6 +223,7 @@ function HymnWorkspace({
   printRequest,
   printSettings,
   persistToolsPanel = false,
+  persistHymnPanel = false,
   onChange,
   onDelete,
   onOpenGuide,
@@ -226,6 +234,7 @@ function HymnWorkspace({
   printRequest: number;
   printSettings: PdfExportSettings;
   persistToolsPanel?: boolean;
+  persistHymnPanel?: boolean;
   onChange: (hymn: Hymn) => void;
   onDelete: () => void;
   onOpenGuide: (trigger: HTMLButtonElement) => void;
@@ -236,6 +245,9 @@ function HymnWorkspace({
   const [activeTool, setActiveTool] = useState<ActiveTool>(null);
   const [toolsOpen, setToolsOpen] = useState(() =>
     persistToolsPanel ? readToolsPanelOpen(localStorage, hymn.id) : true,
+  );
+  const [hymnPanelOpen, setHymnPanelOpen] = useState(() =>
+    persistHymnPanel ? readHymnPanelOpen(localStorage, hymn.id) : true,
   );
   const [coloursVisible, setColoursVisible] = useState(true);
   const [melismasVisible, setMelismasVisible] = useState(true);
@@ -249,6 +261,7 @@ function HymnWorkspace({
   const repeatsDoneRef = useRef(0);
   const toolsId = `hymn-tools-${hymn.id}`;
   const lyricsId = `hymn-lyrics-${hymn.id}`;
+  const workspaceId = `hymn-workspace-${hymn.id}`;
 
   useEffect(() => {
     if (printRequest > 0) setEditing(false);
@@ -260,7 +273,7 @@ function HymnWorkspace({
   }, [hymn.repeatMode]);
 
   useEffect(() => {
-    if (!hymn.videoId || !playerHostRef.current) return;
+    if (!hymnPanelOpen || !hymn.videoId || !playerHostRef.current) return;
     let cancelled = false;
     let readyTimeout = 0;
     setPlayerStatus("loading");
@@ -309,7 +322,7 @@ function HymnWorkspace({
       playerRef.current?.destroy();
       playerRef.current = null;
     };
-  }, [hymn.videoId, playerAttempt]);
+  }, [hymn.videoId, playerAttempt, hymnPanelOpen]);
 
   const segments = useMemo(() => {
     const boundaries = new Set([0, hymn.lyrics.length]);
@@ -447,6 +460,17 @@ function HymnWorkspace({
     if (persistToolsPanel) writeToolsPanelOpen(localStorage, hymn.id, nextOpen);
   }
 
+  function toggleHymnPanel() {
+    const nextOpen = !hymnPanelOpen;
+    if (!nextOpen) {
+      playerRef.current?.pauseVideo();
+      setActiveTool(null);
+      window.getSelection()?.removeAllRanges();
+    }
+    setHymnPanelOpen(nextOpen);
+    if (persistHymnPanel) writeHymnPanelOpen(localStorage, hymn.id, nextOpen);
+  }
+
   function changeReading(showTransliteration: boolean) {
     setActiveTool(null);
     window.getSelection()?.removeAllRanges();
@@ -479,23 +503,60 @@ function HymnWorkspace({
       id={hymn.id}
       aria-label={`Hino ${index + 1}`}
     >
-      <div className="hymn-strip">
-        <span>Hino {String(index + 1).padStart(2, "0")}</span>
-        {canDelete && (
+      <div className={`hymn-strip ${hymnPanelOpen ? "" : "hymn-strip-collapsed"}`}>
+        <span className="hymn-strip-number">Hino {String(index + 1).padStart(2, "0")}</span>
+        {!hymnPanelOpen && (
           <button
-            className="delete-hymn"
-            onClick={() => {
-              if (window.confirm("Remover este hino e todas as suas marcações?")) onDelete();
-            }}
-            aria-label={`Remover hino ${index + 1}`}
-            title="Remover hino"
+            className="collapsed-hymn-summary"
+            onClick={toggleHymnPanel}
+            aria-expanded={false}
+            aria-controls={workspaceId}
+            aria-label={`Expandir hino ${index + 1}: ${hymn.title || "Novo hino"}`}
+            title="Expandir hino"
           >
-            ×
+            <span className="collapsed-hymn-copy">
+              <span className="collapsed-hymn-title">{hymn.title || "Novo hino"}</span>
+              {hymn.mode && <span className="collapsed-hymn-mode">{hymn.mode}</span>}
+            </span>
+            <span className="hymn-collapse-icon" aria-hidden="true">⌄</span>
           </button>
+        )}
+        {(hymnPanelOpen || canDelete) && (
+          <div className="hymn-strip-actions">
+            {hymnPanelOpen && (
+              <button
+                className="hymn-collapse-toggle"
+                onClick={toggleHymnPanel}
+                aria-expanded={true}
+                aria-controls={workspaceId}
+                aria-label={`Recolher hino ${index + 1}: ${hymn.title || "Novo hino"}`}
+                title="Recolher hino"
+              >
+                Recolher hino
+                <span className="hymn-collapse-icon" aria-hidden="true">⌃</span>
+              </button>
+            )}
+            {canDelete && (
+              <button
+                className="delete-hymn"
+                onClick={() => {
+                  if (window.confirm("Remover este hino e todas as suas marcações?")) onDelete();
+                }}
+                aria-label={`Remover hino ${index + 1}`}
+                title="Remover hino"
+              >
+                ×
+              </button>
+            )}
+          </div>
         )}
       </div>
 
-      <div className="workspace screen-workspace">
+      <div
+        id={workspaceId}
+        className={`workspace screen-workspace ${hymnPanelOpen ? "" : "hymn-workspace-collapsed"}`}
+        aria-hidden={hymnPanelOpen ? undefined : true}
+      >
         <article className="panel lyrics-panel">
           <div className="panel-heading">
             <div className="hymn-heading-fields">
@@ -1169,6 +1230,7 @@ function LocalWorkspace() {
             printRequest={printRequest}
             printSettings={printSettings}
             persistToolsPanel
+            persistHymnPanel
             onChange={updateHymn}
             onOpenGuide={(trigger) => setHelp({ page: "guide", trigger })}
             onDelete={() => setHymns((current) => current.filter((item) => item.id !== hymn.id))}

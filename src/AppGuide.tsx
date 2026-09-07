@@ -12,7 +12,10 @@ export default function AppGuide() {
           Os hinos, as gravações escolhidas, as marcações e os ajustes são salvos automaticamente neste navegador. Não é preciso apertar um botão a cada alteração. Esse salvamento pertence a este navegador e dispositivo: ele não sincroniza o trabalho com outros aparelhos e pode ser perdido se os dados do site forem apagados.
         </p>
         <p>
-          Algumas preferências da interface também podem ser lembradas somente neste navegador. Por exemplo, se você deixar a barra de ferramentas de um hino recolhida, o Psaltikon tenta manter essa escolha quando você voltar. Essas preferências ficam separadas do conteúdo dos hinos: não fazem parte das publicações nem da cópia de segurança.
+          Algumas preferências da interface também podem ser lembradas somente neste navegador. Por exemplo, se você deixar a barra de ferramentas ou um hino inteiro recolhido, o Psaltikon tenta manter essa escolha quando você voltar. Essas preferências ficam separadas do conteúdo dos hinos: não fazem parte das publicações nem da cópia de segurança.
+        </p>
+        <p>
+          Em conjuntos longos, <strong>Recolher hino</strong> esconde temporariamente a letra, a gravação e os controles daquele hino e deixa apenas uma faixa compacta com seu título e modo. Nada é apagado: clique na faixa para expandir o hino novamente. Materiais compartilhados começam expandidos; qualquer recolhimento feito neles vale somente para aquela visita.
         </p>
         <p>
           Salvar automaticamente no navegador não é o mesmo que publicar em <strong>Meus conjuntos</strong> ou na <strong>Biblioteca curada</strong>. O trabalho local continua separado das versões públicas até que você escolha publicá-las.
