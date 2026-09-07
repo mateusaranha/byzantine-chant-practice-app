@@ -90,7 +90,7 @@ export default function ReorderHymnsDialog({
       </div>
       <div className="help-copy reorder-copy">
         <p className="reorder-intro">
-          Selecione hinos para excluí-los em conjunto ou use as setas para reordenar. As alterações são salvas automaticamente.
+          Use as setas para colocar os hinos na ordem desejada. A alteração é salva automaticamente. Você também pode selecionar hinos para excluí-los em conjunto.
         </p>
         <ol className="reorder-list">
           {hymns.map((hymn, index) => {
