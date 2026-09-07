@@ -34,6 +34,11 @@
       "source": {
         "path": "hinos/mateusaranha/teste2.json"
       }
+    },
+    {
+      "id": "oficios-e-ocasioes-teste",
+      "label": "teste",
+      "categoryId": "oficios-e-ocasioes"
     }
   ]
 }
