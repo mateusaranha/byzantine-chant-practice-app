@@ -24,3 +24,5 @@ for (const [from, to] of replacements) {
 }
 
 await writeFile(path, source);
+
+// Trigger the temporary workflow after it has been added to the branch.
