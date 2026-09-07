@@ -593,11 +593,72 @@ async function promoteCurated(request, env) {
   return { changed: true, replaced: Boolean(currentPath), subcategory, catalog };
 }
 
+async function removeCuratedAssociation(request, env, subcategoryId) {
+  await requireAdmin(request, env);
+  const id = String(subcategoryId || "").trim();
+  if (!CURATED_ID_PATTERN.test(id)) throw new HttpError(400, "Subcategoria inválida.");
+  const catalog = structuredClone(await curatedCatalog(env));
+  const subcategory = catalog.subcategories.find((item) => item?.id === id);
+  if (!subcategory) throw new HttpError(404, "Subcategoria da Biblioteca curada não encontrada.");
+  const path = String(subcategory.source?.path || "");
+  if (!path) return { changed: false, relisted: false, subcategory, catalog };
+
+  const stillCuratedElsewhere = catalog.subcategories.some(
+    (item) => item?.id !== id && item?.source?.path === path,
+  );
+  let relisted = false;
+  if (!stillCuratedElsewhere && isHymnPath(path)) {
+    const stored = await readRepoJson(env, path);
+    if (stored?.data && stored.data.listed === false) {
+      await writeRepoJson(env, path, { ...stored.data, listed: true }, `Relist Psaltikon set after curation removal: ${subcategory.label}`);
+      relisted = true;
+    }
+  }
+
+  delete subcategory.source;
+  await writeRepoJson(env, CURATED_PATH, catalog, `Remove Psaltikon curated set: ${subcategory.label}`);
+  return { changed: true, relisted, subcategory, catalog };
+}
+
+async function deleteCuratedSubcategory(request, env, subcategoryId) {
+  await requireAdmin(request, env);
+  const id = String(subcategoryId || "").trim();
+  if (!CURATED_ID_PATTERN.test(id)) throw new HttpError(400, "Subcategoria inválida.");
+  const catalog = structuredClone(await curatedCatalog(env));
+  const index = catalog.subcategories.findIndex((item) => item?.id === id);
+  if (index < 0) throw new HttpError(404, "Subcategoria da Biblioteca curada não encontrada.");
+  const subcategory = catalog.subcategories[index];
+  if (subcategory.source?.path) throw new HttpError(409, "Remova o conjunto da subcategoria antes de excluí-la.");
+  catalog.subcategories.splice(index, 1);
+  await writeRepoJson(env, CURATED_PATH, catalog, `Delete Psaltikon curated subcategory: ${subcategory.label}`);
+  return { deleted: true, subcategory, catalog };
+}
+
+async function deleteCuratedCategory(request, env, categoryId) {
+  await requireAdmin(request, env);
+  const id = String(categoryId || "").trim();
+  if (!CURATED_ID_PATTERN.test(id)) throw new HttpError(400, "Categoria inválida.");
+  const catalog = structuredClone(await curatedCatalog(env));
+  const index = catalog.categories.findIndex((item) => item?.id === id);
+  if (index < 0) throw new HttpError(404, "Categoria da Biblioteca curada não encontrada.");
+  const category = catalog.categories[index];
+  if (catalog.subcategories.some((subcategory) => subcategory?.categoryId === id)) {
+    throw new HttpError(409, "A categoria ainda possui subcategorias. Exclua-as primeiro.");
+  }
+  catalog.categories.splice(index, 1);
+  await writeRepoJson(env, CURATED_PATH, catalog, `Delete Psaltikon curated category: ${category.label}`);
+  return { deleted: true, category, catalog };
+}
+
 async function deleteSet(request, env, path) {
   const { user, config } = await requireApproved(request, env);
   if (!isHymnPath(path)) throw new HttpError(400, "Caminho de conjunto inválido.");
   if (!isOwnedHymnPath(path, user.login) && user.login !== config.admin) {
     throw new HttpError(403, "Você só pode excluir conjuntos da sua própria pasta.");
+  }
+  const catalog = await curatedCatalog(env);
+  if (catalog.subcategories.some((subcategory) => subcategory?.source?.path === path)) {
+    throw new HttpError(409, "Remova o conjunto da Biblioteca curada antes de excluí-lo definitivamente.");
   }
   await deleteRepoFile(env, path, `Delete Psaltikon set: ${path}`);
   return { deleted: true };
@@ -673,11 +734,20 @@ async function route(request, env) {
   if (url.pathname === "/api/curated" && request.method === "POST") {
     return jsonResponse(await promoteCurated(request, env), env, 201);
   }
+  if (url.pathname === "/api/curated" && request.method === "DELETE") {
+    return jsonResponse(await removeCuratedAssociation(request, env, url.searchParams.get("subcategoryId")), env);
+  }
   if (url.pathname === "/api/curated/categories" && request.method === "POST") {
     return jsonResponse(await createCuratedCategory(request, env), env, 201);
   }
+  if (url.pathname === "/api/curated/categories" && request.method === "DELETE") {
+    return jsonResponse(await deleteCuratedCategory(request, env, url.searchParams.get("id")), env);
+  }
   if (url.pathname === "/api/curated/subcategories" && request.method === "POST") {
     return jsonResponse(await createCuratedSubcategory(request, env), env, 201);
+  }
+  if (url.pathname === "/api/curated/subcategories" && request.method === "DELETE") {
+    return jsonResponse(await deleteCuratedSubcategory(request, env, url.searchParams.get("id")), env);
   }
   const adminMatch = url.pathname.match(/^\/api\/admin\/(approve|reject|add|revoke)$/);
   if (adminMatch && request.method === "POST") {

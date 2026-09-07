@@ -45,6 +45,7 @@ type SaveDestination = "sets" | "curated" | "both";
 type CuratedWrite = { changed: boolean; subcategory: CuratedCatalog["subcategories"][number]; replaced?: boolean; catalog: CuratedCatalog };
 type CuratedCategoryWrite = { category: CuratedCatalog["categories"][number]; catalog: CuratedCatalog };
 type CuratedSubcategoryWrite = { subcategory: CuratedCatalog["subcategories"][number]; catalog: CuratedCatalog };
+type CuratedRemovalWrite = { changed?: boolean; relisted?: boolean; catalog: CuratedCatalog };
 
 const SESSION_KEY = "psaltikon-publisher-session";
 const { catalog: initialCuratedCatalog } = readCuratedCatalog(rawCatalog);
@@ -281,6 +282,62 @@ export default function CloudLibrary({
     );
     setCuratedCatalog(result.catalog);
     return result;
+  }
+
+  function removeCuratedAssociation() {
+    const target = selectedCuratedSubcategory;
+    if (!target?.source?.path) return;
+    if (!window.confirm(`Remover “${target.label}” da Biblioteca curada? O conjunto-base não será apagado.`)) return;
+    void run("curated-remove", async () => {
+      const result = await api<CuratedRemovalWrite>(
+        apiBase,
+        `/api/curated?subcategoryId=${encodeURIComponent(target.id)}`,
+        { method: "DELETE" },
+        token,
+      );
+      setCuratedCatalog(result.catalog);
+      await refreshLibrary();
+      setMessage(
+        result.relisted
+          ? `“${target.label}” foi removida da Biblioteca curada. O conjunto-base foi preservado e voltou a aparecer em Meus conjuntos.`
+          : `“${target.label}” foi removida da Biblioteca curada. O conjunto-base foi preservado.`,
+      );
+    });
+  }
+
+  function deleteCuratedSubcategory() {
+    const target = selectedCuratedSubcategory;
+    if (!target || target.source?.path) return;
+    if (!window.confirm(`Excluir a subcategoria vazia “${target.label}”?`)) return;
+    void run("curated-subcategory-delete", async () => {
+      const result = await api<CuratedRemovalWrite>(
+        apiBase,
+        `/api/curated/subcategories?id=${encodeURIComponent(target.id)}`,
+        { method: "DELETE" },
+        token,
+      );
+      setCuratedCatalog(result.catalog);
+      setCuratedSubcategoryId("");
+      setMessage(`Subcategoria “${target.label}” excluída.`);
+    });
+  }
+
+  function deleteCuratedCategory() {
+    const target = selectedCuratedCategory;
+    if (!target || curatedSubcategories.length) return;
+    if (!window.confirm(`Excluir a categoria vazia “${target.label}”?`)) return;
+    void run("curated-category-delete", async () => {
+      const result = await api<CuratedRemovalWrite>(
+        apiBase,
+        `/api/curated/categories?id=${encodeURIComponent(target.id)}`,
+        { method: "DELETE" },
+        token,
+      );
+      setCuratedCatalog(result.catalog);
+      setCuratedCategoryId(result.catalog.categories[0]?.id || "");
+      setCuratedSubcategoryId("");
+      setMessage(`Categoria “${target.label}” excluída.`);
+    });
   }
 
   function createCategory() {
@@ -636,6 +693,13 @@ export default function CloudLibrary({
                               <button className="cloud-secondary" type="button" onClick={createCategory} disabled={!newCategoryName.trim() || Boolean(busy)}>Criar</button>
                             </div>
                           )}
+                          {selectedCuratedCategory && curatedSubcategories.length === 0 && !newCategoryOpen && !newSubcategoryOpen && (
+                            <div className="curation-management-actions">
+                              <button className="cloud-secondary danger" type="button" onClick={deleteCuratedCategory} disabled={Boolean(busy)}>
+                                Excluir categoria vazia
+                              </button>
+                            </div>
+                          )}
 
                           <div className="curation-field-row">
                             <label>
@@ -706,6 +770,19 @@ export default function CloudLibrary({
                                     : "Escolha primeiro uma categoria."
                             }
                           </p>
+                          {selectedCuratedSubcategory && !newSubcategoryOpen && (
+                            <div className="curation-management-actions">
+                              {selectedCuratedSubcategory.source?.path ? (
+                                <button className="cloud-secondary danger" type="button" onClick={removeCuratedAssociation} disabled={Boolean(busy)}>
+                                  Remover da Biblioteca curada
+                                </button>
+                              ) : (
+                                <button className="cloud-secondary danger" type="button" onClick={deleteCuratedSubcategory} disabled={Boolean(busy)}>
+                                  Excluir subcategoria vazia
+                                </button>
+                              )}
+                            </div>
+                          )}
                         </div>
                       )}
 

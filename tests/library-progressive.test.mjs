@@ -27,6 +27,10 @@ test("public library keeps progressive disclosure and associates whole sets with
   assert.match(source, /Atualizar conjunto de/);
   assert.match(source, /Criar .* e adicionar conjunto/);
   assert.doesNotMatch(source, /Associar este conjunto à curadoria agora/);
+  assert.match(source, /Remover da Biblioteca curada/);
+  assert.match(source, /Excluir subcategoria vazia/);
+  assert.match(source, /Excluir categoria vazia/);
+  assert.match(source, /method: "DELETE"/);
   assert.doesNotMatch(source, /Selecionar hinos individualmente/);
   assert.doesNotMatch(source, /curated-hymn-selection/);
   assert.match(source, /publishBase\(name, slug, false\)/);

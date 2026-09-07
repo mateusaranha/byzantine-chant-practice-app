@@ -62,6 +62,9 @@ export default function AppGuide() {
         <p>
           Cada subcategoria aponta para um único conjunto. Selecionar uma subcategoria que já possui material associado permite atualizar esse conjunto; se o conjunto atual for outro, o Psaltikon pede confirmação antes de substituir a associação. Um conjunto também pode ser publicado primeiro e adicionado à curadoria mais tarde.
         </p>
+        <p>
+          <strong>Remover da Biblioteca curada</strong> preserva o conjunto-base. Se ele tinha sido salvo somente na curadoria, volta a aparecer em <strong>Meus conjuntos</strong> antes de a associação ser retirada. Depois disso, uma subcategoria vazia pode ser excluída; uma categoria só pode ser excluída quando não possui mais subcategorias.
+        </p>
       </HelpSection>
 
       <HelpSection title="Compartilhar e adicionar ao seu espaço">
