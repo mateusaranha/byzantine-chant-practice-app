@@ -20,6 +20,11 @@
       "id": "paraclisis",
       "label": "Paráclisis",
       "categoryId": "oficios-e-ocasioes"
+    },
+    {
+      "id": "testea-testeb",
+      "label": "testeB",
+      "categoryId": "testea"
     }
   ],
   "entries": [
