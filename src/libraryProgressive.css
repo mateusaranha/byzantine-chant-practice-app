@@ -102,6 +102,15 @@
   grid-template-columns:minmax(0,1fr) auto;
   gap:8px;
 }
+.curation-create-context {
+  display:grid;
+  gap:7px;
+  padding:9px 10px;
+  border-left:2px solid #d8cbb8;
+  background:#fffaf2;
+  color:#675b50;
+  font:12px/1.45 Arial,sans-serif;
+}
 .curation-set-note {
   margin:2px 0;
   color:#81756a;

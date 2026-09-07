@@ -57,10 +57,10 @@ export default function AppGuide() {
           Para o curador, o formulário também oferece <strong>Biblioteca curada</strong> e <strong>Ambos</strong>. Em <strong>Biblioteca curada</strong>, o conteúdo-base é publicado para servir à curadoria, mas não aparece também em Meus conjuntos. Em <strong>Ambos</strong>, o mesmo conteúdo-base aparece nas duas áreas, sem ser duplicado.
         </p>
         <p>
-          Ao adicionar à Biblioteca curada, escolha uma <strong>categoria</strong> e uma <strong>subcategoria</strong>. O curador pode criar ambas diretamente nesse fluxo. O conjunto inteiro que está aberto é associado à subcategoria; não é necessário cadastrar cada hino separadamente.
+          Ao adicionar à Biblioteca curada, escolha primeiro uma <strong>categoria</strong>. A lista seguinte mostra somente as subcategorias pertencentes à categoria escolhida. Você pode selecionar uma subcategoria existente ou criar uma nova já dentro dessa categoria. O conjunto inteiro que está aberto é associado à subcategoria; não é necessário cadastrar cada hino separadamente.
         </p>
         <p>
-          Cada subcategoria aponta para um único conjunto. Se ela já estiver associada a outro conjunto, o Psaltikon pede confirmação antes de substituir essa associação. Um conjunto também pode ser publicado primeiro e adicionado à curadoria mais tarde.
+          Cada subcategoria aponta para um único conjunto. Selecionar uma subcategoria que já possui material associado permite atualizar esse conjunto; se o conjunto atual for outro, o Psaltikon pede confirmação antes de substituir a associação. Um conjunto também pode ser publicado primeiro e adicionado à curadoria mais tarde.
         </p>
       </HelpSection>
 

@@ -18,11 +18,15 @@ test("public library keeps progressive disclosure and associates whole sets with
   assert.match(source, /\["both", "Ambos"\]/);
   assert.match(source, /\+ Nova categoria/);
   assert.match(source, /\+ Nova subcategoria/);
-  assert.match(source, /subcategoryId: curatedSubcategoryId/);
+  assert.match(source, /Subcategoria em/);
+  assert.match(source, /selectCuratedCategory/);
+  assert.match(source, /setCuratedSubcategoryId\(""\)/);
+  assert.match(source, /subcategoryId/);
   assert.match(source, /replace/);
-  assert.match(source, /O conjunto inteiro, com os \{hymns\.length\} hinos abertos/);
-  assert.match(source, /Adicionar conjunto à Biblioteca curada/);
-  assert.match(source, /Associar este conjunto à curadoria agora/);
+  assert.match(source, /já possui um conjunto associado/);
+  assert.match(source, /Atualizar conjunto de/);
+  assert.match(source, /Criar .* e adicionar conjunto/);
+  assert.doesNotMatch(source, /Associar este conjunto à curadoria agora/);
   assert.doesNotMatch(source, /Selecionar hinos individualmente/);
   assert.doesNotMatch(source, /curated-hymn-selection/);
   assert.match(source, /publishBase\(name, slug, false\)/);
@@ -33,6 +37,7 @@ test("public library keeps progressive disclosure and associates whole sets with
   assert.match(styles, /\.library-entry-grid/);
   assert.match(styles, /grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/);
   assert.match(styles, /\.save-destination/);
+  assert.match(styles, /\.curation-create-context/);
   assert.match(styles, /\.curation-set-note/);
   assert.match(styles, /\.curated-set-link/);
   assert.doesNotMatch(styles, /\.curated-hymn-selection|\.curated-hymn-options/);
