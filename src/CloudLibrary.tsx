@@ -150,19 +150,30 @@ export default function CloudLibrary({
 
   const curatedCategories = curatedCatalog.categories;
   const curatedSubcategories = curatedCatalog.subcategories.filter((subcategory) => subcategory.categoryId === curatedCategoryId);
+  const selectedCuratedCategory = curatedCategories.find((category) => category.id === curatedCategoryId);
+  const selectedCuratedSubcategory = curatedSubcategories.find((subcategory) => subcategory.id === curatedSubcategoryId);
   const setsEntryLabel = session?.isApproved ? "Meus conjuntos" : "Conjuntos publicados";
   const wantsCurated = session?.isAdmin && saveDestination !== "sets";
-
 
   useEffect(() => {
     if (!curatedCategories.some((category) => category.id === curatedCategoryId)) {
       setCuratedCategoryId(curatedCategories[0]?.id || "");
+      setCuratedSubcategoryId("");
+      setNewSubcategoryOpen(false);
+      setNewSubcategoryName("");
       return;
     }
-    if (!curatedSubcategories.some((subcategory) => subcategory.id === curatedSubcategoryId)) {
-      setCuratedSubcategoryId(curatedSubcategories[0]?.id || "");
+    if (curatedSubcategoryId && !curatedSubcategories.some((subcategory) => subcategory.id === curatedSubcategoryId)) {
+      setCuratedSubcategoryId("");
     }
   }, [curatedCatalog, curatedCategoryId, curatedSubcategoryId]);
+
+  function selectCuratedCategory(categoryId: string) {
+    setCuratedCategoryId(categoryId);
+    setCuratedSubcategoryId("");
+    setNewSubcategoryOpen(false);
+    setNewSubcategoryName("");
+  }
 
   function toggleLibrarySort(by: LibrarySort["by"]) {
     setLibrarySort((current) => nextLibrarySort(current, by));
@@ -247,10 +258,10 @@ export default function CloudLibrary({
     });
   }
 
-  async function promoteCurated(path: string) {
+  async function promoteCurated(path: string, subcategoryId = curatedSubcategoryId, catalog = curatedCatalog) {
     if (!session?.isAdmin) throw new Error("Somente o curador pode adicionar itens à Biblioteca curada.");
-    if (!curatedSubcategoryId) throw new Error("Escolha a subcategoria da curadoria.");
-    const target = curatedCatalog.subcategories.find((subcategory) => subcategory.id === curatedSubcategoryId);
+    if (!subcategoryId) throw new Error("Escolha a subcategoria da curadoria.");
+    const target = catalog.subcategories.find((subcategory) => subcategory.id === subcategoryId);
     if (!target) throw new Error("Subcategoria da Biblioteca curada não encontrada.");
 
     let replace = false;
@@ -264,7 +275,7 @@ export default function CloudLibrary({
       "/api/curated",
       {
         method: "POST",
-        body: JSON.stringify({ path, subcategoryId: curatedSubcategoryId, replace }),
+        body: JSON.stringify({ path, subcategoryId, replace }),
       },
       token,
     );
@@ -292,22 +303,19 @@ export default function CloudLibrary({
     });
   }
 
-  function createSubcategory() {
-    const label = newSubcategoryName.trim();
-    if (!label || !curatedCategoryId) return;
-    void run("curated-subcategory", async () => {
-      const result = await api<CuratedSubcategoryWrite>(
-        apiBase,
-        "/api/curated/subcategories",
-        { method: "POST", body: JSON.stringify({ label, categoryId: curatedCategoryId }) },
-        token,
-      );
-      setCuratedCatalog(result.catalog);
-      setCuratedSubcategoryId(result.subcategory.id);
-      setNewSubcategoryName("");
-      setNewSubcategoryOpen(false);
-      setMessage(`Subcategoria “${result.subcategory.label}” criada.`);
-    });
+  async function createCuratedSubcategory(label: string) {
+    if (!label || !curatedCategoryId) throw new Error("Escolha uma categoria e informe o nome da nova subcategoria.");
+    const result = await api<CuratedSubcategoryWrite>(
+      apiBase,
+      "/api/curated/subcategories",
+      { method: "POST", body: JSON.stringify({ label, categoryId: curatedCategoryId }) },
+      token,
+    );
+    setCuratedCatalog(result.catalog);
+    setCuratedSubcategoryId(result.subcategory.id);
+    setNewSubcategoryName("");
+    setNewSubcategoryOpen(false);
+    return result;
   }
 
   async function publishBase(name: string, slug: string, listed: boolean) {
@@ -325,8 +333,12 @@ export default function CloudLibrary({
       setError("Informe um nome para o conjunto.");
       return;
     }
-    if (wantsCurated && !curatedSubcategoryId) {
-      setError("Escolha ou crie uma categoria e uma subcategoria para a Biblioteca curada.");
+    if (wantsCurated && !curatedCategoryId) {
+      setError("Escolha ou crie uma categoria para a Biblioteca curada.");
+      return;
+    }
+    if (wantsCurated && !curatedSubcategoryId && !(newSubcategoryOpen && newSubcategoryName.trim())) {
+      setError("Escolha uma subcategoria desta categoria ou informe o nome de uma nova subcategoria.");
       return;
     }
     const updatesOwnSet = Boolean(savedSlug && savedOwner === session?.user.login);
@@ -340,7 +352,14 @@ export default function CloudLibrary({
 
       if (wantsCurated) {
         try {
-          const promotion = await promoteCurated(saved.path);
+          let targetSubcategoryId = curatedSubcategoryId;
+          let promotionCatalog = curatedCatalog;
+          if (newSubcategoryOpen) {
+            const created = await createCuratedSubcategory(newSubcategoryName.trim());
+            targetSubcategoryId = created.subcategory.id;
+            promotionCatalog = created.catalog;
+          }
+          const promotion = await promoteCurated(saved.path, targetSubcategoryId, promotionCatalog);
           if (!promotion) {
             setMessage("Conjunto salvo em Meus conjuntos; a associação da Biblioteca curada não foi alterada.");
             await refreshLibrary();
@@ -371,22 +390,6 @@ export default function CloudLibrary({
         setMessage("Conjunto salvo em Meus conjuntos. O histórico anterior foi preservado.");
       }
       await refreshLibrary();
-    });
-  }
-
-  function promoteLoadedSet() {
-    if (!savedPath) return;
-    void run("curate", async () => {
-      const promotion = await promoteCurated(savedPath);
-      if (!promotion) {
-        setMessage("A associação da Biblioteca curada não foi alterada.");
-        return;
-      }
-      setMessage(
-        promotion.changed
-          ? "Conjunto associado à Biblioteca curada. O conteúdo publicado não foi duplicado."
-          : "Este conjunto já estava associado a essa subcategoria da Biblioteca curada.",
-      );
     });
   }
 
@@ -430,6 +433,16 @@ export default function CloudLibrary({
   const canDelete = (item: LibraryItem) =>
     Boolean(session?.isApproved && (session.isAdmin || item.owner === session.user.login));
   const updatesOwnSet = Boolean(savedSlug && savedOwner === session?.user.login);
+  const curatedTargetReady = !wantsCurated || Boolean(
+    curatedCategoryId && (curatedSubcategoryId || (newSubcategoryOpen && newSubcategoryName.trim())),
+  );
+  const curatedSaveLabel = newSubcategoryOpen && newSubcategoryName.trim()
+    ? `Criar “${newSubcategoryName.trim()}” e adicionar conjunto`
+    : selectedCuratedSubcategory?.source?.path
+      ? `Atualizar conjunto de “${selectedCuratedSubcategory.label}”`
+      : selectedCuratedSubcategory
+        ? `Adicionar conjunto a “${selectedCuratedSubcategory.label}”`
+        : "Escolha uma subcategoria";
 
   return (
     <section className="cloud-library" aria-label="Biblioteca pública">
@@ -608,7 +621,7 @@ export default function CloudLibrary({
                           <div className="curation-field-row">
                             <label>
                               Categoria
-                              <select value={curatedCategoryId} onChange={(event) => setCuratedCategoryId(event.target.value)}>
+                              <select value={curatedCategoryId} onChange={(event) => selectCuratedCategory(event.target.value)}>
                                 <option value="">Selecione</option>
                                 {curatedCategories.map((category) => (
                                   <option key={category.id} value={category.id}>{category.label}</option>
@@ -626,41 +639,81 @@ export default function CloudLibrary({
 
                           <div className="curation-field-row">
                             <label>
-                              Subcategoria
-                              <select value={curatedSubcategoryId} onChange={(event) => setCuratedSubcategoryId(event.target.value)} disabled={!curatedCategoryId}>
+                              {selectedCuratedCategory ? `Subcategoria em “${selectedCuratedCategory.label}”` : "Subcategoria"}
+                              <select
+                                value={curatedSubcategoryId}
+                                onChange={(event) => {
+                                  setCuratedSubcategoryId(event.target.value);
+                                  setNewSubcategoryOpen(false);
+                                  setNewSubcategoryName("");
+                                }}
+                                disabled={!curatedCategoryId || newSubcategoryOpen}
+                              >
                                 <option value="">Selecione</option>
                                 {curatedSubcategories.map((subcategory) => (
                                   <option key={subcategory.id} value={subcategory.id}>{subcategory.label}</option>
                                 ))}
                               </select>
                             </label>
-                            <button className="cloud-secondary" type="button" onClick={() => setNewSubcategoryOpen((open) => !open)} disabled={!curatedCategoryId}>+ Nova subcategoria</button>
+                            <button
+                              className="cloud-secondary"
+                              type="button"
+                              onClick={() => {
+                                const opening = !newSubcategoryOpen;
+                                setNewSubcategoryOpen(opening);
+                                setNewSubcategoryName("");
+                                if (opening) setCuratedSubcategoryId("");
+                              }}
+                              disabled={!curatedCategoryId}
+                            >
+                              + Nova subcategoria
+                            </button>
                           </div>
-                          {newSubcategoryOpen && curatedCategoryId && (
-                            <div className="curation-create-row">
-                              <input value={newSubcategoryName} onChange={(event) => setNewSubcategoryName(event.target.value)} placeholder="Ex.: Dormição da Theotokos" />
-                              <button className="cloud-secondary" type="button" onClick={createSubcategory} disabled={!newSubcategoryName.trim() || Boolean(busy)}>Criar</button>
+                          {newSubcategoryOpen && selectedCuratedCategory && (
+                            <div className="curation-create-context">
+                              <span>Nova subcategoria em <strong>“{selectedCuratedCategory.label}”</strong></span>
+                              <div className="curation-create-row">
+                                <input
+                                  value={newSubcategoryName}
+                                  onChange={(event) => setNewSubcategoryName(event.target.value)}
+                                  placeholder="Ex.: Dormição da Theotokos"
+                                  aria-label={`Nova subcategoria em ${selectedCuratedCategory.label}`}
+                                />
+                                <button
+                                  className="cloud-secondary"
+                                  type="button"
+                                  onClick={() => {
+                                    setNewSubcategoryOpen(false);
+                                    setNewSubcategoryName("");
+                                  }}
+                                >
+                                  Cancelar
+                                </button>
+                              </div>
                             </div>
                           )}
                           <p className="curation-set-note">
-                            O conjunto inteiro, com os {hymns.length} hinos abertos, será associado a esta subcategoria.
+                            {newSubcategoryOpen && selectedCuratedCategory
+                              ? newSubcategoryName.trim()
+                                ? `Ao salvar, “${newSubcategoryName.trim()}” será criada dentro de “${selectedCuratedCategory.label}” e receberá o conjunto inteiro.`
+                                : `Informe o nome da nova subcategoria de “${selectedCuratedCategory.label}”.`
+                              : selectedCuratedSubcategory?.source?.path
+                                ? `“${selectedCuratedSubcategory.label}” já possui um conjunto associado. Salvar atualizará essa subcategoria com o conjunto atualmente aberto.`
+                                : selectedCuratedSubcategory
+                                  ? `“${selectedCuratedSubcategory.label}” ainda não possui conjunto. O conjunto inteiro, com os ${hymns.length} hinos abertos, será associado a ela.`
+                                  : selectedCuratedCategory
+                                    ? `Escolha uma subcategoria de “${selectedCuratedCategory.label}” ou crie uma nova.`
+                                    : "Escolha primeiro uma categoria."
+                            }
                           </p>
-
-                          {savedPath && (
-                            <button className="cloud-secondary" type="button" onClick={promoteLoadedSet} disabled={!curatedSubcategoryId || Boolean(busy)}>
-                              {busy === "curate" ? "Associando…" : "Associar este conjunto à curadoria agora"}
-                            </button>
-                          )}
                         </div>
                       )}
 
-                      <button className="cloud-primary" onClick={saveSet} disabled={Boolean(busy)}>
+                      <button className="cloud-primary" onClick={saveSet} disabled={Boolean(busy) || !curatedTargetReady}>
                         {busy === "save"
                           ? "Salvando…"
                           : wantsCurated
-                            ? saveDestination === "both"
-                              ? "Salvar conjunto e adicionar à curadoria"
-                              : "Adicionar conjunto à Biblioteca curada"
+                            ? curatedSaveLabel
                             : updatesOwnSet
                               ? "Atualizar publicação"
                               : savedSlug

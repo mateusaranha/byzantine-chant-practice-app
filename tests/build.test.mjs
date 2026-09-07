@@ -318,7 +318,9 @@ test("the production build contains the app shell and migration features", async
   assert.match(appGuideSource, /abre diretamente o conjunto completo associado/);
   assert.match(appGuideSource, /O conjunto inteiro que está aberto é associado à subcategoria/);
   assert.match(appGuideSource, /não é necessário cadastrar cada hino separadamente/);
-  assert.match(appGuideSource, /pede confirmação antes de substituir essa associação/);
+  assert.match(appGuideSource, /A lista seguinte mostra somente as subcategorias pertencentes à categoria escolhida/);
+  assert.match(appGuideSource, /criar uma nova já dentro dessa categoria/);
+  assert.match(appGuideSource, /pede confirmação antes de substituir a associação/);
   assert.match(appGuideSource, /não aparece também em Meus conjuntos/);
   assert.match(appGuideSource, /área temporária, sem alterar seu espaço/);
   assert.match(appGuideSource, /cópia local independente aos seus hinos/);
