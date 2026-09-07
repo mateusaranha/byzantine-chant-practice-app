@@ -59,6 +59,10 @@ Revisar o limite de 80 hinos somente se o uso real mostrar necessidade.
 
 Essas ideias devem permanecer nas Issues enquanto não houver problema concreto, desenho revisado e prioridade definida.
 
+## Manutenibilidade
+
+Monitorar a concentração de responsabilidades em componentes centrais, especialmente `src/App.tsx`. Não refatorar por tamanho ou contagem de linhas; quando uma tarefa real tocar uma área central e houver benefício concreto, preferir extrações pequenas, testáveis e sem mudança de comportamento que reduzam acoplamento, contexto necessário e conflitos entre mudanças. A discussão e os sinais para agir estão registrados em #106.
+
 ## Segurança e manutenção
 
 Camadas possíveis, sem urgência comprovada para o uso atual:
