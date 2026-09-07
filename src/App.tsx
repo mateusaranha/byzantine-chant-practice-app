@@ -25,6 +25,7 @@ import {
   readHymnPanelOpen,
   readToolsPanelOpen,
   writeHymnPanelOpen,
+  writeHymnPanelsOpen,
   writeToolsPanelOpen,
 } from "./workspacePreferences";
 import "./hymnCollapse.css";
@@ -224,6 +225,8 @@ function HymnWorkspace({
   printSettings,
   persistToolsPanel = false,
   persistHymnPanel = false,
+  hymnPanelOpen: controlledHymnPanelOpen,
+  onHymnPanelOpenChange,
   onChange,
   onDelete,
   onOpenGuide,
@@ -235,6 +238,8 @@ function HymnWorkspace({
   printSettings: PdfExportSettings;
   persistToolsPanel?: boolean;
   persistHymnPanel?: boolean;
+  hymnPanelOpen?: boolean;
+  onHymnPanelOpenChange?: (open: boolean) => void;
   onChange: (hymn: Hymn) => void;
   onDelete: () => void;
   onOpenGuide: (trigger: HTMLButtonElement) => void;
@@ -246,9 +251,10 @@ function HymnWorkspace({
   const [toolsOpen, setToolsOpen] = useState(() =>
     persistToolsPanel ? readToolsPanelOpen(localStorage, hymn.id) : true,
   );
-  const [hymnPanelOpen, setHymnPanelOpen] = useState(() =>
+  const [localHymnPanelOpen, setLocalHymnPanelOpen] = useState(() =>
     persistHymnPanel ? readHymnPanelOpen(localStorage, hymn.id) : true,
   );
+  const hymnPanelOpen = controlledHymnPanelOpen ?? localHymnPanelOpen;
   const [coloursVisible, setColoursVisible] = useState(true);
   const [melismasVisible, setMelismasVisible] = useState(true);
   const [transliterated, setTransliterated] = useState(false);
@@ -467,8 +473,11 @@ function HymnWorkspace({
       setActiveTool(null);
       window.getSelection()?.removeAllRanges();
     }
-    setHymnPanelOpen(nextOpen);
-    if (persistHymnPanel) writeHymnPanelOpen(localStorage, hymn.id, nextOpen);
+    if (onHymnPanelOpenChange) onHymnPanelOpenChange(nextOpen);
+    else {
+      setLocalHymnPanelOpen(nextOpen);
+      if (persistHymnPanel) writeHymnPanelOpen(localStorage, hymn.id, nextOpen);
+    }
   }
 
   function changeReading(showTransliteration: boolean) {
@@ -1046,6 +1055,7 @@ function HymnWorkspace({
 function LocalWorkspace() {
   const [hymns, setHymns] = useState<Hymn[]>(() => [newHymn()]);
   const [hydrated, setHydrated] = useState(false);
+  const [collapsedHymnIds, setCollapsedHymnIds] = useState<Set<string>>(() => new Set());
   const [storageProblem, setStorageProblem] = useState<
     { kind: "read"; raw: string | null; writeFailed?: boolean } | { kind: "write" } | null
   >(null);
@@ -1061,7 +1071,14 @@ function LocalWorkspace() {
 
   useEffect(() => {
     const stored = readWorkspace(localStorage);
-    if (stored.status === "ready") setHymns(stored.hymns);
+    if (stored.status === "ready") {
+      setHymns(stored.hymns);
+      setCollapsedHymnIds(new Set(
+        stored.hymns
+          .filter((hymn) => !readHymnPanelOpen(localStorage, hymn.id))
+          .map((hymn) => hymn.id),
+      ));
+    }
     if (stored.status === "unreadable") setStorageProblem({ kind: "read", raw: stored.raw });
     setHydrated(true);
   }, []);
@@ -1093,6 +1110,26 @@ function LocalWorkspace() {
 
   function updateHymn(updated: Hymn) {
     setHymns((current) => current.map((hymn) => (hymn.id === updated.id ? updated : hymn)));
+  }
+
+  function setHymnPanelOpen(hymnId: string, open: boolean) {
+    setCollapsedHymnIds((current) => {
+      const next = new Set(current);
+      if (open) next.delete(hymnId);
+      else next.add(hymnId);
+      return next;
+    });
+    writeHymnPanelOpen(localStorage, hymnId, open);
+  }
+
+  function setAllHymnPanelsOpen(open: boolean) {
+    const hymnIds = hymns.map((hymn) => hymn.id);
+    setCollapsedHymnIds((current) => {
+      const next = new Set(current);
+      hymnIds.forEach((id) => open ? next.delete(id) : next.add(id));
+      return next;
+    });
+    writeHymnPanelsOpen(localStorage, hymnIds, open);
   }
 
   function addHymn() {
@@ -1231,6 +1268,8 @@ function LocalWorkspace() {
             printSettings={printSettings}
             persistToolsPanel
             persistHymnPanel
+            hymnPanelOpen={!collapsedHymnIds.has(hymn.id)}
+            onHymnPanelOpenChange={(open) => setHymnPanelOpen(hymn.id, open)}
             onChange={updateHymn}
             onOpenGuide={(trigger) => setHelp({ page: "guide", trigger })}
             onDelete={() => setHymns((current) => current.filter((item) => item.id !== hymn.id))}
@@ -1249,6 +1288,13 @@ function LocalWorkspace() {
             Organizar hinos
           </button>
         )}
+        <details className="hymn-display-menu">
+          <summary>Exibição <span aria-hidden="true">⌄</span></summary>
+          <div className="hymn-display-menu-options">
+            <button type="button" onClick={() => setAllHymnPanelsOpen(false)}>Recolher todos</button>
+            <button type="button" onClick={() => setAllHymnPanelsOpen(true)}>Expandir todos</button>
+          </div>
+        </details>
       </div>
 
       <footer>

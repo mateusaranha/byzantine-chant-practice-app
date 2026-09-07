@@ -213,13 +213,21 @@ button,input,textarea { font:inherit; } button { cursor:pointer; }
 .input-row { display:flex; gap:8px; } .input-row input { min-width:0; flex:1; border:1px solid #cdbfae; background:#fffdf8; border-radius:3px; padding:12px 13px; color:var(--ink); outline:none; font:14px Arial,sans-serif; }
 .input-row input:focus { border-color:var(--gold); box-shadow:0 0 0 3px rgba(180,139,71,.12); } .input-row button { border:1px solid #752724; background:var(--red); color:white; border-radius:3px; padding:0 20px; font:600 12px Arial,sans-serif; }
 .input-row button:hover { background:#742623; } .error { margin:7px 0 0; color:var(--red); font:12px Arial,sans-serif; }
-.hymn-list-actions { max-width:1500px; margin:24px auto 0; display:grid; grid-template-columns:minmax(0,2fr) minmax(220px,.65fr); gap:10px; }
+.hymn-list-actions { max-width:1500px; margin:24px auto 0; display:grid; grid-template-columns:minmax(0,2fr) minmax(220px,.65fr) minmax(150px,.45fr); gap:10px; }
 .add-hymn { width:100%; min-height:58px; display:flex; align-items:center; justify-content:center; gap:11px; border:1px dashed rgba(202,169,104,.58); border-radius:4px; background:rgba(180,139,71,.06); color:#d4bd96; font:600 12px Arial,sans-serif; letter-spacing:.08em; text-transform:uppercase; transition:.18s ease; }
 .add-hymn span { width:28px; height:28px; display:grid; place-items:center; border:1px solid rgba(202,169,104,.65); border-radius:50%; font:300 21px/1 Arial,sans-serif; }
 .add-hymn:hover { border-color:#d8b36d; background:rgba(180,139,71,.13); color:#fff3df; }
 .organize-hymns { min-height:58px; display:flex; align-items:center; justify-content:center; gap:9px; border:1px solid rgba(202,169,104,.42); border-radius:4px; background:rgba(20,16,14,.24); color:#c8b18d; padding:10px 16px; font:600 11px Arial,sans-serif; letter-spacing:.08em; text-transform:uppercase; }
 .organize-hymns span { color:#d8b36d; font:20px/1 Arial,sans-serif; }
 .organize-hymns:hover { border-color:#d8b36d; background:rgba(180,139,71,.1); color:#fff3df; }
+.hymn-display-menu { position:relative; min-width:0; }
+.hymn-display-menu summary { min-height:58px; display:flex; align-items:center; justify-content:center; gap:8px; border:1px solid rgba(202,169,104,.32); border-radius:4px; background:rgba(20,16,14,.18); color:#bfa987; padding:10px 14px; cursor:pointer; list-style:none; font:600 11px Arial,sans-serif; letter-spacing:.08em; text-transform:uppercase; }
+.hymn-display-menu summary::-webkit-details-marker { display:none; }
+.hymn-display-menu summary:hover,.hymn-display-menu[open] summary { border-color:#d8b36d; background:rgba(180,139,71,.08); color:#fff3df; }
+.hymn-display-menu summary:focus-visible,.hymn-display-menu-options button:focus-visible { outline:2px solid #d8b36d; outline-offset:2px; }
+.hymn-display-menu-options { position:absolute; z-index:10; right:0; bottom:calc(100% + 6px); width:max-content; min-width:190px; display:grid; gap:4px; padding:6px; border:1px solid rgba(180,139,71,.55); border-radius:4px; background:#2b231f; box-shadow:0 12px 30px rgba(0,0,0,.34); }
+.hymn-display-menu-options button { min-height:42px; border:0; border-radius:3px; background:transparent; color:#eadcc6; padding:9px 12px; text-align:left; font:600 12px Arial,sans-serif; }
+.hymn-display-menu-options button:hover { background:rgba(180,139,71,.18); color:#fff8ed; }
 footer { max-width:1500px; margin:15px auto 0; display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:8px 14px; color:#9e8e7e; text-align:center; font:11px Arial,sans-serif; letter-spacing:.1em; }
 .about-link { border:0; border-bottom:1px solid rgba(202,169,104,.5); background:transparent; color:#cbb58f; padding:3px 1px; font:600 10px Arial,sans-serif; letter-spacing:.09em; text-transform:uppercase; }
 .about-link:hover,.about-link:focus-visible { border-color:#d8b36d; color:#fff3df; outline:none; }
