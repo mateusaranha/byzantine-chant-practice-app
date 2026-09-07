@@ -1,10 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
+import rawCatalog from "../catalog/curated.json";
 import type { Hymn } from "./hymnState";
 import { libraryItemLabel, nextLibrarySort, sortLibraryItems } from "./librarySort";
 import type { LibrarySort } from "./librarySort";
 import { readPublishedSet } from "./sharedHymns";
 import ShareDialog from "./ShareDialog";
 import CuratedLibrary from "./CuratedLibrary";
+import { readCuratedCatalog } from "./curatedCatalog";
 
 type GitHubUser = {
   login: string;
@@ -37,7 +39,12 @@ type LibraryItem = {
   updatedAt?: string | null;
 };
 
+type LibraryView = "home" | "curated" | "sets";
+type CuratedPromotion = { changed: boolean; entry: { title: string } };
+
 const SESSION_KEY = "psaltikon-publisher-session";
+const { catalog: curatedCatalog } = readCuratedCatalog(rawCatalog);
+const curatedCategories = curatedCatalog.categories;
 
 function readStoredSession() {
   try {
@@ -100,13 +107,19 @@ export default function CloudLibrary({
   onLoad: (hymns: Partial<Hymn>[], title: string) => void;
   onClose: () => void;
 }) {
+  const [view, setView] = useState<LibraryView>("home");
   const [token, setToken] = useState("");
   const [session, setSession] = useState<SessionInfo | null>(null);
   const [sessionChecked, setSessionChecked] = useState(false);
   const [items, setItems] = useState<LibraryItem[]>([]);
+  const [libraryLoaded, setLibraryLoaded] = useState(false);
   const [collectionName, setCollectionName] = useState("");
   const [savedSlug, setSavedSlug] = useState("");
   const [savedOwner, setSavedOwner] = useState("");
+  const [savedPath, setSavedPath] = useState("");
+  const [curateOnSave, setCurateOnSave] = useState(false);
+  const [curatedCategoryId, setCuratedCategoryId] = useState(() => curatedCategories[0]?.id || "");
+  const [curatedHymnId, setCuratedHymnId] = useState(() => hymns[0]?.id || "");
   const [newPublisher, setNewPublisher] = useState("");
   const [busy, setBusy] = useState("");
   const [message, setMessage] = useState("");
@@ -117,11 +130,24 @@ export default function CloudLibrary({
   const grouped = useMemo(() => {
     const groups = new Map<string, LibraryItem[]>();
     items.forEach((item) => groups.set(item.owner, [...(groups.get(item.owner) || []), item]));
-    return [...groups.entries()].map(([owner, ownerItems]) => [
-      owner,
-      sortLibraryItems(ownerItems, librarySort),
-    ] as const);
-  }, [items, librarySort]);
+    return [...groups.entries()]
+      .sort(([ownerA], [ownerB]) => {
+        const own = session?.user.login;
+        if (ownerA === own) return -1;
+        if (ownerB === own) return 1;
+        return ownerA.localeCompare(ownerB);
+      })
+      .map(([owner, ownerItems]) => [owner, sortLibraryItems(ownerItems, librarySort)] as const);
+  }, [items, librarySort, session?.user.login]);
+
+  const selectedCuratedHymn = hymns.find((hymn) => hymn.id === curatedHymnId) || hymns[0];
+  const setsEntryLabel = session?.isApproved ? "Meus conjuntos" : "Conjuntos publicados";
+
+  useEffect(() => {
+    if (selectedCuratedHymn && selectedCuratedHymn.id !== curatedHymnId) {
+      setCuratedHymnId(selectedCuratedHymn.id);
+    }
+  }, [selectedCuratedHymn, curatedHymnId]);
 
   function toggleLibrarySort(by: LibrarySort["by"]) {
     setLibrarySort((current) => nextLibrarySort(current, by));
@@ -148,6 +174,7 @@ export default function CloudLibrary({
   async function refreshLibrary() {
     const library = await api<LibraryItem[]>(apiBase, "/api/library");
     setItems(library);
+    setLibraryLoaded(true);
   }
 
   async function refreshSession(sessionToken = token) {
@@ -178,8 +205,12 @@ export default function CloudLibrary({
     }
     setToken(initialToken);
     void refreshSession(initialToken);
-    void run("library", refreshLibrary);
   }, []);
+
+  function openSets() {
+    setView("sets");
+    if (!libraryLoaded) void run("library", refreshLibrary);
+  }
 
   function signIn() {
     window.location.href = `${apiBase}/auth/login`;
@@ -200,6 +231,24 @@ export default function CloudLibrary({
     });
   }
 
+  async function promoteCurated(path: string) {
+    if (!session?.isAdmin) throw new Error("Somente o curador pode adicionar itens à Biblioteca curada.");
+    if (!selectedCuratedHymn?.id || !curatedCategoryId) throw new Error("Escolha o hino e a categoria da curadoria.");
+    return api<CuratedPromotion>(
+      apiBase,
+      "/api/curated",
+      {
+        method: "POST",
+        body: JSON.stringify({
+          path,
+          hymnId: selectedCuratedHymn.id,
+          categoryId: curatedCategoryId,
+        }),
+      },
+      token,
+    );
+  }
+
   function saveSet() {
     const name = collectionName.trim();
     if (!name) {
@@ -209,7 +258,7 @@ export default function CloudLibrary({
     const updatesOwnSet = Boolean(savedSlug && savedOwner === session?.user.login);
     const slug = updatesOwnSet ? savedSlug : slugify(name);
     void run("save", async () => {
-      await api(
+      const saved = await api<{ path: string }>(
         apiBase,
         "/api/sets",
         { method: "POST", body: JSON.stringify({ title: name, slug, hymns }) },
@@ -217,8 +266,37 @@ export default function CloudLibrary({
       );
       setSavedSlug(slug);
       setSavedOwner(session?.user.login || "");
+      setSavedPath(saved.path);
       await refreshLibrary();
-      setMessage("Conjunto salvo no GitHub. O histórico anterior foi preservado.");
+      if (session?.isAdmin && curateOnSave) {
+        try {
+          const promotion = await promoteCurated(saved.path);
+          setCurateOnSave(false);
+          setMessage(
+            promotion.changed
+              ? "Conjunto salvo e hino adicionado à Biblioteca curada."
+              : "Conjunto salvo. O hino já fazia parte dessa categoria da Biblioteca curada.",
+          );
+        } catch (promotionError) {
+          const detail = promotionError instanceof Error ? promotionError.message : "Não foi possível atualizar a curadoria.";
+          setError(`O conjunto foi salvo no GitHub, mas a curadoria não foi alterada. ${detail}`);
+        }
+      } else {
+        setMessage("Conjunto salvo no GitHub. O histórico anterior foi preservado.");
+      }
+    });
+  }
+
+  function promoteLoadedSet() {
+    if (!savedPath) return;
+    void run("curate", async () => {
+      const promotion = await promoteCurated(savedPath);
+      setCurateOnSave(false);
+      setMessage(
+        promotion.changed
+          ? "Hino adicionado à Biblioteca curada. O conjunto publicado não foi duplicado."
+          : "Este hino já fazia parte dessa categoria da Biblioteca curada.",
+      );
     });
   }
 
@@ -231,6 +309,8 @@ export default function CloudLibrary({
       setCollectionName(published.title);
       setSavedSlug(item.slug);
       setSavedOwner(item.owner);
+      setSavedPath(item.path);
+      setCuratedHymnId(published.hymns[0]?.id || "");
       setMessage(`“${published.title}” foi carregado no espaço de trabalho atual.`);
     });
   }
@@ -263,13 +343,17 @@ export default function CloudLibrary({
   const updatesOwnSet = Boolean(savedSlug && savedOwner === session?.user.login);
 
   return (
-    <section className="cloud-library" aria-label="Biblioteca online de conjuntos">
+    <section className="cloud-library" aria-label="Biblioteca pública">
       <div className="cloud-library-heading">
         <div>
-          <p className="eyebrow">Biblioteca no GitHub</p>
-          <h2>Biblioteca de hinos</h2>
+          <p className="eyebrow">Biblioteca pública</p>
+          <h2>Biblioteca pública</h2>
           <p>
-            Cada autor publica na própria pasta. Qualquer pessoa pode carregar um conjunto; somente contas aprovadas podem salvar.
+            {view === "home"
+              ? "Escolha uma área para explorar. Os detalhes aparecem somente depois da sua escolha."
+              : view === "curated"
+                ? "Explore a seleção por categorias e versões de estudo."
+                : "Abra conjuntos publicados ou gerencie suas publicações."}
           </p>
         </div>
         <button className="cloud-close" onClick={onClose} aria-label="Fechar biblioteca">×</button>
@@ -283,162 +367,247 @@ export default function CloudLibrary({
 
       {sharing && <ShareDialog apiBase={apiBase} path={sharing.path} trigger={sharing.trigger} onClose={() => setSharing(null)} />}
 
-      <CuratedLibrary apiBase={apiBase} />
+      {view === "home" ? (
+        <div className="library-entry-grid" aria-label="Áreas da Biblioteca pública">
+          <button className="library-entry-card" onClick={() => setView("curated")}>
+            <span className="library-entry-kicker">Seleção por tema</span>
+            <strong>Biblioteca curada</strong>
+            <small>Hinos selecionados e organizados por categorias.</small>
+            <span className="library-entry-arrow" aria-hidden="true">→</span>
+          </button>
+          <button className="library-entry-card" onClick={openSets}>
+            <span className="library-entry-kicker">Publicações</span>
+            <strong>{setsEntryLabel}</strong>
+            <small>
+              {session?.isApproved
+                ? "Acesse seus conjuntos e os materiais publicados por outros autores."
+                : "Explore os conjuntos publicados pelos autores."}
+            </small>
+            <span className="library-entry-arrow" aria-hidden="true">→</span>
+          </button>
+        </div>
+      ) : (
+        <button className="cloud-secondary library-back" onClick={() => setView("home")}>
+          ← Biblioteca pública
+        </button>
+      )}
 
-      <div className="cloud-library-grid">
-        <div className="cloud-card">
-          <div className="cloud-card-title">
-            <div>
-              <span>Conjuntos publicados</span>
-              <p>Escolha um autor e carregue uma cópia no seu dispositivo.</p>
-            </div>
-            <button className="cloud-secondary" onClick={() => void run("library", refreshLibrary)} disabled={Boolean(busy)}>
-              Atualizar lista
-            </button>
-          </div>
-          <div className="library-sort-controls" role="group" aria-label="Ordenar conjuntos">
-            <span>Ordenar por</span>
-            <button
-              className={`cloud-secondary ${librarySort.by === "name" ? "active" : ""}`}
-              aria-pressed={librarySort.by === "name"}
-              onClick={() => toggleLibrarySort("name")}
-            >
-              Nome: {librarySort.by === "name" && librarySort.direction === "desc" ? "Z–A" : "A–Z"}
-            </button>
-            <button
-              className={`cloud-secondary ${librarySort.by === "updatedAt" ? "active" : ""}`}
-              aria-pressed={librarySort.by === "updatedAt"}
-              onClick={() => toggleLibrarySort("updatedAt")}
-            >
-              Atualização: {librarySort.by === "updatedAt" && librarySort.direction === "asc" ? "antigas" : "recentes"}
-            </button>
-          </div>
-          {busy === "library" ? (
-            <p className="cloud-empty">Buscando conjuntos…</p>
-          ) : grouped.length ? (
-            <div className="cloud-groups">
-              {grouped.map(([owner, ownerItems]) => (
-                <div className="cloud-group" key={owner}>
-                  <h3>{owner === session?.user.login ? `Meus conjuntos · @${owner}` : `@${owner}`}</h3>
-                  {ownerItems.map((item) => (
-                    <div className="cloud-set-row" key={item.path}>
-                      <span className="cloud-set-copy">
-                        <strong>{libraryItemLabel(item)}</strong>
-                        {formattedDate(item.updatedAt) && (
-                          <time dateTime={item.updatedAt || undefined}>Atualizado em {formattedDate(item.updatedAt)}</time>
-                        )}
-                      </span>
-                      <div>
-                        <button onClick={() => loadSet(item)} disabled={Boolean(busy)}>Abrir</button>
-                        <button onClick={(event) => setSharing({ path: item.path, trigger: event.currentTarget })} disabled={Boolean(busy)} aria-haspopup="dialog">
-                          Compartilhar
-                        </button>
-                        {canDelete(item) && (
-                          <button className="danger" onClick={() => deleteSet(item)} disabled={Boolean(busy)}>Excluir</button>
-                        )}
-                      </div>
+      {view === "curated" && <CuratedLibrary apiBase={apiBase} />}
+
+      {view === "sets" && (
+        <>
+          <div className="cloud-library-grid">
+            <div className="cloud-card">
+              <div className="cloud-card-title">
+                <div>
+                  <span>{session?.isApproved ? "Meus conjuntos e publicados" : "Conjuntos publicados"}</span>
+                  <p>
+                    {session?.isApproved
+                      ? "Seus conjuntos aparecem primeiro; os demais autores continuam disponíveis abaixo."
+                      : "Escolha um autor e carregue uma cópia no seu dispositivo."}
+                  </p>
+                </div>
+                <button className="cloud-secondary" onClick={() => void run("library", refreshLibrary)} disabled={Boolean(busy)}>
+                  Atualizar lista
+                </button>
+              </div>
+              <div className="library-sort-controls" role="group" aria-label="Ordenar conjuntos">
+                <span>Ordenar por</span>
+                <button
+                  className={`cloud-secondary ${librarySort.by === "name" ? "active" : ""}`}
+                  aria-pressed={librarySort.by === "name"}
+                  onClick={() => toggleLibrarySort("name")}
+                >
+                  Nome: {librarySort.by === "name" && librarySort.direction === "desc" ? "Z–A" : "A–Z"}
+                </button>
+                <button
+                  className={`cloud-secondary ${librarySort.by === "updatedAt" ? "active" : ""}`}
+                  aria-pressed={librarySort.by === "updatedAt"}
+                  onClick={() => toggleLibrarySort("updatedAt")}
+                >
+                  Atualização: {librarySort.by === "updatedAt" && librarySort.direction === "asc" ? "antigas" : "recentes"}
+                </button>
+              </div>
+              {busy === "library" ? (
+                <p className="cloud-empty">Buscando conjuntos…</p>
+              ) : grouped.length ? (
+                <div className="cloud-groups">
+                  {grouped.map(([owner, ownerItems]) => (
+                    <div className="cloud-group" key={owner}>
+                      <h3>{owner === session?.user.login ? `Meus conjuntos · @${owner}` : `@${owner}`}</h3>
+                      {ownerItems.map((item) => (
+                        <div className="cloud-set-row" key={item.path}>
+                          <span className="cloud-set-copy">
+                            <strong>{libraryItemLabel(item)}</strong>
+                            {formattedDate(item.updatedAt) && (
+                              <time dateTime={item.updatedAt || undefined}>Atualizado em {formattedDate(item.updatedAt)}</time>
+                            )}
+                          </span>
+                          <div>
+                            <button onClick={() => loadSet(item)} disabled={Boolean(busy)}>Abrir</button>
+                            <button onClick={(event) => setSharing({ path: item.path, trigger: event.currentTarget })} disabled={Boolean(busy)} aria-haspopup="dialog">
+                              Compartilhar
+                            </button>
+                            {canDelete(item) && (
+                              <button className="danger" onClick={() => deleteSet(item)} disabled={Boolean(busy)}>Excluir</button>
+                            )}
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   ))}
                 </div>
-              ))}
+              ) : libraryLoaded ? (
+                <p className="cloud-empty">Ainda não há conjuntos publicados.</p>
+              ) : (
+                <p className="cloud-empty">Buscando conjuntos…</p>
+              )}
             </div>
-          ) : (
-            <p className="cloud-empty">Ainda não há conjuntos publicados.</p>
-          )}
-        </div>
 
-        <div className="cloud-card account-card">
-          <span>Publicar no GitHub</span>
-          {!sessionChecked ? (
-            <p className="cloud-empty">Verificando sessão…</p>
-          ) : !session ? (
-            <>
-              <p>Entre com o GitHub para solicitar permissão ou publicar na sua pasta.</p>
-              <button className="cloud-primary" onClick={signIn}>Entrar com GitHub</button>
-            </>
-          ) : (
-            <>
-              <div className="github-identity">
-                {session.user.avatarUrl && <img src={session.user.avatarUrl} alt="" />}
-                <div><strong>{session.user.name}</strong><span>@{session.user.login}</span></div>
-                <button onClick={signOut}>Sair</button>
-              </div>
-              {session.isApproved ? (
-                <div className="publish-form">
-                  <label>
-                    Nome do conjunto
-                    <input
-                      value={collectionName}
-                      onChange={(event) => {
-                        setCollectionName(event.target.value);
-                        if (!savedSlug) setSavedSlug("");
-                      }}
-                      placeholder="Ex.: Dormição da Theotokos"
-                    />
-                  </label>
-                  <p>Serão publicados os {hymns.length} hinos que estão abertos agora.</p>
-                  <button className="cloud-primary" onClick={saveSet} disabled={Boolean(busy)}>
-                    {busy === "save"
-                      ? "Salvando…"
-                      : updatesOwnSet
-                        ? "Atualizar conjunto no GitHub"
-                        : savedSlug
-                          ? "Salvar uma cópia na minha pasta"
-                          : "Salvar conjunto no GitHub"}
-                  </button>
-                  {updatesOwnSet && (
-                    <button className="cloud-secondary" onClick={() => { setSavedSlug(""); setSavedOwner(""); setCollectionName(""); }}>
-                      Salvar como novo conjunto
+            <div className="cloud-card account-card">
+              <span>Publicar no GitHub</span>
+              {!sessionChecked ? (
+                <p className="cloud-empty">Verificando sessão…</p>
+              ) : !session ? (
+                <>
+                  <p>Entre com o GitHub para solicitar permissão ou publicar na sua pasta.</p>
+                  <button className="cloud-primary" onClick={signIn}>Entrar com GitHub</button>
+                </>
+              ) : (
+                <>
+                  <div className="github-identity">
+                    {session.user.avatarUrl && <img src={session.user.avatarUrl} alt="" />}
+                    <div><strong>{session.user.name}</strong><span>@{session.user.login}</span></div>
+                    <button onClick={signOut}>Sair</button>
+                  </div>
+                  {session.isApproved ? (
+                    <div className="publish-form">
+                      <label>
+                        Nome do conjunto
+                        <input
+                          value={collectionName}
+                          onChange={(event) => {
+                            setCollectionName(event.target.value);
+                            if (!savedSlug) setSavedSlug("");
+                          }}
+                          placeholder="Ex.: Dormição da Theotokos"
+                        />
+                      </label>
+                      <p>Serão publicados os {hymns.length} hinos que estão abertos agora.</p>
+
+                      {session.isAdmin && curatedCategories.length > 0 && (
+                        <div className="curation-publish">
+                          <label className="curation-toggle">
+                            <input
+                              type="checkbox"
+                              checked={curateOnSave}
+                              onChange={(event) => setCurateOnSave(event.target.checked)}
+                            />
+                            <span>Também adicionar à Biblioteca curada</span>
+                          </label>
+                          {curateOnSave && (
+                            <div className="curation-options">
+                              <label>
+                                Categoria
+                                <select value={curatedCategoryId} onChange={(event) => setCuratedCategoryId(event.target.value)}>
+                                  {curatedCategories.map((category) => (
+                                    <option key={category.id} value={category.id}>{category.label}</option>
+                                  ))}
+                                </select>
+                              </label>
+                              {hymns.length > 1 && (
+                                <label>
+                                  Hino
+                                  <select value={selectedCuratedHymn?.id || ""} onChange={(event) => setCuratedHymnId(event.target.value)}>
+                                    {hymns.map((hymn, index) => (
+                                      <option key={hymn.id} value={hymn.id}>{hymn.title || `Hino ${index + 1}`}</option>
+                                    ))}
+                                  </select>
+                                </label>
+                              )}
+                              {savedPath && (
+                                <button className="cloud-secondary" type="button" onClick={promoteLoadedSet} disabled={Boolean(busy)}>
+                                  {busy === "curate" ? "Adicionando…" : "Adicionar à curadoria agora"}
+                                </button>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      <button className="cloud-primary" onClick={saveSet} disabled={Boolean(busy)}>
+                        {busy === "save"
+                          ? "Salvando…"
+                          : updatesOwnSet
+                            ? "Atualizar conjunto no GitHub"
+                            : savedSlug
+                              ? "Salvar uma cópia na minha pasta"
+                              : "Salvar conjunto no GitHub"}
+                      </button>
+                      {updatesOwnSet && (
+                        <button
+                          className="cloud-secondary"
+                          onClick={() => {
+                            setSavedSlug("");
+                            setSavedOwner("");
+                            setSavedPath("");
+                            setCollectionName("");
+                            setCurateOnSave(false);
+                          }}
+                        >
+                          Salvar como novo conjunto
+                        </button>
+                      )}
+                    </div>
+                  ) : session.isPending ? (
+                    <p className="pending-status">Sua solicitação está aguardando aprovação de @{session.isAdmin ? session.user.login : "mateusaranha"}.</p>
+                  ) : (
+                    <button className="cloud-primary" onClick={requestAccess} disabled={Boolean(busy)}>
+                      Solicitar permissão para publicar
                     </button>
                   )}
-                </div>
-              ) : session.isPending ? (
-                <p className="pending-status">Sua solicitação está aguardando aprovação de @{session.isAdmin ? session.user.login : "mateusaranha"}.</p>
-              ) : (
-                <button className="cloud-primary" onClick={requestAccess} disabled={Boolean(busy)}>
-                  Solicitar permissão para publicar
-                </button>
+                </>
               )}
-            </>
-          )}
-        </div>
-      </div>
-
-      {session?.isAdmin && (
-        <div className="cloud-card admin-card">
-          <div className="cloud-card-title">
-            <div><span>Administrar usuários</span><p>Somente @{session.user.login} vê esta área.</p></div>
+            </div>
           </div>
-          <div className="admin-columns">
-            <div>
-              <h3>Solicitações pendentes</h3>
-              {session.requests?.length ? session.requests.map((request) => (
-                <div className="admin-row" key={request.number}>
-                  <span>@{request.login}</span>
-                  <div>
-                    <button onClick={() => adminAction("approve", request)}>Aprovar</button>
-                    <button className="danger" onClick={() => adminAction("reject", request)}>Recusar</button>
+
+          {session?.isAdmin && (
+            <div className="cloud-card admin-card">
+              <div className="cloud-card-title">
+                <div><span>Administrar usuários</span><p>Somente @{session.user.login} vê esta área.</p></div>
+              </div>
+              <div className="admin-columns">
+                <div>
+                  <h3>Solicitações pendentes</h3>
+                  {session.requests?.length ? session.requests.map((request) => (
+                    <div className="admin-row" key={request.number}>
+                      <span>@{request.login}</span>
+                      <div>
+                        <button onClick={() => adminAction("approve", request)}>Aprovar</button>
+                        <button className="danger" onClick={() => adminAction("reject", request)}>Recusar</button>
+                      </div>
+                    </div>
+                  )) : <p className="cloud-empty">Nenhuma solicitação pendente.</p>}
+                </div>
+                <div>
+                  <h3>Usuários aprovados</h3>
+                  {session.publishers?.map((login) => (
+                    <div className="admin-row" key={login}>
+                      <span>@{login}</span>
+                      {login !== session.user.login && (
+                        <button className="danger" onClick={() => adminAction("revoke", { login })}>Revogar</button>
+                      )}
+                    </div>
+                  ))}
+                  <div className="admin-add">
+                    <input value={newPublisher} onChange={(event) => setNewPublisher(event.target.value)} placeholder="nome de usuário do GitHub" />
+                    <button onClick={() => adminAction("add", { login: newPublisher })} disabled={!newPublisher.trim()}>Adicionar</button>
                   </div>
                 </div>
-              )) : <p className="cloud-empty">Nenhuma solicitação pendente.</p>}
-            </div>
-            <div>
-              <h3>Usuários aprovados</h3>
-              {session.publishers?.map((login) => (
-                <div className="admin-row" key={login}>
-                  <span>@{login}</span>
-                  {login !== session.user.login && (
-                    <button className="danger" onClick={() => adminAction("revoke", { login })}>Revogar</button>
-                  )}
-                </div>
-              ))}
-              <div className="admin-add">
-                <input value={newPublisher} onChange={(event) => setNewPublisher(event.target.value)} placeholder="nome de usuário do GitHub" />
-                <button onClick={() => adminAction("add", { login: newPublisher })} disabled={!newPublisher.trim()}>Adicionar</button>
               </div>
             </div>
-          </div>
-        </div>
+          )}
+        </>
       )}
     </section>
   );
