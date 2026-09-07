@@ -1071,8 +1071,8 @@ function LocalWorkspace() {
 
   useEffect(() => {
     const stored = readWorkspace(localStorage);
+    if (stored.status === "ready") setHymns(stored.hymns);
     if (stored.status === "ready") {
-      setHymns(stored.hymns);
       setCollapsedHymnIds(new Set(
         stored.hymns
           .filter((hymn) => !readHymnPanelOpen(localStorage, hymn.id))
