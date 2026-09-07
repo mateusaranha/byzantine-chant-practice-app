@@ -1,19 +1,28 @@
 import { useRef, useState } from "react";
 import rawCatalog from "../catalog/curated.json";
 import { curatedGroups, readCuratedCatalog } from "./curatedCatalog";
+import type { CuratedCatalog } from "./curatedCatalog";
 import { createShareUrl } from "./sharedHymns";
 import ShareDialog from "./ShareDialog";
 
-const { catalog, errors } = readCuratedCatalog(rawCatalog);
-const groups = curatedGroups(catalog);
+const { catalog: staticCatalog, errors: staticErrors } = readCuratedCatalog(rawCatalog);
 
-export default function CuratedLibrary({ apiBase }: { apiBase: string }) {
+export default function CuratedLibrary({
+  apiBase,
+  catalogOverride,
+}: {
+  apiBase: string;
+  catalogOverride?: CuratedCatalog;
+}) {
   const [categoryId, setCategoryId] = useState<string | null>(null);
   const [subcategoryId, setSubcategoryId] = useState<string | null>(null);
   const [sharing, setSharing] = useState<{ path: string; hymnId: string; trigger: HTMLButtonElement } | null>(null);
   const heading = useRef<HTMLHeadingElement>(null);
   const categoryButtons = useRef(new Map<string, HTMLButtonElement>());
   const subcategoryButtons = useRef(new Map<string, HTMLButtonElement>());
+  const catalog = catalogOverride || staticCatalog;
+  const errors = catalogOverride ? [] : staticErrors;
+  const groups = curatedGroups(catalog);
   const category = groups.find(group => group.id === categoryId);
   const subcategory = category?.subcategories.find(group => group.id === subcategoryId);
 
