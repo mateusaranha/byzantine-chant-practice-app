@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 import test from "node:test";
 import {
   isHymnPath,
@@ -99,4 +100,18 @@ test("validates curated promotion as one complete published set per subcategory"
     path: "hinos/mateusaranha/dormicao.json",
     subcategoryId: "grandes-festas-dormicao",
   }, catalog, { hymns: [] }), /Conjunto publicado inválido/);
+});
+
+
+test("curated removal relists hidden sets before unlinking and deletes only empty structure", async () => {
+  const source = await readFile(new URL("../src/index.js", import.meta.url), "utf8");
+  assert.match(source, /async function removeCuratedAssociation/);
+  assert.match(source, /stored\.data\.listed === false/);
+  assert.match(source, /stillCuratedElsewhere/);
+  assert.match(source, /listed: true/);
+  assert.match(source, /delete subcategory\.source/);
+  assert.match(source, /Remova o conjunto da Biblioteca curada antes de excluí-lo definitivamente/);
+  assert.match(source, /Remova o conjunto da subcategoria antes de excluí-la/);
+  assert.match(source, /A categoria ainda possui subcategorias/);
+  assert.match(source, /url\.pathname === "\/api\/curated" && request\.method === "DELETE"/);
 });
