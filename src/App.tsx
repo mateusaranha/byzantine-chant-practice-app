@@ -1226,7 +1226,7 @@ function LocalWorkspace() {
             key={hymn.id}
             hymn={hymn}
             index={index}
-            canDelete={index > 0}
+            canDelete={hymns.length > 1}
             printRequest={printRequest}
             printSettings={printSettings}
             persistToolsPanel
