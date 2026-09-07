@@ -114,6 +114,7 @@ test("curated UI keeps the public hierarchy compact and opens whole sets", async
   assert.doesNotMatch(html, /Estudar agora|Compartilhar|versão|versões/);
   assert.match(source, /hymnId: null/);
   assert.match(source, /curated-set-link/);
+  assert.match(source, /method: "PATCH"/);
   assert.doesNotMatch(source, /subcategory\.entries|curated-entry/);
 });
 
@@ -123,6 +124,7 @@ test("inline categories toggle exclusively and preserve whole-set destinations",
   // Exercise the component's event handlers without adding a DOM dependency.
   const hooksUrl = dataUrl(`
     let value = null;
+    export const useEffect = () => {};
     export const useId = () => 'curated-test';
     export const useState = () => [value, update => { value = update(value); }];
   `);
