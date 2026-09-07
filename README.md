@@ -54,7 +54,7 @@ Não há servidor da interface, banco de dados próprio, contas próprias do Psa
 
 **Biblioteca e compartilhamento:** qualquer visitante pode abrir os conjuntos públicos sem login. Um link pode apontar para o conjunto inteiro ou para um hino específico e sempre lê a publicação mais recente. O material compartilhado abre em uma área temporária; **Adicionar ao meu espaço** cria uma cópia local independente sem sobrescrever trabalho válido.
 
-**Biblioteca curada:** a área por temas referencia versões individuais já publicadas, sem duplicar os hinos. O catálogo manual em `catalog/curated.json` é incorporado à interface no build e validado contra os arquivos do repositório antes do deploy. Estudar e compartilhar reutilizam os links públicos; adicionar ao espaço local continua criando uma cópia independente. Veja [como acrescentar categorias e versões](catalog/README.md).
+**Biblioteca curada:** a entrada da Biblioteca pública usa navegação progressiva: primeiro aparecem apenas **Biblioteca curada** e **Meus conjuntos/Conjuntos publicados**; categorias e listas só são mostradas depois da escolha. A curadoria continua referenciando versões individuais já publicadas em `hinos/`, sem duplicar letras, marcações ou links. O administrador pode promover um hino publicado para uma categoria durante ou depois do salvamento; o Worker grava somente a referência `path + hymnId` em `catalog/curated.json`. Alterações no catálogo acionam novo deploy do Pages, onde o catálogo continua sendo validado antes da publicação. Veja [como acrescentar categorias e versões](catalog/README.md).
 
 **Publicação:** o login usa GitHub OAuth. A interface retira a sessão assinada da URL e a mantém no navegador por até oito horas. Somente contas em `config/approved-users.json` publicam; cada autor grava em `hinos/<seu-login>/`. A administração continua restrita ao administrador e toda exclusão é limitada a caminhos válidos sob `hinos/`.
 
@@ -69,6 +69,7 @@ src/StudyGuide.tsx              preparação e prática dos hinos
 src/AppGuide.tsx                backup, PDF, biblioteca e compartilhamento
 src/CloudLibrary.tsx            biblioteca e administração
 src/CuratedLibrary.tsx          navegação da biblioteca curada
+src/libraryProgressive.css      navegação compacta da Biblioteca pública
 catalog/                       metadados editoriais e guia de curadoria
 scripts/validate-curated.mjs    validação de referências antes do build
 src/ShareDialog.tsx             compartilhamento de conjuntos e hinos
@@ -129,7 +130,7 @@ O deploy do Worker utiliza estes secrets:
 
 Os valores públicos ficam em `publisher-worker/wrangler.jsonc`. O provisionamento da GitHub App está documentado em `publisher-worker/README.md`.
 
-Renomear o repositório ou mudar URLs exige revisar em conjunto GitHub Pages, Worker, GitHub App, callback OAuth, CORS, manifesto, workflows e documentação. Salvar um conjunto ainda cria um commit na `main` e, por isso, também aciona o workflow do Pages.
+Renomear o repositório ou mudar URLs exige revisar em conjunto GitHub Pages, Worker, GitHub App, callback OAuth, CORS, manifesto, workflows e documentação. Salvar um conjunto ainda cria um commit na `main` e, por isso, também aciona o workflow do Pages. Promover um hino à curadoria também atualiza `catalog/curated.json` na `main` e aciona a mesma validação/deploy.
 
 ## Segurança e manutenção
 
