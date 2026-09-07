@@ -94,7 +94,7 @@
   color:#fff8ed;
 }
 
-.hymn-workspace-collapsed {
+.workspace.hymn-workspace-collapsed {
   display:none;
 }
 
@@ -125,7 +125,7 @@
 }
 
 @media print {
-  .hymn-workspace-collapsed {
+  .workspace.hymn-workspace-collapsed {
     display:grid !important;
   }
 }

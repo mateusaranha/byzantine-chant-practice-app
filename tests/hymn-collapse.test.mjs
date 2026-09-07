@@ -65,5 +65,13 @@ test("collapsing a hymn is local-only, accessible, pauses video and stays printa
   assert.doesNotMatch(app.slice(sharedIndex), /persistHymnPanel/);
 
   assert.match(css, /\.collapsed-hymn-summary/);
-  assert.match(css, /@media print[\s\S]*\.hymn-workspace-collapsed[\s\S]*display:grid !important/);
+  assert.match(
+    css,
+    /\.workspace\.hymn-workspace-collapsed\s*\{\s*display:none;\s*\}/,
+    "collapsed workspace rule must be more specific than the base .workspace display:grid rule",
+  );
+  assert.match(
+    css,
+    /@media print[\s\S]*\.workspace\.hymn-workspace-collapsed[\s\S]*display:grid !important/,
+  );
 });
