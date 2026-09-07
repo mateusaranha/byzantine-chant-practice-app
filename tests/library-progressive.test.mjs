@@ -12,9 +12,9 @@ test("public library keeps progressive disclosure and exposes simple admin curat
   assert.match(source, />Biblioteca curada</);
   assert.match(source, /view === "home"/);
   assert.match(source, /view === "curated" && <CuratedLibrary/);
-  assert.match(source, />Meus conjuntos</);
-  assert.match(source, />Biblioteca curada</);
-  assert.match(source, />Ambos</);
+  assert.match(source, /\["sets", "Meus conjuntos"\]/);
+  assert.match(source, /\["curated", "Biblioteca curada"\]/);
+  assert.match(source, /\["both", "Ambos"\]/);
   assert.match(source, /\+ Nova categoria/);
   assert.match(source, /\+ Nova subcategoria/);
   assert.match(source, /subcategoryId: curatedSubcategoryId/);
