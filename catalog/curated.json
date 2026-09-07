@@ -42,6 +42,11 @@
       "source": {
         "path": "hinos/mateusaranha/testex.json"
       }
+    },
+    {
+      "id": "testea-testecop",
+      "label": "testeCop",
+      "categoryId": "testea"
     }
   ]
 }
