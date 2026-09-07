@@ -1,6 +1,15 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { isHymnPath, isOwnedHymnPath, normalizeLibraryMetadata, normalizeLogin, slugify, validateHymnSet } from "../src/index.js";
+import {
+  curatedEntryId,
+  isHymnPath,
+  isOwnedHymnPath,
+  normalizeLibraryMetadata,
+  normalizeLogin,
+  slugify,
+  validateCuratedPromotion,
+  validateHymnSet,
+} from "../src/index.js";
 
 test("normalizes GitHub logins and collection slugs", () => {
   assert.equal(normalizeLogin(" MateusAranha "), "mateusaranha");
@@ -38,4 +47,36 @@ test("normalizes public library metadata", () => {
     updatedAt: null,
   });
   assert.deepEqual(normalizeLibraryMetadata(null), { title: "", updatedAt: null });
+});
+
+test("validates curated promotion references without copying hymn content", () => {
+  const catalog = {
+    version: 1,
+    categories: [{ id: "grandes-festas", label: "Grandes Festas", order: 10 }],
+    entries: [],
+  };
+  const published = {
+    hymns: [
+      { id: "apolytikion", title: "Apolytikion", lyrics: "κείμενον", videoId: "abcdefghijk" },
+      { id: "kontakion", title: "Kontakion", lyrics: "κείμενον" },
+    ],
+  };
+  const promotion = validateCuratedPromotion({
+    path: "hinos/mateusaranha/dormicao.json",
+    hymnId: "apolytikion",
+    categoryId: "grandes-festas",
+  }, catalog, published);
+  assert.equal(promotion.path, "hinos/mateusaranha/dormicao.json");
+  assert.equal(promotion.hymn, published.hymns[0]);
+  assert.equal(curatedEntryId(promotion.path, promotion.hymnId), "dormicao-apolytikion");
+  assert.throws(() => validateCuratedPromotion({
+    path: "hinos/mateusaranha/dormicao.json",
+    hymnId: "missing",
+    categoryId: "grandes-festas",
+  }, catalog, published), /não foi encontrado/);
+  assert.throws(() => validateCuratedPromotion({
+    path: "hinos/mateusaranha/dormicao.json",
+    hymnId: "apolytikion",
+    categoryId: "categoria-inexistente",
+  }, catalog, published), /Categoria/);
 });
