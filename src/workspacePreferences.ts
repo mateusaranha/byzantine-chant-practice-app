@@ -58,10 +58,26 @@ export function readHymnPanelOpen(storage: Pick<Storage, "getItem">, hymnId: str
   return !readCollapsedHymnIds(storage, HYMN_PANEL_STATE_KEY).has(hymnId);
 }
 
+export function writeHymnPanelsOpen(
+  storage: Pick<Storage, "getItem" | "setItem">,
+  hymnIds: string[],
+  open: boolean,
+): boolean {
+  try {
+    const collapsed = readCollapsedHymnIds(storage, HYMN_PANEL_STATE_KEY);
+    hymnIds.forEach((id) => open ? collapsed.delete(id) : collapsed.add(id));
+    const collapsedHymnIds = [...collapsed].slice(-MAX_TRACKED_HYMNS);
+    storage.setItem(HYMN_PANEL_STATE_KEY, JSON.stringify({ version: 1, collapsedHymnIds }));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export function writeHymnPanelOpen(
   storage: Pick<Storage, "getItem" | "setItem">,
   hymnId: string,
   open: boolean,
 ): boolean {
-  return writePanelOpen(storage, HYMN_PANEL_STATE_KEY, hymnId, open);
+  return writeHymnPanelsOpen(storage, [hymnId], open);
 }

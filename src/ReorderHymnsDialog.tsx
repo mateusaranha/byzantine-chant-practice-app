@@ -5,16 +5,21 @@ export default function ReorderHymnsDialog({
   hymns,
   trigger,
   onMove,
+  onDeleteSelected,
   onClose,
 }: {
   hymns: Hymn[];
   trigger: HTMLButtonElement;
   onMove: (id: string, direction: -1 | 1) => void;
+  onDeleteSelected: (ids: string[]) => void;
   onClose: () => void;
 }) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
   const [message, setMessage] = useState("");
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(() => new Set());
+  const selectedCount = selectedIds.size;
+  const allSelected = selectedCount === hymns.length;
 
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -29,6 +34,29 @@ export default function ReorderHymnsDialog({
       trigger.focus({ preventScroll: true });
     };
   }, [trigger]);
+
+  useEffect(() => {
+    const currentIds = new Set(hymns.map((hymn) => hymn.id));
+    setSelectedIds((current) => new Set([...current].filter((id) => currentIds.has(id))));
+  }, [hymns]);
+
+  function toggleSelected(hymnId: string) {
+    setSelectedIds((current) => {
+      const next = new Set(current);
+      if (next.has(hymnId)) next.delete(hymnId);
+      else next.add(hymnId);
+      return next;
+    });
+  }
+
+  function deleteSelected() {
+    if (!selectedCount || allSelected) return;
+    const noun = selectedCount === 1 ? "hino" : "hinos";
+    if (!window.confirm(`Remover ${selectedCount} ${noun} e todas as suas marcações?`)) return;
+    onDeleteSelected([...selectedIds]);
+    setSelectedIds(new Set());
+    setMessage(`${selectedCount} ${noun} removido${selectedCount === 1 ? "" : "s"}.`);
+  }
 
   function move(hymn: Hymn, index: number, direction: -1 | 1) {
     onMove(hymn.id, direction);
@@ -62,13 +90,20 @@ export default function ReorderHymnsDialog({
       </div>
       <div className="help-copy reorder-copy">
         <p className="reorder-intro">
-          Use as setas para colocar os hinos na ordem desejada. A alteração é salva automaticamente.
+          Use as setas para colocar os hinos na ordem desejada. A alteração é salva automaticamente. Você também pode selecionar hinos para excluí-los em conjunto.
         </p>
         <ol className="reorder-list">
           {hymns.map((hymn, index) => {
             const title = hymn.title || "Novo hino";
             return (
-              <li key={hymn.id}>
+              <li key={hymn.id} className={selectedIds.has(hymn.id) ? "reorder-selected" : undefined}>
+                <input
+                  className="reorder-checkbox"
+                  type="checkbox"
+                  checked={selectedIds.has(hymn.id)}
+                  onChange={() => toggleSelected(hymn.id)}
+                  aria-label={`Selecionar ${title}`}
+                />
                 <span className="reorder-number" aria-hidden="true">
                   {String(index + 1).padStart(2, "0")}
                 </span>
@@ -100,6 +135,22 @@ export default function ReorderHymnsDialog({
             );
           })}
         </ol>
+        <div className="reorder-selection-actions">
+          <p>
+            <strong>{selectedCount}</strong> {selectedCount === 1 ? "hino selecionado" : "hinos selecionados"}
+            {allSelected && selectedCount > 0 && (
+              <span>Pelo menos um hino precisa permanecer.</span>
+            )}
+          </p>
+          <button
+            type="button"
+            className="delete-selected-hymns"
+            onClick={deleteSelected}
+            disabled={!selectedCount || allSelected}
+          >
+            Excluir selecionados
+          </button>
+        </div>
         <p className="reorder-status" role="status" aria-live="polite">{message}</p>
       </div>
     </dialog>

@@ -17,6 +17,7 @@ test("hymn panel state persists locally per hymn and remains separate from tool-
     readHymnPanelOpen,
     readToolsPanelOpen,
     writeHymnPanelOpen,
+    writeHymnPanelsOpen,
     writeToolsPanelOpen,
   } = await loadWorkspacePreferences();
   const values = new Map();
@@ -41,6 +42,14 @@ test("hymn panel state persists locally per hymn and remains separate from tool-
   assert.equal(readHymnPanelOpen(storage, "hymn-a"), true);
   assert.equal(readToolsPanelOpen(storage, "hymn-a"), false);
 
+  assert.equal(writeHymnPanelsOpen(storage, ["hymn-a", "hymn-b"], false), true);
+  assert.equal(readHymnPanelOpen(storage, "hymn-a"), false);
+  assert.equal(readHymnPanelOpen(storage, "hymn-b"), false);
+  assert.equal(writeHymnPanelsOpen(storage, ["hymn-a", "hymn-b"], true), true);
+  assert.equal(readHymnPanelOpen(storage, "hymn-a"), true);
+  assert.equal(readHymnPanelOpen(storage, "hymn-b"), true);
+  assert.equal(readToolsPanelOpen(storage, "hymn-a"), false);
+
   values.set(HYMN_PANEL_STATE_KEY, "{dados interrompidos");
   assert.equal(readHymnPanelOpen(storage, "hymn-a"), true);
   assert.equal(readHymnPanelOpen({ getItem: () => { throw new Error("blocked"); } }, "hymn-a"), true);
@@ -61,8 +70,15 @@ test("collapsing a hymn is local-only, accessible, pauses video and stays printa
   const localIndex = app.indexOf("function LocalWorkspace()");
   const sharedIndex = app.indexOf("function SharedWorkspace");
   assert.ok(localIndex >= 0 && sharedIndex > localIndex);
-  assert.match(app.slice(localIndex, sharedIndex), /persistHymnPanel/);
-  assert.doesNotMatch(app.slice(sharedIndex), /persistHymnPanel/);
+  const localWorkspace = app.slice(localIndex, sharedIndex);
+  const sharedWorkspace = app.slice(sharedIndex);
+  assert.match(localWorkspace, /persistHymnPanel/);
+  assert.match(localWorkspace, /hymnPanelOpen=\{!collapsedHymnIds\.has\(hymn\.id\)\}/);
+  assert.match(localWorkspace, /writeHymnPanelsOpen\(localStorage, hymnIds, open\)/);
+  assert.match(localWorkspace, /Recolher todos/);
+  assert.match(localWorkspace, /Expandir todos/);
+  assert.doesNotMatch(sharedWorkspace, /persistHymnPanel/);
+  assert.doesNotMatch(sharedWorkspace, /writeHymnPanelsOpen/);
 
   assert.match(css, /\.collapsed-hymn-summary/);
   assert.match(
