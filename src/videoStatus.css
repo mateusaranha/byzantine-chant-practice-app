@@ -1,0 +1,10 @@
+.video-frame { position:relative; }
+.video-status { position:absolute; inset:0; z-index:2; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; padding:24px; background:radial-gradient(circle,#3b3029,#201a17); color:#ede2d1; text-align:center; font:13px/1.5 Arial,sans-serif; }
+.video-status > strong { font-size:14px; }
+.video-status > span { color:#c9bdaf; }
+.video-spinner { width:30px; height:30px; border:3px solid rgba(237,226,209,.28); border-top-color:#d1ad68; border-radius:50%; animation:video-spin .8s linear infinite; }
+.video-retry { min-height:40px; margin-top:2px; border:1px solid #b89558; border-radius:3px; background:rgba(180,139,71,.12); color:#f3e4ce; padding:8px 13px; font:600 11px Arial,sans-serif; }
+.video-retry:hover { background:rgba(180,139,71,.24); }
+.video-retry:focus-visible { outline:2px solid #d8b36d; outline-offset:3px; }
+@keyframes video-spin { to { transform:rotate(360deg); } }
+@media (prefers-reduced-motion:reduce) { .video-spinner { animation:none; border-top-color:rgba(237,226,209,.28); border-right-color:#d1ad68; } }
