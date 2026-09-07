@@ -10,7 +10,8 @@
 8. Trate alterações em nome do repositório, URLs, autenticação ou deploy como mudanças coordenadas entre Pages, Worker, GitHub App, OAuth, CORS, manifesto e documentação.
 9. Nunca registre secrets, tokens ou chaves. `.dev.vars` é local e ignorado; `.dev.vars.example` contém somente placeholders.
 10. Prefira mudanças pequenas, compreensíveis, testáveis e reversíveis. Não faça refatorações amplas sem necessidade concreta.
-11. Antes de entregar mudanças de código, rode `npm test` na raiz e `npm test` em `publisher-worker/`. Teste manualmente os fluxos afetados quando a automação não os cobre.
-12. Atualize `README.md` quando mudar arquitetura, autenticação, armazenamento, deploy ou fluxo principal. Atualize `ROADMAP.md` quando mudar uma prioridade ou decisão estratégica. Pequenos ajustes visuais não exigem atualização documental.
-13. Não altere ou remova os conjuntos em `hinos/` nem a lista de aprovados em `config/` salvo quando a tarefa pedir explicitamente dados da biblioteca.
-14. Preserve a diferença entre leitura pública da biblioteca, publicação por usuários aprovados e administração exclusiva do administrador.
+11. Ao modificar áreas muito centrais, especialmente `src/App.tsx`, observe se a tarefa oferece uma oportunidade concreta de reduzir acoplamento por uma extração pequena e sem mudança de comportamento. Não refatore apenas por tamanho ou contagem de linhas; prefira modularização incremental quando ela reduzir contexto, risco ou conflitos entre mudanças. Veja #106.
+12. Antes de entregar mudanças de código, rode `npm test` na raiz e `npm test` em `publisher-worker/`. Teste manualmente os fluxos afetados quando a automação não os cobre.
+13. Atualize `README.md` quando mudar arquitetura, autenticação, armazenamento, deploy ou fluxo principal. Atualize `ROADMAP.md` quando mudar uma prioridade ou decisão estratégica. Pequenos ajustes visuais não exigem atualização documental.
+14. Não altere ou remova os conjuntos em `hinos/` nem a lista de aprovados em `config/` salvo quando a tarefa pedir explicitamente dados da biblioteca.
+15. Preserve a diferença entre leitura pública da biblioteca, publicação por usuários aprovados e administração exclusiva do administrador.
