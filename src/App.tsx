@@ -232,6 +232,7 @@ function HymnWorkspace({
 }) {
   const [editing, setEditing] = useState(!hymn.lyrics);
   const [history, setHistory] = useState<HistoryEntry[]>([]);
+  const [redoHistory, setRedoHistory] = useState<HistoryEntry[]>([]);
   const [activeTool, setActiveTool] = useState<ActiveTool>(null);
   const [toolsOpen, setToolsOpen] = useState(() =>
     persistToolsPanel ? readToolsPanelOpen(localStorage, hymn.id) : true,
@@ -346,6 +347,7 @@ function HymnWorkspace({
       ...current.slice(-19),
       { highlights: hymn.highlights, melismas: hymn.melismas },
     ]);
+    setRedoHistory([]);
   }
 
   function markSelection() {
@@ -400,8 +402,23 @@ function HymnWorkspace({
   function undo() {
     const previous = history[history.length - 1];
     if (!previous) return;
+    setRedoHistory((current) => [
+      ...current.slice(-19),
+      { highlights: hymn.highlights, melismas: hymn.melismas },
+    ]);
     onChange({ ...hymn, ...previous });
     setHistory((current) => current.slice(0, -1));
+  }
+
+  function redo() {
+    const next = redoHistory[redoHistory.length - 1];
+    if (!next) return;
+    setHistory((current) => [
+      ...current.slice(-19),
+      { highlights: hymn.highlights, melismas: hymn.melismas },
+    ]);
+    onChange({ ...hymn, ...next });
+    setRedoHistory((current) => current.slice(0, -1));
   }
 
   function loadVideo() {
@@ -703,8 +720,19 @@ function HymnWorkspace({
                           className="tool-button undo-tool"
                           onClick={undo}
                           disabled={!history.length || !coloursVisible || !melismasVisible}
+                          aria-label="Desfazer última alteração nas marcações"
+                          title="Desfazer"
                         >
-                          <span aria-hidden="true">↶</span> Desfazer
+                          <span aria-hidden="true">↶</span>
+                        </button>
+                        <button
+                          className="tool-button undo-tool redo-tool"
+                          onClick={redo}
+                          disabled={!redoHistory.length || !coloursVisible || !melismasVisible}
+                          aria-label="Refazer última alteração nas marcações"
+                          title="Refazer"
+                        >
+                          <span aria-hidden="true">↷</span>
                         </button>
                         <div className="clear-controls" role="group" aria-label="Limpar marcações">
                           <span className="tool-label">Limpar</span>
@@ -751,6 +779,7 @@ function HymnWorkspace({
                   !window.confirm("Alterar a letra removerá todas as cores e todos os sublinhados deste hino. Continuar?")
                 ) return;
                 setHistory([]);
+                setRedoHistory([]);
                 onChange({
                   ...hymn,
                   lyrics: event.target.value,
