@@ -273,7 +273,9 @@ test("the production build contains the app shell and migration features", async
   assert.match(javascript, /Não há uma proporção fixa nem uma velocidade necessariamente correta/);
   assert.match(javascript, /Salvar e recuperar seu trabalho/);
   assert.match(javascript, /Exportar PDF para leitura ou impressão/);
-  assert.match(javascript, /Usar a biblioteca e compartilhar conjuntos/);
+  assert.match(javascript, /Explorar a Biblioteca pública/);
+  assert.match(javascript, /Publicar e adicionar à Biblioteca curada/);
+  assert.match(javascript, /Compartilhar e adicionar ao seu espaço/);
   assert.doesNotMatch(javascript, /5\. Salvar e recuperar seu trabalho/);
   assert.doesNotMatch(javascript, /6\. Usar a biblioteca e compartilhar conjuntos/);
   assert.match(javascript, /não publica nem compartilha os hinos/);
@@ -291,10 +293,16 @@ test("the production build contains the app shell and migration features", async
   assert.doesNotMatch(studyGuideSource, /Usar a biblioteca e compartilhar conjuntos/);
   const storageGuideIndex = appGuideSource.indexOf('title="Salvar e recuperar seu trabalho"');
   const pdfGuideIndex = appGuideSource.indexOf('title="Exportar PDF para leitura ou impressão"');
-  const libraryGuideIndex = appGuideSource.indexOf('title="Usar a biblioteca e compartilhar conjuntos"');
+  const libraryGuideIndex = appGuideSource.indexOf('title="Explorar a Biblioteca pública"');
+  const publishGuideIndex = appGuideSource.indexOf('title="Publicar e adicionar à Biblioteca curada"');
+  const shareGuideIndex = appGuideSource.indexOf('title="Compartilhar e adicionar ao seu espaço"');
   assert.ok(
-    storageGuideIndex >= 0 && storageGuideIndex < pdfGuideIndex && pdfGuideIndex < libraryGuideIndex,
-    "operational guidance must keep backup, PDF and library in a clear order",
+    storageGuideIndex >= 0 &&
+      storageGuideIndex < pdfGuideIndex &&
+      pdfGuideIndex < libraryGuideIndex &&
+      libraryGuideIndex < publishGuideIndex &&
+      publishGuideIndex < shareGuideIndex,
+    "operational guidance must keep backup, PDF, library, publishing and sharing in a clear order",
   );
   assert.match(appGuideSource, /salvos automaticamente neste navegador/);
   assert.match(appGuideSource, /ele não sincroniza o trabalho com outros aparelhos/);
@@ -305,7 +313,12 @@ test("the production build contains the app shell and migration features", async
   assert.match(appGuideSource, /não dependem de as marcações estarem visíveis ou ocultas no modo de treino/);
   assert.match(appGuideSource, /salvar como PDF ou imprimir/);
   assert.match(appGuideSource, /conjunto compartilhado/);
-  assert.match(appGuideSource, /Alterações feitas depois apenas no seu espaço não aparecem na versão pública/);
+  assert.match(appGuideSource, /Alterações feitas depois apenas no seu espaço não aparecem na versão publicada/);
+  assert.match(appGuideSource, /categoria → subcategoria → hinos/);
+  assert.match(appGuideSource, /Todos os hinos do conjunto/);
+  assert.match(appGuideSource, /Selecionar hinos individualmente/);
+  assert.match(appGuideSource, /não aparece também em Meus conjuntos/);
+  assert.match(appGuideSource, /adicionado à curadoria mais tarde/);
   assert.match(appGuideSource, /área temporária, sem alterar seu espaço/);
   assert.match(appGuideSource, /cópia local independente aos seus hinos/);
   assert.match(studyGuideSource, /As mesmas ferramentas podem ser usadas na leitura grega ou transliterada/);
