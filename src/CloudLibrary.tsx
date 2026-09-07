@@ -4,6 +4,7 @@ import { libraryItemLabel, nextLibrarySort, sortLibraryItems } from "./librarySo
 import type { LibrarySort } from "./librarySort";
 import { readPublishedSet } from "./sharedHymns";
 import ShareDialog from "./ShareDialog";
+import CuratedLibrary from "./CuratedLibrary";
 
 type GitHubUser = {
   login: string;
@@ -266,7 +267,7 @@ export default function CloudLibrary({
       <div className="cloud-library-heading">
         <div>
           <p className="eyebrow">Biblioteca no GitHub</p>
-          <h2>Conjuntos de hinos salvos</h2>
+          <h2>Biblioteca de hinos</h2>
           <p>
             Cada autor publica na própria pasta. Qualquer pessoa pode carregar um conjunto; somente contas aprovadas podem salvar.
           </p>
@@ -282,11 +283,13 @@ export default function CloudLibrary({
 
       {sharing && <ShareDialog apiBase={apiBase} path={sharing.path} trigger={sharing.trigger} onClose={() => setSharing(null)} />}
 
+      <CuratedLibrary apiBase={apiBase} />
+
       <div className="cloud-library-grid">
         <div className="cloud-card">
           <div className="cloud-card-title">
             <div>
-              <span>Buscar hinos salvos</span>
+              <span>Conjuntos publicados</span>
               <p>Escolha um autor e carregue uma cópia no seu dispositivo.</p>
             </div>
             <button className="cloud-secondary" onClick={() => void run("library", refreshLibrary)} disabled={Boolean(busy)}>
@@ -316,7 +319,7 @@ export default function CloudLibrary({
             <div className="cloud-groups">
               {grouped.map(([owner, ownerItems]) => (
                 <div className="cloud-group" key={owner}>
-                  <h3>@{owner}</h3>
+                  <h3>{owner === session?.user.login ? `Meus conjuntos · @${owner}` : `@${owner}`}</h3>
                   {ownerItems.map((item) => (
                     <div className="cloud-set-row" key={item.path}>
                       <span className="cloud-set-copy">
