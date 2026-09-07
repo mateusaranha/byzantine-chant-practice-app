@@ -38,10 +38,7 @@
     {
       "id": "oficios-e-ocasioes-teste",
       "label": "teste",
-      "categoryId": "oficios-e-ocasioes",
-      "source": {
-        "path": "hinos/mateusaranha/testex.json"
-      }
+      "categoryId": "oficios-e-ocasioes"
     },
     {
       "id": "testea-testecop",
