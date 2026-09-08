@@ -590,7 +590,7 @@ export default function CloudLibrary({
               {busy === "library" ? (
                 <p className="cloud-empty">Buscando conjuntos…</p>
               ) : grouped.length ? (
-                <div className="cloud-groups">
+                <div className="cloud-groups" role="region" aria-label="Lista de conjuntos publicados" tabIndex={0}>
                   {grouped.map(([owner, ownerItems]) => (
                     <div className="cloud-group" key={owner}>
                       <h3>{owner === session?.user.login ? `Meus conjuntos · @${owner}` : `@${owner}`}</h3>
