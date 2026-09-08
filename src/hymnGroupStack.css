@@ -1,0 +1,55 @@
+.hymn-group.hymn-group-collapsed {
+  position:relative;
+  isolation:isolate;
+}
+
+.hymn-group.hymn-group-collapsed::before,
+.hymn-group.hymn-group-collapsed::after {
+  content:"";
+  position:absolute;
+  top:0;
+  right:0;
+  bottom:12px;
+  left:0;
+  border:1px solid rgba(202,169,104,.32);
+  border-radius:4px;
+  background:#2c241f;
+  box-shadow:0 5px 14px rgba(0,0,0,.18);
+  pointer-events:none;
+}
+
+.hymn-group.hymn-group-collapsed::before {
+  z-index:1;
+  transform:translate(-6px,-5px);
+}
+
+.hymn-group.hymn-group-collapsed::after {
+  z-index:0;
+  transform:translate(-12px,-10px);
+  opacity:.82;
+}
+
+.hymn-group.hymn-group-collapsed > .hymn-group-deck {
+  z-index:2;
+  isolation:auto;
+}
+
+.hymn-group.hymn-group-collapsed > .hymn-group-deck::before,
+.hymn-group.hymn-group-collapsed > .hymn-group-deck::after {
+  display:none;
+}
+
+@media (max-width:520px) {
+  .hymn-group.hymn-group-collapsed::before,
+  .hymn-group.hymn-group-collapsed::after {
+    bottom:10px;
+  }
+
+  .hymn-group.hymn-group-collapsed::before {
+    transform:translate(-5px,-4px);
+  }
+
+  .hymn-group.hymn-group-collapsed::after {
+    transform:translate(-10px,-8px);
+  }
+}
