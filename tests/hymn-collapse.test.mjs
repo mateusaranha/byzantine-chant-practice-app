@@ -85,15 +85,18 @@ test("collapsing a hymn is local-only, accessible, pauses video and stays printa
   assert.match(localWorkspace, /element: actions/);
   assert.match(localWorkspace, /window\.scrollBy\(\{ top: offset, left: 0, behavior: "auto" \}\)/);
   assert.doesNotMatch(sharedWorkspace, /persistHymnPanel/);
-  assert.match(localWorkspace, /function collapsePreviousHymns\(hymnId: string\)/);
+  assert.match(localWorkspace, /function togglePreviousHymns\(hymnId: string\)/);
   assert.match(localWorkspace, /hymns\.slice\(0, currentIndex\)\.map\(\(hymn\) => hymn\.id\)/);
-  assert.match(localWorkspace, /previousHymnIds\.forEach\(\(id\) => next\.add\(id\)\)/);
-  assert.match(localWorkspace, /writeHymnPanelsOpen\(localStorage, previousHymnIds, false\)/);
-  assert.match(localWorkspace, /onCollapsePrevious=\{index > 0 \?/);
+  assert.match(localWorkspace, /previousHymnIds\.every\(\(id\) => collapsedHymnIds\.has\(id\)\)/);
+  assert.match(localWorkspace, /previousHymnIds\.forEach\(\(id\) => open \? next\.delete\(id\) : next\.add\(id\)\)/);
+  assert.match(localWorkspace, /writeHymnPanelsOpen\(localStorage, previousHymnIds, open\)/);
+  assert.match(localWorkspace, /onTogglePrevious=\{index > 0 \?/);
+  assert.match(localWorkspace, /previousHymnsCollapsed=\{/);
   assert.match(localWorkspace, /element: currentHymn/);
-  assert.match(app, /Recolher anteriores/);
+  assert.match(app, /previousHymnsCollapsed \? "Expandir anteriores" : "Recolher anteriores"/);
+  assert.match(app, /previousHymnsCollapsed \? "Expandir ant\." : "Recolher ant\."/);
   assert.doesNotMatch(sharedWorkspace, /writeHymnPanelsOpen/);
-  assert.doesNotMatch(sharedWorkspace, /onCollapsePrevious=/);
+  assert.doesNotMatch(sharedWorkspace, /onTogglePrevious=/);
 
   assert.match(css, /\.collapsed-hymn-summary/);
   assert.match(

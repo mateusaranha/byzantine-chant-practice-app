@@ -229,7 +229,8 @@ function HymnWorkspace({
   onHymnPanelOpenChange,
   onChange,
   onDelete,
-  onCollapsePrevious,
+  previousHymnsCollapsed,
+  onTogglePrevious,
   onOpenGuide,
 }: {
   hymn: Hymn;
@@ -243,7 +244,8 @@ function HymnWorkspace({
   onHymnPanelOpenChange?: (open: boolean) => void;
   onChange: (hymn: Hymn) => void;
   onDelete: () => void;
-  onCollapsePrevious?: () => void;
+  previousHymnsCollapsed?: boolean;
+  onTogglePrevious?: () => void;
   onOpenGuide: (trigger: HTMLButtonElement) => void;
 }) {
   const [editing, setEditing] = useState(!hymn.lyrics);
@@ -270,6 +272,8 @@ function HymnWorkspace({
   const toolsId = `hymn-tools-${hymn.id}`;
   const lyricsId = `hymn-lyrics-${hymn.id}`;
   const workspaceId = `hymn-workspace-${hymn.id}`;
+  const previousHymnsAction = previousHymnsCollapsed ? "Expandir anteriores" : "Recolher anteriores";
+  const previousHymnsShortAction = previousHymnsCollapsed ? "Expandir ant." : "Recolher ant.";
 
   useEffect(() => {
     if (printRequest > 0) setEditing(false);
@@ -534,15 +538,15 @@ function HymnWorkspace({
         )}
         {(hymnPanelOpen || canDelete) && (
           <div className="hymn-strip-actions">
-            {hymnPanelOpen && onCollapsePrevious && (
+            {hymnPanelOpen && onTogglePrevious && (
               <button
-                className="collapse-previous-hymns"
-                onClick={onCollapsePrevious}
-                aria-label={`Recolher hinos anteriores ao hino ${index + 1}`}
-                title="Recolher hinos anteriores"
+                className="toggle-previous-hymns"
+                onClick={onTogglePrevious}
+                aria-label={`${previousHymnsAction} ao hino ${index + 1}`}
+                title={previousHymnsAction}
               >
-                <span className="collapse-previous-long">Recolher anteriores</span>
-                <span className="collapse-previous-short" aria-hidden="true">Anteriores</span>
+                <span className="previous-hymns-long">{previousHymnsAction}</span>
+                <span className="previous-hymns-short" aria-hidden="true">{previousHymnsShortAction}</span>
               </button>
             )}
             {hymnPanelOpen && (
@@ -1180,10 +1184,11 @@ function LocalWorkspace() {
     writeHymnPanelsOpen(localStorage, hymnIds, open);
   }
 
-  function collapsePreviousHymns(hymnId: string) {
+  function togglePreviousHymns(hymnId: string) {
     const currentIndex = hymns.findIndex((hymn) => hymn.id === hymnId);
     if (currentIndex <= 0) return;
     const previousHymnIds = hymns.slice(0, currentIndex).map((hymn) => hymn.id);
+    const open = previousHymnIds.every((id) => collapsedHymnIds.has(id));
     const currentHymn = document.getElementById(hymnId);
     if (currentHymn) {
       batchScrollAnchorRef.current = {
@@ -1193,10 +1198,10 @@ function LocalWorkspace() {
     }
     setCollapsedHymnIds((current) => {
       const next = new Set(current);
-      previousHymnIds.forEach((id) => next.add(id));
+      previousHymnIds.forEach((id) => open ? next.delete(id) : next.add(id));
       return next;
     });
-    writeHymnPanelsOpen(localStorage, previousHymnIds, false);
+    writeHymnPanelsOpen(localStorage, previousHymnIds, open);
   }
 
   function addHymn() {
@@ -1340,7 +1345,10 @@ function LocalWorkspace() {
             onChange={updateHymn}
             onOpenGuide={(trigger) => setHelp({ page: "guide", trigger })}
             onDelete={() => setHymns((current) => current.filter((item) => item.id !== hymn.id))}
-            onCollapsePrevious={index > 0 ? () => collapsePreviousHymns(hymn.id) : undefined}
+            previousHymnsCollapsed={
+              index > 0 && hymns.slice(0, index).every((previous) => collapsedHymnIds.has(previous.id))
+            }
+            onTogglePrevious={index > 0 ? () => togglePreviousHymns(hymn.id) : undefined}
           />
         ))}
       </div>
