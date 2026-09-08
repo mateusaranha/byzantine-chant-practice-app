@@ -51,7 +51,13 @@ export function validateHymnSet(value) {
   if (new TextEncoder().encode(serialized).byteLength > MAX_SET_BYTES) {
     throw new HttpError(413, "O conjunto é grande demais para ser publicado.");
   }
-  return { title, slug, hymns: value.hymns, listed: value.listed !== false };
+  return {
+    title,
+    slug,
+    hymns: value.hymns,
+    listed: value.listed !== false,
+    createOnly: value.createOnly === true,
+  };
 }
 
 export function normalizeLibraryMetadata(value) {
@@ -291,8 +297,11 @@ async function readRepoJson(env, path) {
   }
 }
 
-async function writeRepoJson(env, path, value, message) {
+async function writeRepoJson(env, path, value, message, { createOnly = false } = {}) {
   const existing = await readRepoJson(env, path);
+  if (createOnly && existing) {
+    throw new HttpError(409, "Já existe um conjunto com esse nome. Escolha outro nome para salvar como novo.");
+  }
   const body = {
     message,
     branch: "main",
@@ -544,7 +553,13 @@ async function saveSet(request, env) {
     listed: value.listed,
     hymns: value.hymns,
   };
-  await writeRepoJson(env, path, document, `Save Psaltikon set: ${value.title}`);
+  await writeRepoJson(
+    env,
+    path,
+    document,
+    `Save Psaltikon set: ${value.title}`,
+    { createOnly: value.createOnly },
+  );
   return { path, title: value.title, updatedAt: document.updatedAt, listed: document.listed };
 }
 
