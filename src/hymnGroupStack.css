@@ -32,6 +32,7 @@
 .hymn-group.hymn-group-collapsed > .hymn-group-deck {
   z-index:2;
   isolation:auto;
+  background-color:#2c241f;
 }
 
 .hymn-group.hymn-group-collapsed > .hymn-group-deck::before,
