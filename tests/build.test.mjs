@@ -380,7 +380,12 @@ test("the production build contains the app shell and migration features", async
   assert.match(source, /writeWorkspace\(localStorage, hymns\)/);
   assert.match(source, /has\("psaltikon_token"\)/);
   assert.match(source, /\{ version: 4, exportedAt: new Date\(\)\.toISOString\(\), hymns \}/);
-  assert.match(librarySource, /JSON\.stringify\(\{ title: name, slug, hymns, listed \}\)/);
+  assert.match(librarySource, /JSON\.stringify\(\{ title: name, slug, hymns, listed, createOnly \}\)/);
+  assert.match(librarySource, /onClick=\{\(\) => saveSet\("new"\)\}/);
+  assert.match(librarySource, /Atualizar “\$\{savedTitle\}” e alterar seu nome para “\$\{name\}”\?/);
+  assert.match(librarySource, /Atualizar “\$\{savedTitle \|\| name\}” com o conteúdo atual\?/);
+  assert.match(librarySource, /Novo conjunto “\$\{name\}” salvo em Meus conjuntos\./);
+  assert.doesNotMatch(librarySource, /setCollectionName\(""\)/);
   assert.match(librarySource, /const published = readPublishedSet\(saved\)/);
   assert.match(pullRequestWorkflow, /pull_request:/);
   assert.match(pullRequestWorkflow, /Test interface/);
