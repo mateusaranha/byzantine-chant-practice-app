@@ -30,6 +30,8 @@ test("validates saved sets and curated-only listing metadata", () => {
   const listed = validateHymnSet({ title: "Domingo", hymns: [{ title: "Hino" }] });
   assert.equal(listed.slug, "domingo");
   assert.equal(listed.listed, true);
+  assert.equal(listed.createOnly, false);
+  assert.equal(validateHymnSet({ title: "Cópia", createOnly: true, hymns: [{ title: "Hino" }] }).createOnly, true);
   assert.equal(validateHymnSet({ title: "Curado", listed: false, hymns: [{ title: "Hino" }] }).listed, false);
   assert.throws(() => validateHymnSet({ title: "Vazio", hymns: [] }), /entre 1 e/);
 });
@@ -102,6 +104,13 @@ test("validates curated promotion as one complete published set per subcategory"
   }, catalog, { hymns: [] }), /Conjunto publicado inválido/);
 });
 
+
+test("protects save-as-new from overwriting an existing slug", async () => {
+  const source = await readFile(new URL("../src/index.js", import.meta.url), "utf8");
+  assert.match(source, /createOnly && existing/);
+  assert.match(source, /Já existe um conjunto com esse nome/);
+  assert.match(source, /\{ createOnly: value\.createOnly \}/);
+});
 
 test("curated removal relists hidden sets before unlinking and deletes only empty structure", async () => {
   const source = await readFile(new URL("../src/index.js", import.meta.url), "utf8");

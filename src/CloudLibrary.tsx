@@ -121,6 +121,7 @@ export default function CloudLibrary({
   const [savedSlug, setSavedSlug] = useState("");
   const [savedOwner, setSavedOwner] = useState("");
   const [savedPath, setSavedPath] = useState("");
+  const [savedTitle, setSavedTitle] = useState("");
   const [saveDestination, setSaveDestination] = useState<SaveDestination>("sets");
   const [curatedCatalog, setCuratedCatalog] = useState<CuratedCatalog>(initialCuratedCatalog);
   const [curatedCategoryId, setCuratedCategoryId] = useState(() => initialCuratedCatalog.categories[0]?.id || "");
@@ -375,16 +376,16 @@ export default function CloudLibrary({
     return result;
   }
 
-  async function publishBase(name: string, slug: string, listed: boolean) {
+  async function publishBase(name: string, slug: string, listed: boolean, createOnly = false) {
     return api<{ path: string }>(
       apiBase,
       "/api/sets",
-      { method: "POST", body: JSON.stringify({ title: name, slug, hymns, listed }) },
+      { method: "POST", body: JSON.stringify({ title: name, slug, hymns, listed, createOnly }) },
       token,
     );
   }
 
-  function saveSet() {
+  function saveSet(mode: "primary" | "new" = "primary") {
     const name = collectionName.trim();
     if (!name) {
       setError("Informe um nome para o conjunto.");
@@ -399,13 +400,23 @@ export default function CloudLibrary({
       return;
     }
     const updatesOwnSet = Boolean(savedSlug && savedOwner === session?.user.login);
-    const slug = updatesOwnSet ? savedSlug : slugify(name);
+    const createsNewSet = mode === "new" || !updatesOwnSet;
+    if (updatesOwnSet && !createsNewSet) {
+      const confirmed = window.confirm(
+        savedTitle && savedTitle !== name
+          ? `Atualizar “${savedTitle}” e alterar seu nome para “${name}”?`
+          : `Atualizar “${savedTitle || name}” com o conteúdo atual?`,
+      );
+      if (!confirmed) return;
+    }
+    const slug = createsNewSet ? slugify(name) : updatesOwnSet ? savedSlug : slugify(name);
     void run("save", async () => {
       // Curated-only starts listed as a safe fallback. It is hidden only after promotion succeeds.
-      const saved = await publishBase(name, slug, true);
+      const saved = await publishBase(name, slug, true, createsNewSet);
       setSavedSlug(slug);
       setSavedOwner(session?.user.login || "");
       setSavedPath(saved.path);
+      setSavedTitle(name);
 
       if (wantsCurated) {
         try {
@@ -444,7 +455,13 @@ export default function CloudLibrary({
           setError(`O conteúdo foi preservado em Meus conjuntos, mas a curadoria não foi alterada. ${detail}`);
         }
       } else {
-        setMessage("Conjunto salvo em Meus conjuntos. O histórico anterior foi preservado.");
+        setMessage(
+          createsNewSet
+            ? `Novo conjunto “${name}” salvo em Meus conjuntos.`
+            : updatesOwnSet
+              ? `Publicação “${name}” atualizada com sucesso.`
+              : "Conjunto salvo em Meus conjuntos. O histórico anterior foi preservado.",
+        );
       }
       await refreshLibrary();
     });
@@ -460,6 +477,7 @@ export default function CloudLibrary({
       setSavedSlug(item.slug);
       setSavedOwner(item.owner);
       setSavedPath(item.path);
+      setSavedTitle(published.title);
       setMessage(`“${published.title}” foi carregado no espaço de trabalho atual.`);
     });
   }
@@ -786,7 +804,7 @@ export default function CloudLibrary({
                         </div>
                       )}
 
-                      <button className="cloud-primary" onClick={saveSet} disabled={Boolean(busy) || !curatedTargetReady}>
+                      <button className="cloud-primary" onClick={() => saveSet()} disabled={Boolean(busy) || !curatedTargetReady}>
                         {busy === "save"
                           ? "Salvando…"
                           : wantsCurated
@@ -800,13 +818,8 @@ export default function CloudLibrary({
                       {updatesOwnSet && (
                         <button
                           className="cloud-secondary"
-                          onClick={() => {
-                            setSavedSlug("");
-                            setSavedOwner("");
-                            setSavedPath("");
-                            setCollectionName("");
-                            setSaveDestination("sets");
-                          }}
+                          onClick={() => saveSet("new")}
+                          disabled={Boolean(busy) || !curatedTargetReady}
                         >
                           Salvar como novo conjunto
                         </button>
