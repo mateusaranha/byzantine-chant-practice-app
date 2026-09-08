@@ -99,8 +99,8 @@ button,input,textarea { font:inherit; } button { cursor:pointer; }
 .hymn-group-deck { position:relative; isolation:isolate; width:100%; min-width:0; min-height:72px; display:flex; align-items:center; justify-content:space-between; gap:18px; border:1px solid rgba(202,169,104,.52); border-radius:4px; background:linear-gradient(135deg,rgba(255,249,239,.11),rgba(255,249,239,.055)); color:#f5ead8; padding:14px 18px; text-align:left; box-shadow:0 10px 28px rgba(0,0,0,.2); }
 .hymn-group-deck::before,.hymn-group-deck::after { content:""; position:absolute; z-index:-1; display:none; border:1px solid rgba(202,169,104,.32); border-radius:4px; background:#2c241f; box-shadow:0 5px 14px rgba(0,0,0,.18); pointer-events:none; }
 .hymn-group-collapsed .hymn-group-deck::before,.hymn-group-collapsed .hymn-group-deck::after { display:block; }
-.hymn-group-collapsed .hymn-group-deck::before { inset:0; transform:translate(-6px,5px); }
-.hymn-group-collapsed .hymn-group-deck::after { inset:0; transform:translate(-12px,10px); opacity:.82; }
+.hymn-group-collapsed .hymn-group-deck::before { inset:0; transform:translate(-6px,-5px); }
+.hymn-group-collapsed .hymn-group-deck::after { inset:0; transform:translate(-12px,-10px); opacity:.82; }
 .hymn-group-deck:hover { border-color:#d8b36d; background:linear-gradient(135deg,rgba(180,139,71,.17),rgba(255,249,239,.07)); }
 .hymn-group-deck:focus-visible { outline:2px solid #d8b36d; outline-offset:3px; }
 .hymn-group-deck-copy { min-width:0; flex:1; }
@@ -385,8 +385,8 @@ footer { max-width:1500px; margin:15px auto 0; display:flex; align-items:center;
   .pdf-dialog-actions button { width:100%; }
   .hymn-group-collapsed { padding-bottom:10px; }
   .hymn-group-deck { min-height:68px; gap:8px; padding:12px; }
-  .hymn-group-collapsed .hymn-group-deck::before { transform:translate(-5px,4px); }
-  .hymn-group-collapsed .hymn-group-deck::after { transform:translate(-10px,8px); }
+  .hymn-group-collapsed .hymn-group-deck::before { transform:translate(-5px,-4px); }
+  .hymn-group-collapsed .hymn-group-deck::after { transform:translate(-10px,-8px); }
   .hymn-group-expanded { gap:12px; padding-bottom:10px; }
   .hymn-group-expanded .hymn-group-deck { min-height:50px; padding:4px 0 10px; }
   .hymn-group-items { gap:16px; padding-left:12px; }
