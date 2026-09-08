@@ -6,8 +6,8 @@
     "name": "Mateus Aranha Martins",
     "avatarUrl": "https://avatars.githubusercontent.com/u/91752012?v=4"
   },
-  "updatedAt": "2026-09-07T16:35:16.045Z",
-  "listed": false,
+  "updatedAt": "2026-09-08T01:14:52.067Z",
+  "listed": true,
   "hymns": [
     {
       "id": "shared-hymn-0",
@@ -126,8 +126,30 @@
       "repeatMode": "off",
       "fontSize": 27,
       "lineHeight": 1.9,
-      "highlights": [],
-      "melismas": []
+      "highlights": [
+        {
+          "start": 16,
+          "end": 56,
+          "color": "sage"
+        },
+        {
+          "start": 56,
+          "end": 125,
+          "color": "sky"
+        }
+      ],
+      "melismas": [
+        {
+          "start": 9,
+          "end": 55,
+          "kind": "simple"
+        },
+        {
+          "start": 55,
+          "end": 123,
+          "kind": "complex"
+        }
+      ]
     },
     {
       "id": "hymn-1788635406901-infuk",
@@ -140,8 +162,30 @@
       "repeatMode": "off",
       "fontSize": 27,
       "lineHeight": 1.9,
-      "highlights": [],
-      "melismas": []
+      "highlights": [
+        {
+          "start": 49,
+          "end": 93,
+          "color": "sage"
+        },
+        {
+          "start": 98,
+          "end": 173,
+          "color": "wheat"
+        }
+      ],
+      "melismas": [
+        {
+          "start": 11,
+          "end": 49,
+          "kind": "complex"
+        },
+        {
+          "start": 95,
+          "end": 172,
+          "kind": "complex"
+        }
+      ]
     },
     {
       "id": "shared-hymn-2",
