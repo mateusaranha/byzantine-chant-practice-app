@@ -59,11 +59,10 @@ export default function HymnGroupList({
               onClick={() => toggleGroup(item.group.id)}
             >
               <span className="hymn-group-deck-copy">
-                <span className="hymn-group-label">Grupo de hinos</span>
                 <strong>{item.group.name}</strong>
               </span>
               <span className="hymn-group-meta">
-                <span>{item.hymns.length} itens</span>
+                <span>{item.hymns.length} {item.hymns.length === 1 ? "hino" : "hinos"}</span>
                 <span className="hymn-group-toggle-icon" aria-hidden="true">{expanded ? "⌃" : "⌄"}</span>
               </span>
             </button>

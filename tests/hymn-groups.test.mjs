@@ -93,13 +93,16 @@ test("group presentation and organizer expose the accessible interactions", asyn
   ]);
   assert.match(view, /aria-expanded=\{expanded\}/);
   assert.match(view, /hymn-group-items-collapsed/);
-  assert.match(view, /\{item\.hymns\.length\} itens/);
+  assert.match(view, /item\.hymns\.length === 1 \? "hino" : "hinos"/);
+  assert.doesNotMatch(view, />Grupo de hinos</);
   assert.match(organizer, /Criar grupo/);
   assert.match(organizer, /Renomear grupo/);
   assert.match(organizer, /Desfazer grupo/);
   assert.match(organizer, /Adicionar ao grupo/);
   assert.match(organizer, /Remover.*do grupo/);
-  assert.match(styles, /\.hymn-group-deck::before,.hymn-group-deck::after/);
+  assert.match(styles, /\.hymn-group-collapsed \.hymn-group-deck::before/);
+  assert.match(styles, /\.hymn-group-expanded \.hymn-group-deck \{[^}]*border-bottom:/);
+  assert.match(styles, /\.hymn-group-items::before \{[^}]*linear-gradient/);
   assert.match(styles, /@media \(max-width:520px\)[\s\S]*\.hymn-group-deck/);
   assert.match(styles, /@media print \{[\s\S]*\.hymn-group-items-collapsed \{ display:contents!important; \}/);
 });
