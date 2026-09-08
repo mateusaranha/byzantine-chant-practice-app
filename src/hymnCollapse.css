@@ -5,7 +5,7 @@
 }
 
 .hymn-collapse-toggle,
-.collapse-previous-hymns {
+.toggle-previous-hymns {
   min-height:30px;
   display:flex;
   align-items:center;
@@ -21,19 +21,19 @@
 
 .hymn-collapse-toggle:hover,
 .hymn-collapse-toggle:focus-visible,
-.collapse-previous-hymns:hover,
-.collapse-previous-hymns:focus-visible {
+.toggle-previous-hymns:hover,
+.toggle-previous-hymns:focus-visible {
   color:#fff3df;
 }
 
 .hymn-collapse-toggle:focus-visible,
-.collapse-previous-hymns:focus-visible,
+.toggle-previous-hymns:focus-visible,
 .collapsed-hymn-summary:focus-visible {
   outline:2px solid #d8b36d;
   outline-offset:2px;
 }
 
-.collapse-previous-short {
+.previous-hymns-short {
   display:none;
 }
 
@@ -127,16 +127,16 @@
   }
 
   .hymn-collapse-toggle,
-  .collapse-previous-hymns {
+  .toggle-previous-hymns {
     min-height:38px;
     padding-inline:8px;
   }
 
-  .collapse-previous-long {
+  .previous-hymns-long {
     display:none;
   }
 
-  .collapse-previous-short {
+  .previous-hymns-short {
     display:inline;
   }
 }
