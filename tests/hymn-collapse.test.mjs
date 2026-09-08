@@ -81,10 +81,19 @@ test("collapsing a hymn is local-only, accessible, pauses video and stays printa
   assert.match(localWorkspace, /document\.addEventListener\("pointerdown"/);
   assert.match(localWorkspace, /menu\?\.removeAttribute\("open"\)/);
   assert.match(localWorkspace, /focus\(\{ preventScroll: true \}\)/);
-  assert.match(localWorkspace, /displayAnchorTopRef\.current = actions\.getBoundingClientRect\(\)\.top/);
+  assert.match(localWorkspace, /batchScrollAnchorRef\.current = \{/);
+  assert.match(localWorkspace, /element: actions/);
   assert.match(localWorkspace, /window\.scrollBy\(\{ top: offset, left: 0, behavior: "auto" \}\)/);
   assert.doesNotMatch(sharedWorkspace, /persistHymnPanel/);
+  assert.match(localWorkspace, /function collapsePreviousHymns\(hymnId: string\)/);
+  assert.match(localWorkspace, /hymns\.slice\(0, currentIndex\)\.map\(\(hymn\) => hymn\.id\)/);
+  assert.match(localWorkspace, /previousHymnIds\.forEach\(\(id\) => next\.add\(id\)\)/);
+  assert.match(localWorkspace, /writeHymnPanelsOpen\(localStorage, previousHymnIds, false\)/);
+  assert.match(localWorkspace, /onCollapsePrevious=\{index > 0 \?/);
+  assert.match(localWorkspace, /element: currentHymn/);
+  assert.match(app, /Recolher anteriores/);
   assert.doesNotMatch(sharedWorkspace, /writeHymnPanelsOpen/);
+  assert.doesNotMatch(sharedWorkspace, /onCollapsePrevious=/);
 
   assert.match(css, /\.collapsed-hymn-summary/);
   assert.match(
