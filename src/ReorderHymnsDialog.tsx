@@ -38,7 +38,14 @@ export default function ReorderHymnsDialog({
   const layout = useMemo(() => hymnLayout(hymns), [hymns]);
   const groups = layout.filter((item): item is Extract<HymnLayoutItem, { type: "group" }> => item.type === "group");
   const selectedCount = selectedIds.size;
+  const selectedUngroupedCount = hymns.filter(
+    (hymn) => selectedIds.has(hymn.id) && !hymn.group,
+  ).length;
   const allSelected = selectedCount === hymns.length;
+  const groupMembershipKey = useMemo(
+    () => hymns.map((hymn) => `${hymn.id}:${hymn.group?.id || ""}`).join("|"),
+    [hymns],
+  );
   const canAddToTarget = Boolean(targetGroupId && hymns.some(
     (hymn) => selectedIds.has(hymn.id) && hymn.group?.id !== targetGroupId,
   ));
@@ -61,6 +68,10 @@ export default function ReorderHymnsDialog({
     const currentIds = new Set(hymns.map((hymn) => hymn.id));
     setSelectedIds((current) => new Set([...current].filter((id) => currentIds.has(id))));
   }, [hymns]);
+
+  useEffect(() => {
+    setSelectedIds(new Set());
+  }, [groupMembershipKey]);
 
   useEffect(() => {
     if (!groups.some((item) => item.group.id === targetGroupId)) {
@@ -109,7 +120,10 @@ export default function ReorderHymnsDialog({
       return;
     }
     if (groupEditor.mode === "create") {
-      if (selectedCount < 2) return;
+      if (selectedUngroupedCount < 2) {
+        setMessage("Selecione pelo menos 2 hinos que ainda não pertençam a um grupo.");
+        return;
+      }
       onChange(createHymnGroup(hymns, selectedIds, name));
       setSelectedIds(new Set());
       setMessage(`Grupo “${name}” criado.`);
@@ -282,7 +296,7 @@ export default function ReorderHymnsDialog({
             {allSelected && selectedCount > 0 && <span>Pelo menos um hino precisa permanecer para excluir.</span>}
           </p>
           <div className="organize-selection-buttons">
-            <button type="button" className="cloud-primary" onClick={() => setGroupEditor({ mode: "create", name: "" })} disabled={selectedCount < 2}>Criar grupo</button>
+            <button type="button" className="cloud-primary" onClick={() => setGroupEditor({ mode: "create", name: "" })} disabled={selectedUngroupedCount < 2}>Criar grupo</button>
             <button type="button" className="cloud-secondary" onClick={clearSelection} disabled={!selectedCount}>Cancelar seleção</button>
             <button type="button" className="delete-selected-hymns" onClick={deleteSelected} disabled={!selectedCount || allSelected}>Excluir selecionados</button>
           </div>

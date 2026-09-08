@@ -224,16 +224,17 @@ export function moveHymnInGroup(hymns: Hymn[], hymnId: string, direction: -1 | 1
 
 export function createHymnGroup(hymns: Hymn[], hymnIds: Iterable<string>, name: string): Hymn[] {
   const selectedIds = new Set(hymnIds);
-  const selected = hymns.filter((hymn) => selectedIds.has(hymn.id));
+  const selected = hymns.filter((hymn) => selectedIds.has(hymn.id) && !hymn.group);
   const trimmedName = name.trim().slice(0, 120);
   if (selected.length < 2 || !trimmedName) return hymns;
 
+  const selectedUngroupedIds = new Set(selected.map((hymn) => hymn.id));
   const group: HymnGroup = { id: newHymnGroupId(), name: trimmedName };
-  const firstSelectedIndex = hymns.findIndex((hymn) => selectedIds.has(hymn.id));
+  const firstSelectedIndex = hymns.findIndex((hymn) => selectedUngroupedIds.has(hymn.id));
   const insertionIndex = hymns
     .slice(0, firstSelectedIndex)
-    .filter((hymn) => !selectedIds.has(hymn.id)).length;
-  const remaining = hymns.filter((hymn) => !selectedIds.has(hymn.id));
+    .filter((hymn) => !selectedUngroupedIds.has(hymn.id)).length;
+  const remaining = hymns.filter((hymn) => !selectedUngroupedIds.has(hymn.id));
   const grouped = selected.map((hymn) => ({ ...hymn, group }));
   return normalizeHymnGroups([
     ...remaining.slice(0, insertionIndex),
