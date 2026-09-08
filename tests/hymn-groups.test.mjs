@@ -35,6 +35,24 @@ test("groups keep selected hymns together and move as one layout item", async ()
   assert.equal(moved[2].group.id, moved[3].group.id);
 });
 
+test("creating another group never absorbs or renames an existing group", async () => {
+  const { createHymnGroup, hymnLayout, newHymn } = await loadHymnState();
+  let hymns = createHymnGroup(fixture(newHymn), ["a", "b"], "Primeiro grupo");
+  const firstGroupId = hymns.find((hymn) => hymn.id === "a").group.id;
+
+  // Simulate stale checked ids from the previous operation plus the newly selected hymns.
+  hymns = createHymnGroup(hymns, ["a", "b", "c", "d"], "Segundo grupo");
+  const layout = hymnLayout(hymns).filter((item) => item.type === "group");
+
+  assert.equal(layout.length, 2);
+  assert.equal(hymns.find((hymn) => hymn.id === "a").group.id, firstGroupId);
+  assert.equal(hymns.find((hymn) => hymn.id === "b").group.id, firstGroupId);
+  assert.equal(hymns.find((hymn) => hymn.id === "a").group.name, "Primeiro grupo");
+  assert.equal(hymns.find((hymn) => hymn.id === "c").group.name, "Segundo grupo");
+  assert.equal(hymns.find((hymn) => hymn.id === "d").group.name, "Segundo grupo");
+  assert.notEqual(hymns.find((hymn) => hymn.id === "c").group.id, firstGroupId);
+});
+
 test("group members can be reordered, added, removed, renamed and ungrouped", async () => {
   const {
     addHymnsToGroup,
@@ -96,6 +114,8 @@ test("group presentation and organizer expose the accessible interactions", asyn
   assert.match(view, /item\.hymns\.length === 1 \? "hino" : "hinos"/);
   assert.doesNotMatch(view, />Grupo de hinos</);
   assert.match(organizer, /Criar grupo/);
+  assert.match(organizer, /selectedUngroupedCount/);
+  assert.match(organizer, /groupMembershipKey/);
   assert.match(organizer, /Renomear grupo/);
   assert.match(organizer, /Desfazer grupo/);
   assert.match(organizer, /Adicionar ao grupo/);
