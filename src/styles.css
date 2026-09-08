@@ -63,9 +63,11 @@ button,input,textarea { font:inherit; } button { cursor:pointer; }
 .cloud-secondary,.github-identity button { border-color:#c4b5a2; background:#fff; color:#675b50; }
 .cloud-primary:disabled,.cloud-secondary:disabled,.cloud-set-row button:disabled { opacity:.45; cursor:default; }
 .cloud-empty { margin:13px 0 0; color:#958778; font:italic 13px Arial,sans-serif; }
-.cloud-groups { display:grid; gap:13px; margin-top:14px; }
+.cloud-groups { max-height:min(520px,55vh); display:grid; gap:13px; margin-top:14px; padding-right:8px; overflow-y:auto; overscroll-behavior:contain; scrollbar-gutter:stable; }
+.cloud-groups:focus-visible { outline:2px solid var(--red); outline-offset:3px; }
 .cloud-group { padding-top:11px; border-top:1px solid #e3d8c9; }
 .cloud-group h3,.admin-columns h3 { margin:0 0 8px; color:#705f51; font:600 11px Arial,sans-serif; letter-spacing:.07em; text-transform:uppercase; }
+.cloud-group h3 { position:sticky; z-index:1; top:0; padding:7px 0; background:#fffdf8; }
 .cloud-set-row,.admin-row { min-height:39px; display:flex; align-items:center; justify-content:space-between; gap:12px; border-top:1px solid #eee5d9; font:14px Arial,sans-serif; }
 .cloud-set-row:first-of-type,.admin-row:first-of-type { border-top:0; }
 .cloud-set-row > div,.admin-row > div { display:flex; gap:6px; }
@@ -345,6 +347,10 @@ footer { max-width:1500px; margin:15px auto 0; display:flex; align-items:center;
   .reorder-buttons button { width:40px; height:40px; }
   .reorder-selection-actions { align-items:stretch; flex-direction:column; }
   .delete-selected-hymns { width:100%; }
+}
+@media (max-width:520px) {
+  .cloud-groups { max-height:none; padding-right:0; overflow:visible; scrollbar-gutter:auto; }
+  .cloud-group h3 { position:static; padding-top:0; }
 }
 @media (prefers-reduced-motion:reduce) { * { scroll-behavior:auto!important; transition:none!important; } }
 
