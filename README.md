@@ -8,7 +8,7 @@ O Psaltikon é um auxílio intermediário de escuta e memorização. Ele não su
 
 ## Estado atual
 
-- vários hinos no mesmo espaço, com reorganização da ordem;
+- vários hinos no mesmo espaço, com reorganização da ordem e grupos visuais recolhíveis;
 - texto grego politônico e leitura transliterada automática;
 - cinco cores, sublinhados simples ou duplos, borracha e desfazer;
 - controles de treino para ocultar temporariamente cores ou sublinhados;
@@ -26,7 +26,7 @@ YouTube, login e biblioteca dependem de conexão. O restante do espaço de estud
 1. Edite título, modo e letra em **Editar texto**.
 2. Cole uma URL do YouTube e carregue a gravação.
 3. Marque trechos com cores ou sublinhados e defina a velocidade de estudo.
-4. Acrescente e reorganize hinos quando necessário.
+4. Acrescente, reorganize e, quando útil, agrupe hinos relacionados em **Organizar hinos**.
 5. Mantenha o trabalho no dispositivo, exporte backup/PDF ou publique um conjunto.
 
 ### Leitura transliterada
@@ -50,7 +50,7 @@ Não há servidor da interface, banco de dados próprio, contas próprias do Psa
 
 ## Dados e permissões
 
-**Trabalho local:** o espaço fica em `psaltikon-practice` no `localStorage` e é salvo automaticamente. Dados antigos são normalizados. Se uma leitura ou tentativa de salvamento falhar, o salvamento é pausado e a interface oferece recuperação antes de qualquer substituição. Importações, conjuntos da biblioteca e alterações de letras com marcações são validados e confirmados quando podem remover dados.
+**Trabalho local:** o espaço fica em `psaltikon-practice` no `localStorage` e é salvo automaticamente. O agrupamento é um metadado opcional de cada hino; conjuntos antigos sem esse campo permanecem inalterados. Dados antigos são normalizados. Se uma leitura ou tentativa de salvamento falhar, o salvamento é pausado e a interface oferece recuperação antes de qualquer substituição. Importações, conjuntos da biblioteca e alterações de letras com marcações são validados e confirmados quando podem remover dados.
 
 **Biblioteca e compartilhamento:** qualquer visitante pode abrir os conjuntos públicos sem login. Um link pode apontar para o conjunto inteiro ou para um hino específico e sempre lê a publicação mais recente. O material compartilhado abre em uma área temporária; **Adicionar ao meu espaço** cria uma cópia local independente sem sobrescrever trabalho válido.
 

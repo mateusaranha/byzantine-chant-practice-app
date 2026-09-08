@@ -27,10 +27,16 @@ test("limits a publisher to hymn paths", () => {
 });
 
 test("validates saved sets and curated-only listing metadata", () => {
-  const listed = validateHymnSet({ title: "Domingo", hymns: [{ title: "Hino" }] });
+  const groupedHymns = [
+    { title: "Hino A", group: { id: "group-a", name: "Versões" } },
+    { title: "Hino B", group: { id: "group-a", name: "Versões" } },
+  ];
+  const listed = validateHymnSet({ title: "Domingo", hymns: groupedHymns });
   assert.equal(listed.slug, "domingo");
   assert.equal(listed.listed, true);
   assert.equal(listed.createOnly, false);
+  assert.equal(listed.hymns, groupedHymns);
+  assert.deepEqual(listed.hymns.map((hymn) => hymn.group), groupedHymns.map((hymn) => hymn.group));
   assert.equal(validateHymnSet({ title: "Cópia", createOnly: true, hymns: [{ title: "Hino" }] }).createOnly, true);
   assert.equal(validateHymnSet({ title: "Curado", listed: false, hymns: [{ title: "Hino" }] }).listed, false);
   assert.throws(() => validateHymnSet({ title: "Vazio", hymns: [] }), /entre 1 e/);

@@ -1,4 +1,4 @@
-import { newHymn, normalizeHymn, restoreHymns } from "./hymnState";
+import { newHymn, newHymnGroupId, normalizeHymn, normalizeHymnGroups, restoreHymns } from "./hymnState";
 import type { Hymn } from "./hymnState";
 
 export type ShareRequest = { path: string; hymnId: string | null };
@@ -61,6 +61,12 @@ export function readPublishedSet(value: unknown): PublishedSet {
     if (item.repeatMode !== undefined) {
       if (!["off", "once", "three", "continuous"].includes(item.repeatMode)) throw invalid();
       safe.repeatMode = item.repeatMode;
+    }
+    if (item.group !== undefined) {
+      if (!item.group || typeof item.group !== "object" || Array.isArray(item.group) ||
+          typeof item.group.id !== "string" || !item.group.id.trim() || item.group.id.length > 200 ||
+          typeof item.group.name !== "string" || !item.group.name.trim() || item.group.name.trim().length > 120) throw invalid();
+      safe.group = { id: item.group.id, name: item.group.name.trim() };
     }
     for (const field of ["highlights", "melismas"] as const) {
       if (item[field] === undefined) continue;
@@ -129,12 +135,24 @@ export function addSharedToWorkspace(storage: Pick<Storage, "getItem" | "setItem
     throw new Error("A cópia ultrapassaria o limite de 80 hinos. Libere espaço no seu conjunto antes de adicioná-la.");
   }
   const ids = new Set(current.map((hymn) => hymn.id));
-  const copies = incoming.map((hymn) => {
+  const copies = normalizeHymnGroups(incoming.map((hymn) => {
     let id = newHymn().id;
     while (ids.has(id)) id = newHymn().id;
     ids.add(id);
     return { ...structuredClone(hymn), id };
+  }));
+  const existingGroupIds = new Set(current.flatMap((hymn) => hymn.group ? [hymn.group.id] : []));
+  const copiedGroupIds = new Map<string, string>();
+  const safeCopies = copies.map((hymn) => {
+    if (!hymn.group) return hymn;
+    let id = copiedGroupIds.get(hymn.group.id);
+    if (!id) {
+      do id = newHymnGroupId(); while (existingGroupIds.has(id));
+      copiedGroupIds.set(hymn.group.id, id);
+      existingGroupIds.add(id);
+    }
+    return { ...hymn, group: { ...hymn.group, id } };
   });
-  storage.setItem(WORKSPACE_KEY, JSON.stringify({ version: 3, hymns: [...current, ...copies] }));
-  return copies.length;
+  storage.setItem(WORKSPACE_KEY, JSON.stringify({ version: 3, hymns: [...current, ...safeCopies] }));
+  return safeCopies.length;
 }
