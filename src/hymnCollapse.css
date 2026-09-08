@@ -4,7 +4,8 @@
   gap:8px;
 }
 
-.hymn-collapse-toggle {
+.hymn-collapse-toggle,
+.collapse-previous-hymns {
   min-height:30px;
   display:flex;
   align-items:center;
@@ -19,14 +20,21 @@
 }
 
 .hymn-collapse-toggle:hover,
-.hymn-collapse-toggle:focus-visible {
+.hymn-collapse-toggle:focus-visible,
+.collapse-previous-hymns:hover,
+.collapse-previous-hymns:focus-visible {
   color:#fff3df;
 }
 
 .hymn-collapse-toggle:focus-visible,
+.collapse-previous-hymns:focus-visible,
 .collapsed-hymn-summary:focus-visible {
   outline:2px solid #d8b36d;
   outline-offset:2px;
+}
+
+.collapse-previous-short {
+  display:none;
 }
 
 .hymn-collapse-icon {
@@ -118,9 +126,18 @@
     max-width:58vw;
   }
 
-  .hymn-collapse-toggle {
+  .hymn-collapse-toggle,
+  .collapse-previous-hymns {
     min-height:38px;
     padding-inline:8px;
+  }
+
+  .collapse-previous-long {
+    display:none;
+  }
+
+  .collapse-previous-short {
+    display:inline;
   }
 }
 

@@ -229,6 +229,7 @@ function HymnWorkspace({
   onHymnPanelOpenChange,
   onChange,
   onDelete,
+  onCollapsePrevious,
   onOpenGuide,
 }: {
   hymn: Hymn;
@@ -242,6 +243,7 @@ function HymnWorkspace({
   onHymnPanelOpenChange?: (open: boolean) => void;
   onChange: (hymn: Hymn) => void;
   onDelete: () => void;
+  onCollapsePrevious?: () => void;
   onOpenGuide: (trigger: HTMLButtonElement) => void;
 }) {
   const [editing, setEditing] = useState(!hymn.lyrics);
@@ -532,6 +534,17 @@ function HymnWorkspace({
         )}
         {(hymnPanelOpen || canDelete) && (
           <div className="hymn-strip-actions">
+            {hymnPanelOpen && onCollapsePrevious && (
+              <button
+                className="collapse-previous-hymns"
+                onClick={onCollapsePrevious}
+                aria-label={`Recolher hinos anteriores ao hino ${index + 1}`}
+                title="Recolher hinos anteriores"
+              >
+                <span className="collapse-previous-long">Recolher anteriores</span>
+                <span className="collapse-previous-short" aria-hidden="true">Anteriores</span>
+              </button>
+            )}
             {hymnPanelOpen && (
               <button
                 className="hymn-collapse-toggle"
@@ -1070,7 +1083,7 @@ function LocalWorkspace() {
   const backupInputRef = useRef<HTMLInputElement>(null);
   const hymnListActionsRef = useRef<HTMLDivElement>(null);
   const hymnDisplayMenuRef = useRef<HTMLDetailsElement>(null);
-  const displayAnchorTopRef = useRef<number | null>(null);
+  const batchScrollAnchorRef = useRef<{ element: HTMLElement; top: number } | null>(null);
 
   useEffect(() => {
     const stored = readWorkspace(localStorage);
@@ -1099,11 +1112,10 @@ function LocalWorkspace() {
   }, []);
 
   useLayoutEffect(() => {
-    const previousTop = displayAnchorTopRef.current;
-    const actions = hymnListActionsRef.current;
-    if (previousTop === null || !actions) return;
-    displayAnchorTopRef.current = null;
-    const offset = actions.getBoundingClientRect().top - previousTop;
+    const anchor = batchScrollAnchorRef.current;
+    if (!anchor) return;
+    batchScrollAnchorRef.current = null;
+    const offset = anchor.element.getBoundingClientRect().top - anchor.top;
     if (offset) window.scrollBy({ top: offset, left: 0, behavior: "auto" });
   }, [collapsedHymnIds]);
 
@@ -1148,7 +1160,12 @@ function LocalWorkspace() {
 
   function setAllHymnPanelsOpen(open: boolean) {
     const actions = hymnListActionsRef.current;
-    if (actions) displayAnchorTopRef.current = actions.getBoundingClientRect().top;
+    if (actions) {
+      batchScrollAnchorRef.current = {
+        element: actions,
+        top: actions.getBoundingClientRect().top,
+      };
+    }
 
     const menu = hymnDisplayMenuRef.current;
     menu?.removeAttribute("open");
@@ -1161,6 +1178,25 @@ function LocalWorkspace() {
       return next;
     });
     writeHymnPanelsOpen(localStorage, hymnIds, open);
+  }
+
+  function collapsePreviousHymns(hymnId: string) {
+    const currentIndex = hymns.findIndex((hymn) => hymn.id === hymnId);
+    if (currentIndex <= 0) return;
+    const previousHymnIds = hymns.slice(0, currentIndex).map((hymn) => hymn.id);
+    const currentHymn = document.getElementById(hymnId);
+    if (currentHymn) {
+      batchScrollAnchorRef.current = {
+        element: currentHymn,
+        top: currentHymn.getBoundingClientRect().top,
+      };
+    }
+    setCollapsedHymnIds((current) => {
+      const next = new Set(current);
+      previousHymnIds.forEach((id) => next.add(id));
+      return next;
+    });
+    writeHymnPanelsOpen(localStorage, previousHymnIds, false);
   }
 
   function addHymn() {
@@ -1304,6 +1340,7 @@ function LocalWorkspace() {
             onChange={updateHymn}
             onOpenGuide={(trigger) => setHelp({ page: "guide", trigger })}
             onDelete={() => setHymns((current) => current.filter((item) => item.id !== hymn.id))}
+            onCollapsePrevious={index > 0 ? () => collapsePreviousHymns(hymn.id) : undefined}
           />
         ))}
       </div>
