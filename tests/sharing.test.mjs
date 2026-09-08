@@ -21,8 +21,9 @@ const fixture = () => ({
   title: "Conjunto de teste",
   hymns: [{ ...newHymn(), id: "primary-hymn", title: "Primeiro", lyrics: "Κύριε ἐλέησον", videoId: "abcdefghijk",
     videoInput: "https://youtu.be/abcdefghijk", targetSpeed: 0.85, repeatMode: "three",
-    highlights: [{ start: 0, end: 5, color: "sage" }], melismas: [{ start: 6, end: 8, kind: "complex" }] },
-  { ...newHymn(), id: "second", title: "Segundo", lyrics: "Θεοτόκε" }],
+    highlights: [{ start: 0, end: 5, color: "sage" }], melismas: [{ start: 6, end: 8, kind: "complex" }],
+    group: { id: "published-group", name: "Versões" } },
+  { ...newHymn(), id: "second", title: "Segundo", lyrics: "Θεοτόκε", group: { id: "published-group", name: "Versões" } }],
 });
 
 function memoryStorage(initial = null) {
@@ -61,6 +62,7 @@ test("published identity selects the same hymn after reordering and fails if it 
   assert.equal(first.title, reordered.title);
   assert.deepEqual(first.highlights, reordered.highlights);
   assert.equal(first.videoId, reordered.videoId);
+  assert.deepEqual(first.group, { id: "published-group", name: "Versões" });
   assert.deepEqual(readPublishedSet(original).hymns[0].melismas, original.hymns[0].melismas);
   source.hymns.pop();
   assert.throws(() => selectSharedHymns(readPublishedSet(source), "primary-hymn"), /não está mais disponível/);
@@ -127,6 +129,9 @@ test("adding a copy preserves existing work and marks, creates unique IDs and do
   assert.deepEqual(saved[2].melismas, source[0].melismas);
   assert.equal(saved[2].videoId, source[0].videoId);
   assert.equal(saved[2].targetSpeed, source[0].targetSpeed);
+  assert.equal(saved[2].group.name, "Versões");
+  assert.equal(saved[2].group.id, saved[3].group.id);
+  assert.notEqual(saved[2].group.id, source[0].group.id);
   assert.equal(new Set(saved.map(h => h.id)).size, 4);
   assert.equal(storage.writes, 1);
   assert.deepEqual(source, snapshot);
@@ -138,6 +143,13 @@ test("first access and an untouched blank hymn receive the copy without a spare 
     addSharedToWorkspace(storage, fixture().hymns);
     assert.equal(JSON.parse(storage.value).hymns.length, 2);
   }
+});
+
+test("copying one shared hymn does not leave an incomplete group in the workspace", () => {
+  const storage = memoryStorage();
+  const selected = selectSharedHymns(readPublishedSet(fixture()), "primary-hymn");
+  addSharedToWorkspace(storage, selected);
+  assert.equal(JSON.parse(storage.value).hymns[0].group, undefined);
 });
 
 test("unreadable storage, capacity overflow and storage failure never report a successful copy", () => {

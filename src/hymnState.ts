@@ -1,6 +1,7 @@
 export type Highlight = { start: number; end: number; color: string };
 export type Melisma = { start: number; end: number; kind: "simple" | "complex" };
 export type RepeatMode = "off" | "once" | "three" | "continuous";
+export type HymnGroup = { id: string; name: string };
 
 export const WORKSPACE_KEY = "psaltikon-practice";
 
@@ -20,7 +21,12 @@ export type Hymn = {
   lineHeight: number;
   highlights: Highlight[];
   melismas: Melisma[];
+  group?: HymnGroup;
 };
+
+export type HymnLayoutItem =
+  | { type: "hymn"; hymn: Hymn }
+  | { type: "group"; group: HymnGroup; hymns: Hymn[] };
 
 export function newHymn(): Hymn {
   return {
@@ -84,6 +90,16 @@ export function normalizeHymn(value: Partial<Hymn>, fallbackId: string): Hymn {
   const id = typeof value.id === "string" && value.id.trim() && value.id.length <= 200
     ? value.id
     : fallbackId;
+  const group = value.group &&
+    typeof value.group === "object" &&
+    typeof value.group.id === "string" &&
+    value.group.id.trim() &&
+    value.group.id.length <= 200 &&
+    typeof value.group.name === "string" &&
+    value.group.name.trim() &&
+    value.group.name.trim().length <= 120
+      ? { id: value.group.id, name: value.group.name.trim() }
+      : undefined;
   return {
     id,
     title: typeof value.title === "string" ? value.title : "Novo hino",
@@ -97,6 +113,7 @@ export function normalizeHymn(value: Partial<Hymn>, fallbackId: string): Hymn {
     lineHeight: Math.min(2.4, Math.max(1.4, Math.round(savedLineHeight * 10) / 10)),
     highlights,
     melismas,
+    ...(group ? { group } : {}),
   };
 }
 
@@ -123,6 +140,154 @@ export function moveHymn(hymns: Hymn[], id: string, direction: -1 | 1): Hymn[] {
   return next;
 }
 
+function withoutGroup(hymn: Hymn): Hymn {
+  if (!hymn.group) return hymn;
+  const { group: _group, ...ungrouped } = hymn;
+  return ungrouped;
+}
+
+export function newHymnGroupId(): string {
+  return `group-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+}
+
+export function hymnLayout(hymns: Hymn[]): HymnLayoutItem[] {
+  const groupCounts = new Map<string, number>();
+  for (const hymn of hymns) {
+    if (hymn.group) groupCounts.set(hymn.group.id, (groupCounts.get(hymn.group.id) || 0) + 1);
+  }
+
+  const emittedGroups = new Set<string>();
+  const layout: HymnLayoutItem[] = [];
+  for (const hymn of hymns) {
+    const group = hymn.group;
+    if (!group || (groupCounts.get(group.id) || 0) < 2) {
+      layout.push({ type: "hymn", hymn });
+      continue;
+    }
+    if (emittedGroups.has(group.id)) continue;
+    emittedGroups.add(group.id);
+    layout.push({
+      type: "group",
+      group,
+      hymns: hymns.filter((item) => item.group?.id === group.id),
+    });
+  }
+  return layout;
+}
+
+export function normalizeHymnGroups(hymns: Hymn[]): Hymn[] {
+  return hymnLayout(hymns).flatMap((item) => {
+    if (item.type === "hymn") return [withoutGroup(item.hymn)];
+    return item.hymns.map((hymn) => ({ ...hymn, group: item.group }));
+  });
+}
+
+export function hymnLayoutKey(item: HymnLayoutItem): string {
+  return item.type === "group" ? `group:${item.group.id}` : `hymn:${item.hymn.id}`;
+}
+
+function flattenHymnLayout(layout: HymnLayoutItem[]): Hymn[] {
+  return layout.flatMap((item) => item.type === "group" ? item.hymns : [item.hymn]);
+}
+
+function lastHymnIndex(hymns: Hymn[], predicate: (hymn: Hymn) => boolean): number {
+  for (let index = hymns.length - 1; index >= 0; index -= 1) {
+    if (predicate(hymns[index])) return index;
+  }
+  return -1;
+}
+
+export function moveHymnLayoutItem(hymns: Hymn[], key: string, direction: -1 | 1): Hymn[] {
+  const layout = hymnLayout(normalizeHymnGroups(hymns));
+  const currentIndex = layout.findIndex((item) => hymnLayoutKey(item) === key);
+  const nextIndex = currentIndex + direction;
+  if (currentIndex < 0 || nextIndex < 0 || nextIndex >= layout.length) return hymns;
+  const next = [...layout];
+  [next[currentIndex], next[nextIndex]] = [next[nextIndex], next[currentIndex]];
+  return flattenHymnLayout(next);
+}
+
+export function moveHymnInGroup(hymns: Hymn[], hymnId: string, direction: -1 | 1): Hymn[] {
+  const normalized = normalizeHymnGroups(hymns);
+  const hymn = normalized.find((item) => item.id === hymnId);
+  if (!hymn?.group) return hymns;
+  const members = normalized.filter((item) => item.group?.id === hymn.group?.id);
+  const memberIndex = members.findIndex((item) => item.id === hymnId);
+  const nextMember = members[memberIndex + direction];
+  if (!nextMember) return hymns;
+  const currentIndex = normalized.findIndex((item) => item.id === hymnId);
+  const nextIndex = normalized.findIndex((item) => item.id === nextMember.id);
+  const next = [...normalized];
+  [next[currentIndex], next[nextIndex]] = [next[nextIndex], next[currentIndex]];
+  return next;
+}
+
+export function createHymnGroup(hymns: Hymn[], hymnIds: Iterable<string>, name: string): Hymn[] {
+  const selectedIds = new Set(hymnIds);
+  const selected = hymns.filter((hymn) => selectedIds.has(hymn.id));
+  const trimmedName = name.trim().slice(0, 120);
+  if (selected.length < 2 || !trimmedName) return hymns;
+
+  const group: HymnGroup = { id: newHymnGroupId(), name: trimmedName };
+  const firstSelectedIndex = hymns.findIndex((hymn) => selectedIds.has(hymn.id));
+  const insertionIndex = hymns
+    .slice(0, firstSelectedIndex)
+    .filter((hymn) => !selectedIds.has(hymn.id)).length;
+  const remaining = hymns.filter((hymn) => !selectedIds.has(hymn.id));
+  const grouped = selected.map((hymn) => ({ ...hymn, group }));
+  return normalizeHymnGroups([
+    ...remaining.slice(0, insertionIndex),
+    ...grouped,
+    ...remaining.slice(insertionIndex),
+  ]);
+}
+
+export function addHymnsToGroup(hymns: Hymn[], hymnIds: Iterable<string>, groupId: string): Hymn[] {
+  const normalized = normalizeHymnGroups(hymns);
+  const target = normalized.find((hymn) => hymn.group?.id === groupId)?.group;
+  if (!target) return hymns;
+  const selectedIds = new Set(hymnIds);
+  const selected = normalized.filter(
+    (hymn) => selectedIds.has(hymn.id) && hymn.group?.id !== groupId,
+  );
+  if (!selected.length) return hymns;
+
+  const remaining = normalized.filter((hymn) => !selected.some((item) => item.id === hymn.id));
+  const lastTargetIndex = lastHymnIndex(remaining, (hymn) => hymn.group?.id === groupId);
+  const additions = selected.map((hymn) => ({ ...hymn, group: target }));
+  return normalizeHymnGroups([
+    ...remaining.slice(0, lastTargetIndex + 1),
+    ...additions,
+    ...remaining.slice(lastTargetIndex + 1),
+  ]);
+}
+
+export function renameHymnGroup(hymns: Hymn[], groupId: string, name: string): Hymn[] {
+  const trimmedName = name.trim().slice(0, 120);
+  if (!trimmedName || !hymns.some((hymn) => hymn.group?.id === groupId)) return hymns;
+  return normalizeHymnGroups(hymns.map((hymn) => hymn.group?.id === groupId
+    ? { ...hymn, group: { id: groupId, name: trimmedName } }
+    : hymn));
+}
+
+export function ungroupHymns(hymns: Hymn[], groupId: string): Hymn[] {
+  return hymns.map((hymn) => hymn.group?.id === groupId ? withoutGroup(hymn) : hymn);
+}
+
+export function removeHymnFromGroup(hymns: Hymn[], hymnId: string): Hymn[] {
+  const normalized = normalizeHymnGroups(hymns);
+  const hymn = normalized.find((item) => item.id === hymnId);
+  if (!hymn?.group) return hymns;
+  const groupId = hymn.group.id;
+  const remaining = normalized.filter((item) => item.id !== hymnId);
+  const lastGroupIndex = lastHymnIndex(remaining, (item) => item.group?.id === groupId);
+  return normalizeHymnGroups([
+    ...remaining.slice(0, lastGroupIndex + 1),
+    withoutGroup(hymn),
+    ...remaining.slice(lastGroupIndex + 1),
+  ]);
+}
+
 export function restoreHymns(value: unknown): Hymn[] | null {
   if (!value || typeof value !== "object") return null;
   const data = value as Partial<Hymn> & { hymns?: unknown };
@@ -131,7 +296,9 @@ export function restoreHymns(value: unknown): Hymn[] | null {
       (hymn): hymn is Partial<Hymn> => Boolean(hymn && typeof hymn === "object"),
     );
     if (!savedHymns.length) return null;
-    return uniqueHymnIds(savedHymns.map((hymn, index) => normalizeHymn(hymn, `hymn-${index}`)));
+    return normalizeHymnGroups(uniqueHymnIds(
+      savedHymns.map((hymn, index) => normalizeHymn(hymn, `hymn-${index}`)),
+    ));
   }
 
   const isLegacyHymn = ["lyrics", "videoInput", "videoId", "highlights"].some(

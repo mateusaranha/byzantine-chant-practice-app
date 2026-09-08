@@ -1,14 +1,15 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import CloudLibrary from "./CloudLibrary";
 import HelpDialog from "./HelpDialog";
+import HymnGroupList from "./HymnGroupList";
 import PdfExportDialog, { DEFAULT_PDF_EXPORT_SETTINGS } from "./PdfExportDialog";
 import ReorderHymnsDialog from "./ReorderHymnsDialog";
 import type { HelpPage } from "./HelpDialog";
 import type { PdfExportSettings } from "./PdfExportDialog";
 import {
-  moveHymn,
   newHymn,
   normalizeHymn,
+  normalizeHymnGroups,
   readWorkspace,
   restoreHymns,
   writeWorkspace,
@@ -1323,14 +1324,17 @@ function LocalWorkspace() {
           hymns={hymns}
           onClose={() => setCloudOpen(false)}
           onLoad={(savedHymns, title) => {
-            setHymns(savedHymns.map((hymn, index) => normalizeHymn(hymn, `hymn-${index}`)));
+            setHymns(normalizeHymnGroups(
+              savedHymns.map((hymn, index) => normalizeHymn(hymn, `hymn-${index}`)),
+            ));
             document.title = `${title} · Psaltikon`;
           }}
         />
       )}
 
-      <div className="hymn-list">
-        {hymns.map((hymn, index) => (
+      <HymnGroupList
+        hymns={hymns}
+        renderHymn={(hymn, index) => (
           <HymnWorkspace
             key={hymn.id}
             hymn={hymn}
@@ -1344,14 +1348,16 @@ function LocalWorkspace() {
             onHymnPanelOpenChange={(open) => setHymnPanelOpen(hymn.id, open)}
             onChange={updateHymn}
             onOpenGuide={(trigger) => setHelp({ page: "guide", trigger })}
-            onDelete={() => setHymns((current) => current.filter((item) => item.id !== hymn.id))}
+            onDelete={() => setHymns((current) => normalizeHymnGroups(
+              current.filter((item) => item.id !== hymn.id),
+            ))}
             previousHymnsCollapsed={
               index > 0 && hymns.slice(0, index).every((previous) => collapsedHymnIds.has(previous.id))
             }
             onTogglePrevious={index > 0 ? () => togglePreviousHymns(hymn.id) : undefined}
           />
-        ))}
-      </div>
+        )}
+      />
 
       <div className="hymn-list-actions" ref={hymnListActionsRef}>
         <button className="add-hymn" onClick={addHymn}>
@@ -1407,11 +1413,11 @@ function LocalWorkspace() {
         <ReorderHymnsDialog
           hymns={hymns}
           trigger={reorderTrigger}
-          onMove={(id, direction) => setHymns((current) => moveHymn(current, id, direction))}
+          onChange={setHymns}
           onDeleteSelected={(ids) => setHymns((current) => {
             const selectedIds = new Set(ids);
             if (!selectedIds.size || selectedIds.size >= current.length) return current;
-            return current.filter((hymn) => !selectedIds.has(hymn.id));
+            return normalizeHymnGroups(current.filter((hymn) => !selectedIds.has(hymn.id)));
           })}
           onClose={() => setReorderTrigger(null)}
         />
@@ -1534,15 +1540,16 @@ function SharedWorkspace({ route }: { route: SharedRoute }) {
         )}
         {copyError && <p role="alert">{copyError}</p>}
       </section>
-      <div className="hymn-list">
-        {hymns.map((hymn, index) => (
+      <HymnGroupList
+        hymns={hymns}
+        renderHymn={(hymn, index) => (
           <HymnWorkspace key={hymn.id} hymn={hymn} index={index} canDelete={false}
             printRequest={printRequest} printSettings={printSettings}
             onChange={(updated) => setHymns((current) => current.map((item) => item.id === updated.id ? updated : item))}
             onDelete={() => {}}
             onOpenGuide={(trigger) => setHelp({ page: "guide", trigger })} />
-        ))}
-      </div>
+        )}
+      />
       <footer>
         <span>Ἄσωμεν τῷ Κυρίῳ · Um espaço tranquilo para a prática diária</span>
         <button

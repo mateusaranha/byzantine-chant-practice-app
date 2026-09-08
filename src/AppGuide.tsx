@@ -28,6 +28,18 @@ export default function AppGuide() {
         </p>
       </HelpSection>
 
+      <HelpSection title="Organizar hinos e grupos">
+        <p>
+          <strong>Organizar hinos</strong> permite alterar a ordem com as setas e selecionar vários hinos. Com dois ou mais selecionados, use <strong>Criar grupo</strong> e dê um nome ao conjunto de itens relacionados. A organização é salva automaticamente junto com os hinos.
+        </p>
+        <p>
+          Dentro desse diálogo, um grupo pode ser movido como uma unidade, renomeado ou desfeito. Seus hinos também podem ser reordenados, removidos do grupo ou acrescentados a outro grupo sem duplicar nem apagar o conteúdo.
+        </p>
+        <p>
+          Na tela de estudo, um grupo fechado aparece como uma pilha compacta com o nome e a quantidade de itens. Clique ou toque nela para expandir os hinos no mesmo espaço e use o mesmo controle para recolhê-los novamente.
+        </p>
+      </HelpSection>
+
       <HelpSection title="Exportar PDF para leitura ou impressão">
         <p>
           <strong>Exportar PDF para celular</strong> prepara os hinos para leitura, impressão ou consulta em outro aparelho, sem os controles da interface. O documento preserva títulos, modos e a ordem dos hinos, mas não inclui os vídeos e não substitui uma cópia de segurança: ele não pode ser importado para recuperar seu espaço.
