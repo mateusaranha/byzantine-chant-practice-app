@@ -1,22 +1,22 @@
-const PATCH_MARKER = "__psaltikonGranularPlaybackPatched" as const;
-const GRANULAR_STEP = 0.05;
-const FALLBACK_MIN_RATE = 0.25;
-const FALLBACK_MAX_RATE = 2;
-const EPSILON = 0.001;
-const VERIFY_DELAY_MS = 180;
+import "./playbackSpeedObserver.css";
 
-type PlayerStateEvent = { data: number };
+const PATCH_MARKER = "__psaltikonPlaybackObserverPatched" as const;
+const EPSILON = 0.001;
+
+type PlayerEvent = { data: number };
+type PlayerReadyEvent = { target: PlayerLike };
 
 type PlayerLike = {
-  getAvailablePlaybackRates: () => number[];
-  getPlaybackRate: () => number;
-  getPlayerState?: () => number;
-  setPlaybackRate: (rate: number) => void;
+  destroy?: () => void;
+  getPlaybackRate?: () => number;
 };
 
 type PlayerOptions = {
   events?: {
-    onStateChange?: (event: PlayerStateEvent) => void;
+    onReady?: (event: PlayerReadyEvent) => void;
+    onError?: () => void;
+    onStateChange?: (event: PlayerEvent) => void;
+    onPlaybackRateChange?: (event: PlayerEvent) => void;
     [key: string]: unknown;
   };
   [key: string]: unknown;
@@ -37,54 +37,49 @@ type PsaltikonWindow = {
   onYouTubeIframeAPIReady?: () => void;
 };
 
-function sameRate(a: number, b: number) {
-  return Math.abs(a - b) < EPSILON;
+function parseDesiredRate(control: HTMLElement) {
+  const text = control.querySelector(".speed-stepper output")?.textContent || "";
+  const parsed = Number.parseFloat(text.replace(",", "."));
+  return Number.isFinite(parsed) ? parsed : null;
 }
 
-function validRates(rates: number[]) {
-  return [...new Set(rates.filter((rate) => Number.isFinite(rate) && rate > 0))].sort((a, b) => a - b);
+function formatRate(rate: number) {
+  return `${rate.toFixed(2)}×`;
 }
 
-function granularRange(min: number, max: number, nativeRates: number[] = []) {
-  const granular = new Set(nativeRates);
-  const firstStep = Math.ceil((min - EPSILON) / GRANULAR_STEP);
-  const lastStep = Math.floor((max + EPSILON) / GRANULAR_STEP);
+function updateObservedLabel(control: HTMLElement, rate: number) {
+  if (!Number.isFinite(rate) || rate <= 0) return;
+  const copy = control.querySelector<HTMLElement>(".speed-copy");
+  if (!copy) return;
 
-  for (let step = firstStep; step <= lastStep; step += 1) {
-    granular.add(Math.round(step * GRANULAR_STEP * 100) / 100);
+  const desired = parseDesiredRate(control);
+  const matches = desired !== null && Math.abs(desired - rate) < EPSILON;
+  const message = matches
+    ? `Vídeo agora: ${formatRate(rate)} · corresponde à sugestão`
+    : `Vídeo agora: ${formatRate(rate)} · ajuste no player`;
+
+  copy.dataset.videoSpeed = message;
+  copy.dataset.videoSpeedMatch = matches ? "true" : "false";
+
+  if (!control.dataset.baseAriaLabel) {
+    control.dataset.baseAriaLabel = control.getAttribute("aria-label") || "Velocidade de treino";
   }
-
-  return [...granular].sort((a, b) => a - b);
+  control.setAttribute("aria-label", `${control.dataset.baseAriaLabel}. ${message}.`);
 }
 
-export function granularPlaybackRates(rates: number[]) {
-  const nativeRates = validRates(rates);
-
-  // The current embedded player can temporarily report only [1] through the
-  // public IFrame API even though its own speed slider remains available from
-  // 0.25x to 2x. Returning only [1] here makes Psaltikon disable both +/-
-  // buttons after a native speed change such as 1.25x. Keep the historical
-  // Psaltikon range as a defensive fallback until YouTube exposes the finer
-  // values consistently through getAvailablePlaybackRates().
-  if (nativeRates.length <= 1) {
-    return granularRange(FALLBACK_MIN_RATE, FALLBACK_MAX_RATE, nativeRates);
+function clearObservedLabel(control: HTMLElement | null) {
+  if (!control) return;
+  const copy = control.querySelector<HTMLElement>(".speed-copy");
+  if (copy) {
+    delete copy.dataset.videoSpeed;
+    delete copy.dataset.videoSpeedMatch;
   }
-
-  return granularRange(nativeRates[0], nativeRates[nativeRates.length - 1], nativeRates);
+  if (control.dataset.baseAriaLabel) {
+    control.setAttribute("aria-label", control.dataset.baseAriaLabel);
+  }
 }
 
-function nativeFallback(rates: number[], before: number, requested: number) {
-  const nativeRates = validRates(rates);
-  if (requested > before + EPSILON) {
-    return nativeRates.find((rate) => rate > before + EPSILON) ?? before;
-  }
-  if (requested < before - EPSILON) {
-    return [...nativeRates].reverse().find((rate) => rate < before - EPSILON) ?? before;
-  }
-  return before;
-}
-
-function installGranularPlaybackCompatibility() {
+function installPlaybackObserver() {
   const psaltikonWindow = window as unknown as PsaltikonWindow;
   const yt = psaltikonWindow.YT;
   const OriginalPlayer = yt?.Player;
@@ -92,65 +87,73 @@ function installGranularPlaybackCompatibility() {
 
   const WrappedPlayer = function (element: HTMLElement, options: PlayerOptions) {
     let player: PlayerLike | null = null;
-    let nativeSetPlaybackRate: ((rate: number) => void) | null = null;
-    let nativeGetAvailablePlaybackRates: (() => number[]) | null = null;
-    let pendingRate: number | null = null;
-    let verificationTimer = 0;
+    let control: HTMLElement | null = null;
+    let desiredObserver: MutationObserver | null = null;
+    let lastObservedRate: number | null = null;
 
-    const verifyRequestedRate = (requested: number, before: number, fallbackRates: number[]) => {
-      window.clearTimeout(verificationTimer);
-      verificationTimer = window.setTimeout(() => {
-        if (!player || !nativeSetPlaybackRate) return;
-        const actual = player.getPlaybackRate();
-        if (sameRate(actual, requested)) {
-          pendingRate = null;
-          return;
-        }
+    const findControl = () => {
+      if (control?.isConnected) return control;
+      control = element.closest(".video-panel")?.querySelector<HTMLElement>(".speed-control") || null;
+      return control;
+    };
 
-        const fallback = nativeFallback(fallbackRates, before, requested);
-        pendingRate = null;
-        if (!sameRate(fallback, actual)) nativeSetPlaybackRate(fallback);
-      }, VERIFY_DELAY_MS);
+    const refreshLabel = () => {
+      const target = findControl();
+      if (target && lastObservedRate !== null) updateObservedLabel(target, lastObservedRate);
+    };
+
+    const readCurrentRate = (source: PlayerLike | null = player) => {
+      const rate = source?.getPlaybackRate?.();
+      if (typeof rate !== "number" || !Number.isFinite(rate) || rate <= 0) return;
+      lastObservedRate = rate;
+      refreshLabel();
+    };
+
+    const observeDesiredRate = () => {
+      desiredObserver?.disconnect();
+      const output = findControl()?.querySelector(".speed-stepper output");
+      if (!output) return;
+      desiredObserver = new MutationObserver(refreshLabel);
+      desiredObserver.observe(output, { childList: true, characterData: true, subtree: true });
     };
 
     const originalEvents = options.events || {};
+    const originalReady = originalEvents.onReady;
     const originalStateChange = originalEvents.onStateChange;
+    const originalPlaybackRateChange = originalEvents.onPlaybackRateChange;
+
     const wrappedEvents = {
       ...originalEvents,
-      onStateChange(event: PlayerStateEvent) {
+      onReady(event: PlayerReadyEvent) {
+        originalReady?.(event);
+        observeDesiredRate();
+        readCurrentRate(event.target);
+      },
+      onPlaybackRateChange(event: PlayerEvent) {
+        originalPlaybackRateChange?.(event);
+        if (Number.isFinite(event.data) && event.data > 0) {
+          lastObservedRate = event.data;
+          refreshLabel();
+        } else {
+          readCurrentRate();
+        }
+      },
+      onStateChange(event: PlayerEvent) {
         originalStateChange?.(event);
-        if (event.data !== 1 || pendingRate === null || !player || !nativeSetPlaybackRate || !nativeGetAvailablePlaybackRates) return;
-
-        const requested = pendingRate;
-        const before = player.getPlaybackRate();
-        const fallbackRates = nativeGetAvailablePlaybackRates();
-        nativeSetPlaybackRate(requested);
-        verifyRequestedRate(requested, before, fallbackRates);
+        readCurrentRate();
       },
     };
 
     player = new OriginalPlayer(element, { ...options, events: wrappedEvents });
-    nativeSetPlaybackRate = player.setPlaybackRate.bind(player);
-    nativeGetAvailablePlaybackRates = player.getAvailablePlaybackRates.bind(player);
 
-    player.getAvailablePlaybackRates = () => granularPlaybackRates(nativeGetAvailablePlaybackRates!());
-    player.setPlaybackRate = (requested: number) => {
-      if (!nativeSetPlaybackRate || !nativeGetAvailablePlaybackRates || !player) return;
-      const before = player.getPlaybackRate();
-      const fallbackRates = nativeGetAvailablePlaybackRates();
-      const state = player.getPlayerState?.();
-      pendingRate = requested;
-      nativeSetPlaybackRate(requested);
-
-      // The current embedded YouTube player exposes a 0.05-step native slider,
-      // while getAvailablePlaybackRates() can still report only the older presets.
-      // Try the finer requested value first. If YouTube clamps/rejects it, fall back
-      // to the next native preset instead of leaving Psaltikon's control stuck.
-      // Requests made before first playback are retried once when PLAYING begins.
-      if (state === undefined || state === 1 || state === 2 || state === 3) {
-        verifyRequestedRate(requested, before, fallbackRates);
-      }
-    };
+    const nativeDestroy = player.destroy?.bind(player);
+    if (nativeDestroy) {
+      player.destroy = () => {
+        desiredObserver?.disconnect();
+        clearObservedLabel(findControl());
+        nativeDestroy();
+      };
+    }
 
     return player;
   } as unknown as PlayerConstructor;
@@ -166,7 +169,7 @@ if (typeof window !== "undefined") {
   const previousReady = psaltikonWindow.onYouTubeIframeAPIReady;
   psaltikonWindow.onYouTubeIframeAPIReady = () => {
     previousReady?.();
-    installGranularPlaybackCompatibility();
+    installPlaybackObserver();
   };
-  installGranularPlaybackCompatibility();
+  installPlaybackObserver();
 }
