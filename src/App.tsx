@@ -42,12 +42,16 @@ type ActiveTool =
   | "eraser"
   | null;
 type PlayerStateEvent = { data: number };
+type PlayerReadyEvent = { target: YouTubePlayer };
 type PlayerLoadStatus = "loading" | "ready" | "error";
 type YouTubePlayer = {
   destroy: () => void;
+  getAvailablePlaybackRates: () => number[];
+  getPlaybackRate: () => number;
   pauseVideo: () => void;
   playVideo: () => void;
   seekTo: (seconds: number, allowSeekAhead: boolean) => void;
+  setPlaybackRate: (rate: number) => void;
 };
 
 type HistoryEntry = {
@@ -64,9 +68,10 @@ declare global {
           videoId: string;
           playerVars: Record<string, number>;
           events: {
-            onReady?: () => void;
+            onReady?: (event: PlayerReadyEvent) => void;
             onError?: () => void;
             onStateChange: (event: PlayerStateEvent) => void;
+            onPlaybackRateChange?: (event: PlayerStateEvent) => void;
           };
         },
       ) => YouTubePlayer;
@@ -152,6 +157,18 @@ function youtubeId(value: string) {
   } catch {
     return "";
   }
+}
+
+function supportedPlaybackRates(rates: number[]) {
+  const supported = [...new Set(rates.filter((rate) => Number.isFinite(rate) && rate > 0))]
+    .sort((a, b) => a - b);
+  return supported.length ? supported : [1];
+}
+
+function closestPlaybackRateIndex(rates: number[], target: number) {
+  if (!rates.length) return -1;
+  return rates.reduce((bestIndex, rate, index) =>
+    Math.abs(rate - target) < Math.abs(rates[bestIndex] - target) ? index : bestIndex, 0);
 }
 
 function subtractRange<T extends { start: number; end: number }>(
@@ -265,9 +282,11 @@ function HymnWorkspace({
   const [transliterated, setTransliterated] = useState(false);
   const [playerStatus, setPlayerStatus] = useState<PlayerLoadStatus>("loading");
   const [playerAttempt, setPlayerAttempt] = useState(0);
+  const [availablePlaybackRates, setAvailablePlaybackRates] = useState<number[]>([1]);
   const lyricsRef = useRef<HTMLDivElement>(null);
   const playerHostRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<YouTubePlayer | null>(null);
+  const hymnRef = useRef(hymn);
   const repeatModeRef = useRef<RepeatMode>(hymn.repeatMode);
   const repeatsDoneRef = useRef(0);
   const toolsId = `hymn-tools-${hymn.id}`;
@@ -275,6 +294,18 @@ function HymnWorkspace({
   const workspaceId = `hymn-workspace-${hymn.id}`;
   const previousHymnsAction = previousHymnsCollapsed ? "Expandir anteriores" : "Recolher anteriores";
   const previousHymnsShortAction = previousHymnsCollapsed ? "Expandir ant." : "Recolher ant.";
+
+  function persistPlaybackRate(rate: number) {
+    const current = hymnRef.current;
+    if (Math.abs(current.targetSpeed - rate) < 0.001) return;
+    const updated = { ...current, targetSpeed: rate };
+    hymnRef.current = updated;
+    onChange(updated);
+  }
+
+  useEffect(() => {
+    hymnRef.current = hymn;
+  }, [hymn]);
 
   useEffect(() => {
     if (printRequest > 0) setEditing(false);
@@ -290,10 +321,16 @@ function HymnWorkspace({
     let cancelled = false;
     let readyTimeout = 0;
     setPlayerStatus("loading");
+    setAvailablePlaybackRates([1]);
 
-    const markReady = () => {
+    const markReady = ({ target }: PlayerReadyEvent) => {
       if (cancelled) return;
       window.clearTimeout(readyTimeout);
+      const rates = supportedPlaybackRates(target.getAvailablePlaybackRates());
+      const preferredRate = rates[closestPlaybackRateIndex(rates, hymnRef.current.targetSpeed)] ?? 1;
+      setAvailablePlaybackRates(rates);
+      persistPlaybackRate(preferredRate);
+      target.setPlaybackRate(preferredRate);
       setPlayerStatus("ready");
     };
     const markError = () => {
@@ -314,6 +351,12 @@ function HymnWorkspace({
         events: {
           onReady: markReady,
           onError: markError,
+          onPlaybackRateChange: ({ data }) => {
+            if (cancelled) return;
+            const player = playerRef.current;
+            if (player) setAvailablePlaybackRates(supportedPlaybackRates(player.getAvailablePlaybackRates()));
+            persistPlaybackRate(data);
+          },
           onStateChange: ({ data }) => {
             if (data !== 0 || !playerRef.current) return;
             const mode = repeatModeRef.current;
@@ -461,9 +504,21 @@ function HymnWorkspace({
     setPlayerAttempt((current) => current + 1);
   }
 
-  function changeTargetSpeed(amount: number) {
-    const next = Math.min(2, Math.max(0.25, Math.round((hymn.targetSpeed + amount) * 20) / 20));
-    onChange({ ...hymn, targetSpeed: next });
+  function changePlaybackRate(direction: -1 | 1) {
+    const player = playerRef.current;
+    if (!player || playerStatus !== "ready") return;
+    const rates = supportedPlaybackRates(player.getAvailablePlaybackRates());
+    const currentIndex = closestPlaybackRateIndex(rates, player.getPlaybackRate());
+    const nextRate = rates[currentIndex + direction];
+    setAvailablePlaybackRates(rates);
+    if (nextRate === undefined) return;
+    player.setPlaybackRate(nextRate);
+  }
+
+  function resetPlaybackRate() {
+    const player = playerRef.current;
+    if (!player || playerStatus !== "ready") return;
+    player.setPlaybackRate(1);
   }
 
   function toggleTools() {
@@ -506,6 +561,12 @@ function HymnWorkspace({
     }
     setMelismasVisible((visible) => !visible);
   }
+
+  const playbackRateIndex = closestPlaybackRateIndex(availablePlaybackRates, hymn.targetSpeed);
+  const playbackControlsReady = Boolean(hymn.videoId && playerStatus === "ready" && playerRef.current);
+  const canDecreasePlaybackRate = playbackControlsReady && playbackRateIndex > 0;
+  const canIncreasePlaybackRate = playbackControlsReady && playbackRateIndex >= 0
+    && playbackRateIndex < availablePlaybackRates.length - 1;
 
   return (
     <section
@@ -968,36 +1029,35 @@ function HymnWorkspace({
             )}
           </div>
 
-          <div className="speed-control" aria-label={`Velocidade de treino desejada para o hino ${index + 1}`}>
+          <div className="speed-control" aria-label={`Velocidade do vídeo para o hino ${index + 1}`}>
             <div className="speed-copy">
-              <span>Velocidade de treino desejada</span>
-              <p>Ajuste o vídeo do YouTube para este valor antes de praticar.</p>
+              <span>Velocidade do vídeo</span>
+              <p>A velocidade é aplicada automaticamente ao vídeo e salva neste hino.</p>
             </div>
             <div className="speed-stepper">
               <button
-                onClick={() => changeTargetSpeed(-0.05)}
-                disabled={hymn.targetSpeed <= 0.25}
-                aria-label="Diminuir a velocidade de treino em 0,05"
+                onClick={() => changePlaybackRate(-1)}
+                disabled={!canDecreasePlaybackRate}
+                aria-label="Diminuir a velocidade do vídeo"
               >
                 −
               </button>
               <output aria-live="polite">{hymn.targetSpeed.toFixed(2)}×</output>
               <button
-                onClick={() => changeTargetSpeed(0.05)}
-                disabled={hymn.targetSpeed >= 2}
-                aria-label="Aumentar a velocidade de treino em 0,05"
+                onClick={() => changePlaybackRate(1)}
+                disabled={!canIncreasePlaybackRate}
+                aria-label="Aumentar a velocidade do vídeo"
               >
                 +
               </button>
-              {hymn.targetSpeed !== 1 && (
-                <button
-                  className="speed-reset"
-                  onClick={() => onChange({ ...hymn, targetSpeed: 1 })}
-                  aria-label="Restaurar a velocidade de treino original"
-                >
-                  Restaurar
-                </button>
-              )}
+              <button
+                className="speed-reset"
+                onClick={resetPlaybackRate}
+                disabled={!playbackControlsReady || Math.abs(hymn.targetSpeed - 1) < 0.001}
+                aria-label="Restaurar a velocidade normal"
+              >
+                Restaurar
+              </button>
             </div>
           </div>
 
