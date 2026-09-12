@@ -22,11 +22,6 @@
       "source": {
         "path": "hinos/mateusaranha/paraclisis.json"
       }
-    },
-    {
-      "id": "oficios-e-ocasioes-teste",
-      "label": "teste",
-      "categoryId": "oficios-e-ocasioes"
     }
   ]
 }
