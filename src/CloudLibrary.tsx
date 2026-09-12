@@ -3,6 +3,7 @@ import rawCatalog from "../catalog/curated.json";
 import type { Hymn } from "./hymnState";
 import { libraryItemLabel, nextLibrarySort, sortLibraryItems } from "./librarySort";
 import type { LibrarySort } from "./librarySort";
+import { findOwnPublicationByName } from "./libraryUpdateTarget";
 import { readPublishedSet } from "./sharedHymns";
 import ShareDialog from "./ShareDialog";
 import CuratedLibrary from "./CuratedLibrary";
@@ -413,21 +414,55 @@ export default function CloudLibrary({
       setError("Escolha uma subcategoria desta categoria ou informe o nome de uma nova subcategoria.");
       return;
     }
-    const savedTitle = savedSet?.title || "";
-    const updatesOwnSet = Boolean(savedSet?.slug && savedSet.owner === session?.user.login);
-    const createsNewSet = mode === "new" || !updatesOwnSet;
-    if (updatesOwnSet && !createsNewSet) {
+
+    const ownsRememberedSet = Boolean(savedSet?.slug && savedSet.owner === session?.user.login);
+    const detectedOwnItem = !ownsRememberedSet && session?.user.login
+      ? findOwnPublicationByName(items, session.user.login, name, slugify(name))
+      : null;
+    const updateTarget: SavedSetContext | null = ownsRememberedSet
+      ? savedSet
+      : detectedOwnItem
+        ? {
+            owner: detectedOwnItem.owner,
+            slug: detectedOwnItem.slug,
+            path: detectedOwnItem.path,
+            title: detectedOwnItem.title || name,
+          }
+        : null;
+    let createsNewSet = mode === "new" || !updateTarget;
+
+    if (updateTarget && !createsNewSet) {
+      const recoveredAfterReload = !ownsRememberedSet;
       const confirmed = window.confirm(
-        savedTitle && savedTitle !== name
-          ? `Atualizar “${savedTitle}” e alterar seu nome para “${name}”?`
-          : `Atualizar “${savedTitle || name}” com o conteúdo atual?`,
+        recoveredAfterReload
+          ? `Já existe um conjunto seu chamado “${updateTarget.title || name}”. Atualizar esse conjunto com o conteúdo atual?`
+          : updateTarget.title && updateTarget.title !== name
+            ? `Atualizar “${updateTarget.title}” e alterar seu nome para “${name}”?`
+            : `Atualizar “${updateTarget.title || name}” com o conteúdo atual?`,
       );
       if (!confirmed) return;
     }
-    const slug = createsNewSet ? slugify(name) : savedSet?.slug || slugify(name);
+
+    const slug = createsNewSet ? slugify(name) : updateTarget?.slug || slugify(name);
     void run("save", async () => {
       // Curated-only starts listed as a safe fallback. It is hidden only after promotion succeeds.
-      const saved = await publishBase(name, slug, true, createsNewSet);
+      let saved: { path: string };
+      try {
+        saved = await publishBase(name, slug, true, createsNewSet);
+      } catch (publishError) {
+        const duplicateOwnSet = mode === "primary"
+          && createsNewSet
+          && publishError instanceof Error
+          && publishError.message.startsWith("Já existe um conjunto com esse nome.");
+        if (!duplicateOwnSet) throw publishError;
+        const confirmed = window.confirm(
+          `Já existe um conjunto seu chamado “${name}”. Atualizar esse conjunto com o conteúdo atual?`,
+        );
+        if (!confirmed) return;
+        createsNewSet = false;
+        saved = await publishBase(name, slug, true, false);
+      }
+
       rememberSavedSet({
         slug,
         owner: session?.user.login || "",
@@ -475,9 +510,7 @@ export default function CloudLibrary({
         setMessage(
           createsNewSet
             ? `Novo conjunto “${name}” salvo em Meus conjuntos.`
-            : updatesOwnSet
-              ? `Publicação “${name}” atualizada com sucesso.`
-              : "Conjunto salvo em Meus conjuntos. O histórico anterior foi preservado.",
+            : `Publicação “${name}” atualizada com sucesso.`,
         );
       }
       await refreshLibrary();
@@ -525,9 +558,13 @@ export default function CloudLibrary({
     });
   }
 
+  const rememberedOwnSet = Boolean(savedSet?.slug && savedSet.owner === session?.user.login);
+  const detectedOwnSet = !rememberedOwnSet && session?.user.login && collectionName.trim()
+    ? findOwnPublicationByName(items, session.user.login, collectionName, slugify(collectionName))
+    : null;
+  const updatesOwnSet = rememberedOwnSet || Boolean(detectedOwnSet);
   const canDelete = (item: LibraryItem) =>
     Boolean(session?.isApproved && (session.isAdmin || item.owner === session.user.login));
-  const updatesOwnSet = Boolean(savedSet?.slug && savedSet.owner === session?.user.login);
   const curatedTargetReady = !wantsCurated || Boolean(
     curatedCategoryId && (curatedSubcategoryId || (newSubcategoryOpen && newSubcategoryName.trim())),
   );
