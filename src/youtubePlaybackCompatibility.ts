@@ -87,13 +87,18 @@ function installPlaybackObserver() {
 
   const WrappedPlayer = function (element: HTMLElement, options: PlayerOptions) {
     let player: PlayerLike | null = null;
-    let control: HTMLElement | null = null;
+
+    // YouTube replaces the mount element with its iframe during construction.
+    // Keep the surrounding panel before that happens so the observer can still
+    // find Psaltikon's speed UI when onReady/onPlaybackRateChange fire later.
+    const videoPanel = element.closest<HTMLElement>(".video-panel");
+    let control: HTMLElement | null = videoPanel?.querySelector<HTMLElement>(".speed-control") || null;
     let desiredObserver: MutationObserver | null = null;
     let lastObservedRate: number | null = null;
 
     const findControl = () => {
       if (control?.isConnected) return control;
-      control = element.closest(".video-panel")?.querySelector<HTMLElement>(".speed-control") || null;
+      control = videoPanel?.querySelector<HTMLElement>(".speed-control") || null;
       return control;
     };
 
