@@ -21,10 +21,10 @@ export default function AppGuide() {
           Salvar automaticamente no navegador não é o mesmo que publicar em <strong>Meus conjuntos</strong> ou na <strong>Biblioteca curada</strong>. O trabalho local continua separado das versões públicas até que você escolha publicá-las.
         </p>
         <p>
-          <strong>Exportar cópia de segurança</strong> baixa um arquivo com todos os hinos do seu espaço e seus dados de estudo. Guarde-o em um local conhecido para recuperar o trabalho, levá-lo a outro dispositivo ou se proteger antes de uma mudança importante. A exportação não precisa de login e não publica nem compartilha os hinos.
+          Em <strong>Mais ações (⋯)</strong>, <strong>Exportar cópia de segurança</strong> baixa um arquivo com todos os hinos do seu espaço e seus dados de estudo. Guarde-o em um local conhecido para recuperar o trabalho, levá-lo a outro dispositivo ou se proteger antes de uma mudança importante. A exportação não precisa de login e não publica nem compartilha os hinos.
         </p>
         <p>
-          <strong>Importar cópia de segurança</strong> recupera um arquivo exportado pelo Psaltikon. Depois de validar o arquivo e pedir confirmação, a importação substitui todos os hinos que estão no espaço atual. Se quiser conservar o trabalho atual, exporte uma cópia dele antes de importar outra.
+          No mesmo menu, <strong>Importar cópia de segurança</strong> recupera um arquivo exportado pelo Psaltikon. Depois de validar o arquivo e pedir confirmação, a importação substitui todos os hinos que estão no espaço atual. Se quiser conservar o trabalho atual, exporte uma cópia dele antes de importar outra.
         </p>
       </HelpSection>
 
@@ -42,7 +42,7 @@ export default function AppGuide() {
 
       <HelpSection title="Exportar PDF para leitura ou impressão">
         <p>
-          <strong>Exportar PDF para celular</strong> prepara os hinos para leitura, impressão ou consulta em outro aparelho, sem os controles da interface. O documento preserva títulos, modos e a ordem dos hinos, mas não inclui os vídeos e não substitui uma cópia de segurança: ele não pode ser importado para recuperar seu espaço.
+          Em <strong>Mais ações (⋯)</strong>, <strong>Exportar PDF para celular</strong> prepara os hinos para leitura, impressão ou consulta em outro aparelho, sem os controles da interface. O documento preserva títulos, modos e a ordem dos hinos, mas não inclui os vídeos e não substitui uma cópia de segurança: ele não pode ser importado para recuperar seu espaço.
         </p>
         <p>
           Em <strong>Como está na tela</strong>, cada hino respeita a leitura grega ou transliterada escolhida na interface. Você também pode exportar todos em <strong>Grego</strong>, todos em <strong>Transliterado</strong> ou usar <strong>Grego e transliterado</strong>. Na última opção, as duas leituras ficam agrupadas por hino, e a segunda começa em uma nova página.
