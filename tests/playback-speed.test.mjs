@@ -2,28 +2,25 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
 
-test("training speed controls drive and persist the real YouTube playback rate", async () => {
+test("training speed remains a saved 0.05-step practice suggestion", async () => {
   const source = await readFile(new URL("../src/App.tsx", import.meta.url), "utf8");
 
-  assert.match(source, /getAvailablePlaybackRates: \(\) => number\[\]/);
-  assert.match(source, /getPlaybackRate: \(\) => number/);
-  assert.match(source, /setPlaybackRate: \(rate: number\) => void/);
-  assert.match(source, /onPlaybackRateChange:/);
-  assert.match(source, /persistPlaybackRate\(data\)/);
-  assert.match(source, /target\.setPlaybackRate\(preferredRate\)/);
-  assert.match(source, /player\.setPlaybackRate\(nextRate\)/);
-  assert.match(source, /player\.setPlaybackRate\(1\)/);
-  assert.match(source, /A velocidade é aplicada automaticamente ao vídeo e salva neste hino\./);
+  assert.match(source, /function changeTargetSpeed\(amount: number\)/);
+  assert.match(source, /Math\.round\(\(hymn\.targetSpeed \+ amount\) \* 20\) \/ 20/);
+  assert.match(source, /onClick=\{\(\) => changeTargetSpeed\(-0\.05\)\}/);
+  assert.match(source, /onClick=\{\(\) => changeTargetSpeed\(0\.05\)\}/);
+  assert.match(source, /Velocidade de treino desejada/);
+  assert.match(source, /Ajuste o vídeo do YouTube para este valor antes de praticar\./);
+  assert.doesNotMatch(source, /setPlaybackRate/);
 });
 
-test("speed controls use the video's supported rates and never move the reset action", async () => {
+test("training speed keeps historical bounds and the reset slot is visually stable", async () => {
   const source = await readFile(new URL("../src/App.tsx", import.meta.url), "utf8");
+  const styles = await readFile(new URL("../src/playbackSpeedObserver.css", import.meta.url), "utf8");
 
-  assert.match(source, /supportedPlaybackRates\(target\.getAvailablePlaybackRates\(\)\)/);
-  assert.match(source, /closestPlaybackRateIndex\(rates, hymnRef\.current\.targetSpeed\)/);
-  assert.match(source, /disabled=\{!canDecreasePlaybackRate\}/);
-  assert.match(source, /disabled=\{!canIncreasePlaybackRate\}/);
-  assert.match(source, /className="speed-reset"[\s\S]*?disabled=\{!playbackControlsReady \|\| Math\.abs\(hymn\.targetSpeed - 1\) < 0\.001\}/);
-  assert.doesNotMatch(source, /\{hymn\.targetSpeed !== 1 && \(\s*<button\s+className="speed-reset"/);
-  assert.doesNotMatch(source, /changeTargetSpeed/);
+  assert.match(source, /Math\.min\(2, Math\.max\(0\.25,/);
+  assert.match(source, /disabled=\{hymn\.targetSpeed <= 0\.25\}/);
+  assert.match(source, /disabled=\{hymn\.targetSpeed >= 2\}/);
+  assert.match(styles, /\.speed-stepper:not\(:has\(\.speed-reset\)\)::after/);
+  assert.match(styles, /content: "Restaurar"/);
 });
