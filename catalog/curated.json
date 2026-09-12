@@ -43,10 +43,7 @@
     {
       "id": "testea-testecop",
       "label": "testeCop",
-      "categoryId": "testea",
-      "source": {
-        "path": "hinos/mateusaranha/conjuntob.json"
-      }
+      "categoryId": "testea"
     }
   ]
 }
