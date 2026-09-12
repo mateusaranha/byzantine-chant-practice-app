@@ -366,8 +366,8 @@ test("the production build contains the app shell and migration features", async
   assert.match(source, /if \(!coloursVisible && \(isColourTool\(activeTool\) \|\| activeTool === "eraser"\)\) return;/);
   assert.match(source, /if \(!melismasVisible && \(isMelismaTool\(activeTool\) \|\| activeTool === "eraser"\)\) return;/);
   assert.match(source, /if \(toolsOpen\) setActiveTool\(null\)/);
-  assert.match(source, /const \[coloursVisible, setColoursVisible\] = useState\(true\)/);
-  assert.match(source, /const \[melismasVisible, setMelismasVisible\] = useState\(true\)/);
+  assert.match(source, /persistTrainingVisibility \? readTrainingVisibility\(localStorage, hymn\.id\)\.coloursVisible : true/);
+  assert.match(source, /persistTrainingVisibility \? readTrainingVisibility\(localStorage, hymn\.id\)\.melismasVisible : true/);
   assert.match(source, /disabled=\{!coloursVisible\}/);
   assert.match(source, /disabled=\{!melismasVisible\}/);
   assert.match(source, /aria-expanded=\{toolsOpen\}/);

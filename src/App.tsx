@@ -25,9 +25,11 @@ import {
 import {
   readHymnPanelOpen,
   readToolsPanelOpen,
+  readTrainingVisibility,
   writeHymnPanelOpen,
   writeHymnPanelsOpen,
   writeToolsPanelOpen,
+  writeTrainingVisibility,
 } from "./workspacePreferences";
 import "./hymnCollapse.css";
 
@@ -226,6 +228,7 @@ function HymnWorkspace({
   printSettings,
   persistToolsPanel = false,
   persistHymnPanel = false,
+  persistTrainingVisibility = false,
   hymnPanelOpen: controlledHymnPanelOpen,
   onHymnPanelOpenChange,
   onChange,
@@ -241,6 +244,7 @@ function HymnWorkspace({
   printSettings: PdfExportSettings;
   persistToolsPanel?: boolean;
   persistHymnPanel?: boolean;
+  persistTrainingVisibility?: boolean;
   hymnPanelOpen?: boolean;
   onHymnPanelOpenChange?: (open: boolean) => void;
   onChange: (hymn: Hymn) => void;
@@ -260,8 +264,12 @@ function HymnWorkspace({
     persistHymnPanel ? readHymnPanelOpen(localStorage, hymn.id) : true,
   );
   const hymnPanelOpen = controlledHymnPanelOpen ?? localHymnPanelOpen;
-  const [coloursVisible, setColoursVisible] = useState(true);
-  const [melismasVisible, setMelismasVisible] = useState(true);
+  const [coloursVisible, setColoursVisible] = useState(() =>
+    persistTrainingVisibility ? readTrainingVisibility(localStorage, hymn.id).coloursVisible : true,
+  );
+  const [melismasVisible, setMelismasVisible] = useState(() =>
+    persistTrainingVisibility ? readTrainingVisibility(localStorage, hymn.id).melismasVisible : true,
+  );
   const [transliterated, setTransliterated] = useState(false);
   const [playerStatus, setPlayerStatus] = useState<PlayerLoadStatus>("loading");
   const [playerAttempt, setPlayerAttempt] = useState(0);
@@ -497,14 +505,28 @@ function HymnWorkspace({
     if (coloursVisible && (isColourTool(activeTool) || activeTool === "eraser")) {
       setActiveTool(null);
     }
-    setColoursVisible((visible) => !visible);
+    const nextVisible = !coloursVisible;
+    setColoursVisible(nextVisible);
+    if (persistTrainingVisibility) {
+      writeTrainingVisibility(localStorage, hymn.id, {
+        coloursVisible: nextVisible,
+        melismasVisible,
+      });
+    }
   }
 
   function toggleMelismas() {
     if (melismasVisible && (isMelismaTool(activeTool) || activeTool === "eraser")) {
       setActiveTool(null);
     }
-    setMelismasVisible((visible) => !visible);
+    const nextVisible = !melismasVisible;
+    setMelismasVisible(nextVisible);
+    if (persistTrainingVisibility) {
+      writeTrainingVisibility(localStorage, hymn.id, {
+        coloursVisible,
+        melismasVisible: nextVisible,
+      });
+    }
   }
 
   return (
@@ -1344,6 +1366,7 @@ function LocalWorkspace() {
             printSettings={printSettings}
             persistToolsPanel
             persistHymnPanel
+            persistTrainingVisibility
             hymnPanelOpen={!collapsedHymnIds.has(hymn.id)}
             onHymnPanelOpenChange={(open) => setHymnPanelOpen(hymn.id, open)}
             onChange={updateHymn}
