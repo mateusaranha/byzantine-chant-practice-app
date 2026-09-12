@@ -28,11 +28,6 @@
       }
     },
     {
-      "id": "testea-testeb",
-      "label": "testeB",
-      "categoryId": "testea"
-    },
-    {
       "id": "oficios-e-ocasioes-teste",
       "label": "teste",
       "categoryId": "oficios-e-ocasioes"
