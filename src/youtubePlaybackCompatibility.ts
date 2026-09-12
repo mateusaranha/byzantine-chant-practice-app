@@ -30,7 +30,7 @@ type YouTubeGlobal = {
   Player?: PlayerConstructor;
 };
 
-type PsaltikonWindow = typeof window & {
+type PsaltikonWindow = {
   YT?: YouTubeGlobal;
   onYouTubeIframeAPIReady?: () => void;
 };
@@ -72,7 +72,7 @@ function nativeFallback(rates: number[], before: number, requested: number) {
 }
 
 function installGranularPlaybackCompatibility() {
-  const psaltikonWindow = window as PsaltikonWindow;
+  const psaltikonWindow = window as unknown as PsaltikonWindow;
   const yt = psaltikonWindow.YT;
   const OriginalPlayer = yt?.Player;
   if (!yt || !OriginalPlayer || OriginalPlayer[PATCH_MARKER]) return;
@@ -149,7 +149,7 @@ function installGranularPlaybackCompatibility() {
 }
 
 if (typeof window !== "undefined") {
-  const psaltikonWindow = window as PsaltikonWindow;
+  const psaltikonWindow = window as unknown as PsaltikonWindow;
   const previousReady = psaltikonWindow.onYouTubeIframeAPIReady;
   psaltikonWindow.onYouTubeIframeAPIReady = () => {
     previousReady?.();
