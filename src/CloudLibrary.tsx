@@ -413,13 +413,14 @@ export default function CloudLibrary({
       setError("Escolha uma subcategoria desta categoria ou informe o nome de uma nova subcategoria.");
       return;
     }
+    const savedTitle = savedSet?.title || "";
     const updatesOwnSet = Boolean(savedSet?.slug && savedSet.owner === session?.user.login);
     const createsNewSet = mode === "new" || !updatesOwnSet;
     if (updatesOwnSet && !createsNewSet) {
       const confirmed = window.confirm(
-        savedSet?.title && savedSet.title !== name
-          ? `Atualizar “${savedSet.title}” e alterar seu nome para “${name}”?`
-          : `Atualizar “${savedSet?.title || name}” com o conteúdo atual?`,
+        savedTitle && savedTitle !== name
+          ? `Atualizar “${savedTitle}” e alterar seu nome para “${name}”?`
+          : `Atualizar “${savedTitle || name}” com o conteúdo atual?`,
       );
       if (!confirmed) return;
     }
