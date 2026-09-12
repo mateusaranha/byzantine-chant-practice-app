@@ -1,5 +1,6 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import CloudLibrary from "./CloudLibrary";
+import HeaderUtilityMenu from "./HeaderUtilityMenu";
 import HelpDialog from "./HelpDialog";
 import HymnGroupList from "./HymnGroupList";
 import PdfExportDialog, { DEFAULT_PDF_EXPORT_SETTINGS } from "./PdfExportDialog";
@@ -1276,22 +1277,17 @@ function LocalWorkspace() {
           <h1>Psaltikon</h1>
         </div>
         <div className="header-note">Escute · Leia · Repita</div>
-        <div className="header-actions">
+        <div className="header-actions workspace-header-actions">
           {PUBLISHER_API_URL && (
             <button className="backup-button cloud-trigger" onClick={() => setCloudOpen((open) => !open)}>
               Biblioteca online
             </button>
           )}
-          <button className="backup-button" onClick={exportBackup} title="Salvar todos os hinos e marcações em um arquivo">
-            Exportar cópia de segurança
-          </button>
-          <button
-            className="backup-button"
-            onClick={() => backupInputRef.current?.click()}
-            title="Substituir o espaço atual por uma cópia de segurança do Psaltikon"
-          >
-            Importar cópia de segurança
-          </button>
+          <HeaderUtilityMenu
+            onExportBackup={exportBackup}
+            onImportBackup={() => backupInputRef.current?.click()}
+            onExportPdf={(trigger) => setPdfTrigger(trigger)}
+          />
           <input
             ref={backupInputRef}
             className="backup-input"
@@ -1300,15 +1296,6 @@ function LocalWorkspace() {
             onChange={importBackup}
             aria-label="Importar cópia de segurança do Psaltikon"
           />
-          <button
-            className="export-pdf"
-            onClick={(event) => setPdfTrigger(event.currentTarget)}
-            title="PDF em formato vertical para leitura confortável no celular"
-            aria-haspopup="dialog"
-          >
-            <span aria-hidden="true">↓</span>
-            Exportar PDF para celular
-          </button>
         </div>
       </header>
 
