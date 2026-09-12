@@ -1,0 +1,28 @@
+.speed-copy[data-video-speed]::after {
+  content: attr(data-video-speed);
+  display: block;
+  margin-top: 6px;
+  color: #74685e;
+  font: 600 11px/1.45 Arial, sans-serif;
+}
+
+.speed-copy[data-video-speed-match="true"]::after {
+  color: #5f6e55;
+}
+
+.speed-stepper:not(:has(.speed-reset))::after {
+  content: "Restaurar";
+  min-width: 80px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  box-sizing: border-box;
+  border: 1px solid #cdbfae;
+  border-radius: 3px;
+  background: #fffdf8;
+  color: #8d302d;
+  padding: 0 9px;
+  opacity: .35;
+  font: 600 10px/1 Arial, sans-serif;
+  text-transform: uppercase;
+}
