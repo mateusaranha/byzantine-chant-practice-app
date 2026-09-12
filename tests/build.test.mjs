@@ -117,7 +117,6 @@ test("workspace storage reports unreadable data and never hides write failures",
   const ready = readWorkspace(storage);
   assert.equal(ready.status, "ready");
   assert.equal(ready.hymns.length, 1);
-
   values.set(WORKSPACE_KEY, "{arquivo interrompido");
   assert.deepEqual(readWorkspace(storage), { status: "unreadable", raw: "{arquivo interrompido" });
   assert.deepEqual(readWorkspace({ getItem: () => { throw new Error("blocked"); } }), {
@@ -382,8 +381,9 @@ test("the production build contains the app shell and migration features", async
   assert.match(source, /\{ version: 4, exportedAt: new Date\(\)\.toISOString\(\), hymns \}/);
   assert.match(librarySource, /JSON\.stringify\(\{ title: name, slug, hymns, listed, createOnly \}\)/);
   assert.match(librarySource, /onClick=\{\(\) => saveSet\("new"\)\}/);
-  assert.match(librarySource, /Atualizar “\$\{savedTitle\}” e alterar seu nome para “\$\{name\}”\?/);
-  assert.match(librarySource, /Atualizar “\$\{savedTitle \|\| name\}” com o conteúdo atual\?/);
+  assert.match(librarySource, /Atualizar “\$\{updateTarget\.title\}” e alterar seu nome para “\$\{name\}”\?/);
+  assert.match(librarySource, /Atualizar “\$\{updateTarget\.title \|\| name\}” com o conteúdo atual\?/);
+  assert.match(librarySource, /Já existe um conjunto seu chamado “\$\{updateTarget\.title \|\| name\}”\. Atualizar esse conjunto com o conteúdo atual\?/);
   assert.match(librarySource, /Novo conjunto “\$\{name\}” salvo em Meus conjuntos\./);
   assert.doesNotMatch(librarySource, /setCollectionName\(""\)/);
   assert.match(librarySource, /const published = readPublishedSet\(saved\)/);
