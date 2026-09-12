@@ -96,15 +96,15 @@ export function readCuratedCatalog(value: unknown): { catalog: CuratedCatalog; e
   return { catalog, errors };
 }
 
-export function curatedGroups(catalog: CuratedCatalog) {
+export function curatedGroups(catalog: CuratedCatalog, { includeEmpty = false }: { includeEmpty?: boolean } = {}) {
   return catalog.categories
     .map(category => ({
       ...category,
       subcategories: catalog.subcategories.filter(
-        subcategory => subcategory.categoryId === category.id && Boolean(subcategory.source),
+        subcategory => subcategory.categoryId === category.id && (includeEmpty || Boolean(subcategory.source)),
       ),
     }))
-    .filter(category => category.subcategories.length > 0);
+    .filter(category => includeEmpty || category.subcategories.length > 0);
 }
 
 export async function validateCuratedSources(
