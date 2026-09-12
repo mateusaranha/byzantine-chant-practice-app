@@ -46,9 +46,21 @@ type CuratedWrite = { changed: boolean; subcategory: CuratedCatalog["subcategori
 type CuratedCategoryWrite = { category: CuratedCatalog["categories"][number]; catalog: CuratedCatalog };
 type CuratedSubcategoryWrite = { subcategory: CuratedCatalog["subcategories"][number]; catalog: CuratedCatalog };
 type CuratedRemovalWrite = { changed?: boolean; relisted?: boolean; catalog: CuratedCatalog };
+type SavedSetContext = {
+  owner: string;
+  slug: string;
+  path: string;
+  title: string;
+};
 
 const SESSION_KEY = "psaltikon-publisher-session";
 const { catalog: initialCuratedCatalog } = readCuratedCatalog(rawCatalog);
+
+// CloudLibrary is unmounted when it is closed. Keep the identity of the loaded
+// publication in memory so reopening the library can update that exact set.
+// This deliberately resets on a full page reload instead of persisting stale
+// publication provenance beyond the current workspace session.
+let retainedSavedSet: SavedSetContext | null = null;
 
 function readStoredSession() {
   try {
@@ -117,11 +129,8 @@ export default function CloudLibrary({
   const [sessionChecked, setSessionChecked] = useState(false);
   const [items, setItems] = useState<LibraryItem[]>([]);
   const [libraryLoaded, setLibraryLoaded] = useState(false);
-  const [collectionName, setCollectionName] = useState("");
-  const [savedSlug, setSavedSlug] = useState("");
-  const [savedOwner, setSavedOwner] = useState("");
-  const [savedPath, setSavedPath] = useState("");
-  const [savedTitle, setSavedTitle] = useState("");
+  const [collectionName, setCollectionName] = useState(() => retainedSavedSet?.title || "");
+  const [savedSet, setSavedSet] = useState<SavedSetContext | null>(() => retainedSavedSet);
   const [saveDestination, setSaveDestination] = useState<SaveDestination>("sets");
   const [curatedCatalog, setCuratedCatalog] = useState<CuratedCatalog>(initialCuratedCatalog);
   const [curatedCategoryId, setCuratedCategoryId] = useState(() => initialCuratedCatalog.categories[0]?.id || "");
@@ -184,6 +193,11 @@ export default function CloudLibrary({
   function formattedDate(value?: string | null) {
     if (!value || !Number.isFinite(Date.parse(value))) return "";
     return new Intl.DateTimeFormat("pt-BR").format(new Date(value));
+  }
+
+  function rememberSavedSet(next: SavedSetContext | null) {
+    retainedSavedSet = next;
+    setSavedSet(next);
   }
 
   async function run(label: string, operation: () => Promise<void>) {
@@ -399,24 +413,26 @@ export default function CloudLibrary({
       setError("Escolha uma subcategoria desta categoria ou informe o nome de uma nova subcategoria.");
       return;
     }
-    const updatesOwnSet = Boolean(savedSlug && savedOwner === session?.user.login);
+    const updatesOwnSet = Boolean(savedSet?.slug && savedSet.owner === session?.user.login);
     const createsNewSet = mode === "new" || !updatesOwnSet;
     if (updatesOwnSet && !createsNewSet) {
       const confirmed = window.confirm(
-        savedTitle && savedTitle !== name
-          ? `Atualizar “${savedTitle}” e alterar seu nome para “${name}”?`
-          : `Atualizar “${savedTitle || name}” com o conteúdo atual?`,
+        savedSet?.title && savedSet.title !== name
+          ? `Atualizar “${savedSet.title}” e alterar seu nome para “${name}”?`
+          : `Atualizar “${savedSet?.title || name}” com o conteúdo atual?`,
       );
       if (!confirmed) return;
     }
-    const slug = createsNewSet ? slugify(name) : updatesOwnSet ? savedSlug : slugify(name);
+    const slug = createsNewSet ? slugify(name) : savedSet?.slug || slugify(name);
     void run("save", async () => {
       // Curated-only starts listed as a safe fallback. It is hidden only after promotion succeeds.
       const saved = await publishBase(name, slug, true, createsNewSet);
-      setSavedSlug(slug);
-      setSavedOwner(session?.user.login || "");
-      setSavedPath(saved.path);
-      setSavedTitle(name);
+      rememberSavedSet({
+        slug,
+        owner: session?.user.login || "",
+        path: saved.path,
+        title: name,
+      });
 
       if (wantsCurated) {
         try {
@@ -474,10 +490,12 @@ export default function CloudLibrary({
       if (!window.confirm(`Substituir o espaço atual pelo conjunto “${published.title}”?`)) return;
       onLoad(published.hymns, published.title);
       setCollectionName(published.title);
-      setSavedSlug(item.slug);
-      setSavedOwner(item.owner);
-      setSavedPath(item.path);
-      setSavedTitle(published.title);
+      rememberSavedSet({
+        slug: item.slug,
+        owner: item.owner,
+        path: item.path,
+        title: published.title,
+      });
       setMessage(`“${published.title}” foi carregado no espaço de trabalho atual.`);
     });
   }
@@ -486,6 +504,7 @@ export default function CloudLibrary({
     if (!window.confirm(`Excluir “${libraryItemLabel(item)}” da biblioteca do GitHub?`)) return;
     void run(`delete:${item.path}`, async () => {
       await api(apiBase, `/api/sets?path=${encodeURIComponent(item.path)}`, { method: "DELETE" }, token);
+      if (savedSet?.path === item.path) rememberSavedSet(null);
       await refreshLibrary();
       setMessage("Conjunto excluído da biblioteca. O histórico ainda pode ser recuperado pelo GitHub.");
     });
@@ -507,7 +526,7 @@ export default function CloudLibrary({
 
   const canDelete = (item: LibraryItem) =>
     Boolean(session?.isApproved && (session.isAdmin || item.owner === session.user.login));
-  const updatesOwnSet = Boolean(savedSlug && savedOwner === session?.user.login);
+  const updatesOwnSet = Boolean(savedSet?.slug && savedSet.owner === session?.user.login);
   const curatedTargetReady = !wantsCurated || Boolean(
     curatedCategoryId && (curatedSubcategoryId || (newSubcategoryOpen && newSubcategoryName.trim())),
   );
@@ -811,7 +830,7 @@ export default function CloudLibrary({
                             ? curatedSaveLabel
                             : updatesOwnSet
                               ? "Atualizar publicação"
-                              : savedSlug
+                              : savedSet?.slug
                                 ? "Salvar uma cópia"
                                 : "Salvar"}
                       </button>
