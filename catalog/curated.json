@@ -39,11 +39,6 @@
       "id": "oficios-e-ocasioes-teste",
       "label": "teste",
       "categoryId": "oficios-e-ocasioes"
-    },
-    {
-      "id": "testea-testecop",
-      "label": "testeCop",
-      "categoryId": "testea"
     }
   ]
 }
