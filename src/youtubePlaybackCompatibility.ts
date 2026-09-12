@@ -1,3 +1,8 @@
+const PATCH_MARKER = "__psaltikonGranularPlaybackPatched" as const;
+const GRANULAR_STEP = 0.05;
+const EPSILON = 0.001;
+const VERIFY_DELAY_MS = 180;
+
 type PlayerStateEvent = { data: number };
 
 type PlayerLike = {
@@ -15,16 +20,20 @@ type PlayerOptions = {
   [key: string]: unknown;
 };
 
-type PlayerConstructor = new (element: HTMLElement, options: PlayerOptions) => PlayerLike;
-
-type YouTubeGlobal = {
-  Player?: PlayerConstructor & { [PATCH_MARKER]?: boolean };
+type PlayerConstructor = {
+  new (element: HTMLElement, options: PlayerOptions): PlayerLike;
+  prototype: unknown;
+  [PATCH_MARKER]?: boolean;
 };
 
-const PATCH_MARKER = "__psaltikonGranularPlaybackPatched" as const;
-const GRANULAR_STEP = 0.05;
-const EPSILON = 0.001;
-const VERIFY_DELAY_MS = 180;
+type YouTubeGlobal = {
+  Player?: PlayerConstructor;
+};
+
+type PsaltikonWindow = typeof window & {
+  YT?: YouTubeGlobal;
+  onYouTubeIframeAPIReady?: () => void;
+};
 
 function sameRate(a: number, b: number) {
   return Math.abs(a - b) < EPSILON;
@@ -63,7 +72,8 @@ function nativeFallback(rates: number[], before: number, requested: number) {
 }
 
 function installGranularPlaybackCompatibility() {
-  const yt = (window as typeof window & { YT?: YouTubeGlobal }).YT;
+  const psaltikonWindow = window as PsaltikonWindow;
+  const yt = psaltikonWindow.YT;
   const OriginalPlayer = yt?.Player;
   if (!yt || !OriginalPlayer || OriginalPlayer[PATCH_MARKER]) return;
 
@@ -119,17 +129,18 @@ function installGranularPlaybackCompatibility() {
       pendingRate = requested;
       nativeSetPlaybackRate(requested);
 
-      // Since the slider rollout, the embedded player can expose finer speeds than
-      // getAvailablePlaybackRates(). Try the requested 0.05 step first. If the public
-      // API rejects/clamps it, fall back to the next native preset instead of leaving
-      // the control stuck. Before first playback, retry once when PLAYING begins.
+      // The current embedded YouTube player exposes a 0.05-step native slider,
+      // while getAvailablePlaybackRates() can still report only the older presets.
+      // Try the finer requested value first. If YouTube clamps/rejects it, fall back
+      // to the next native preset instead of leaving Psaltikon's control stuck.
+      // Requests made before first playback are retried once when PLAYING begins.
       if (state === undefined || state === 1 || state === 2 || state === 3) {
         verifyRequestedRate(requested, before, fallbackRates);
       }
     };
 
     return player;
-  } as unknown as PlayerConstructor & { [PATCH_MARKER]?: boolean };
+  } as unknown as PlayerConstructor;
 
   Object.setPrototypeOf(WrappedPlayer, OriginalPlayer);
   WrappedPlayer.prototype = OriginalPlayer.prototype;
@@ -138,8 +149,9 @@ function installGranularPlaybackCompatibility() {
 }
 
 if (typeof window !== "undefined") {
-  const previousReady = window.onYouTubeIframeAPIReady;
-  window.onYouTubeIframeAPIReady = () => {
+  const psaltikonWindow = window as PsaltikonWindow;
+  const previousReady = psaltikonWindow.onYouTubeIframeAPIReady;
+  psaltikonWindow.onYouTubeIframeAPIReady = () => {
     previousReady?.();
     installGranularPlaybackCompatibility();
   };
