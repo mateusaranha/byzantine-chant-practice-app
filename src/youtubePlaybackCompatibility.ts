@@ -1,5 +1,7 @@
 const PATCH_MARKER = "__psaltikonGranularPlaybackPatched" as const;
 const GRANULAR_STEP = 0.05;
+const FALLBACK_MIN_RATE = 0.25;
+const FALLBACK_MAX_RATE = 2;
 const EPSILON = 0.001;
 const VERIFY_DELAY_MS = 180;
 
@@ -43,12 +45,7 @@ function validRates(rates: number[]) {
   return [...new Set(rates.filter((rate) => Number.isFinite(rate) && rate > 0))].sort((a, b) => a - b);
 }
 
-export function granularPlaybackRates(rates: number[]) {
-  const nativeRates = validRates(rates);
-  if (nativeRates.length <= 1) return nativeRates.length ? nativeRates : [1];
-
-  const min = nativeRates[0];
-  const max = nativeRates[nativeRates.length - 1];
+function granularRange(min: number, max: number, nativeRates: number[] = []) {
   const granular = new Set(nativeRates);
   const firstStep = Math.ceil((min - EPSILON) / GRANULAR_STEP);
   const lastStep = Math.floor((max + EPSILON) / GRANULAR_STEP);
@@ -58,6 +55,22 @@ export function granularPlaybackRates(rates: number[]) {
   }
 
   return [...granular].sort((a, b) => a - b);
+}
+
+export function granularPlaybackRates(rates: number[]) {
+  const nativeRates = validRates(rates);
+
+  // The current embedded player can temporarily report only [1] through the
+  // public IFrame API even though its own speed slider remains available from
+  // 0.25x to 2x. Returning only [1] here makes Psaltikon disable both +/-
+  // buttons after a native speed change such as 1.25x. Keep the historical
+  // Psaltikon range as a defensive fallback until YouTube exposes the finer
+  // values consistently through getAvailablePlaybackRates().
+  if (nativeRates.length <= 1) {
+    return granularRange(FALLBACK_MIN_RATE, FALLBACK_MAX_RATE, nativeRates);
+  }
+
+  return granularRange(nativeRates[0], nativeRates[nativeRates.length - 1], nativeRates);
 }
 
 function nativeFallback(rates: number[], before: number, requested: number) {
