@@ -1,0 +1,111 @@
+{
+  "version": 1,
+  "title": "epístola treino",
+  "owner": {
+    "login": "mateusaranha",
+    "name": "Mateus Aranha Martins",
+    "avatarUrl": "https://avatars.githubusercontent.com/u/91752012?v=4"
+  },
+  "updatedAt": "2026-09-13T23:40:18.198Z",
+  "listed": true,
+  "hymns": [
+    {
+      "id": "hymn-1789337267982-1xvcn",
+      "title": "55:40",
+      "mode": "",
+      "lyrics": "",
+      "videoInput": "https://www.youtube.com/watch?v=c7vqxegbEGw",
+      "videoId": "c7vqxegbEGw",
+      "targetSpeed": 1,
+      "repeatMode": "off",
+      "fontSize": 27,
+      "lineHeight": 1.9,
+      "highlights": [],
+      "melismas": []
+    },
+    {
+      "id": "hymn-1789337581103-riw2k",
+      "title": "1:02:23",
+      "mode": "",
+      "lyrics": "",
+      "videoInput": "https://www.youtube.com/watch?v=GB4Pw52jteA",
+      "videoId": "GB4Pw52jteA",
+      "targetSpeed": 1,
+      "repeatMode": "off",
+      "fontSize": 27,
+      "lineHeight": 1.9,
+      "highlights": [],
+      "melismas": []
+    },
+    {
+      "id": "hymn-1789337668430-xu9hm",
+      "title": "1:02:06",
+      "mode": "",
+      "lyrics": "",
+      "videoInput": "https://www.youtube.com/watch?v=lgR9-WlKo5Q",
+      "videoId": "lgR9-WlKo5Q",
+      "targetSpeed": 1,
+      "repeatMode": "off",
+      "fontSize": 27,
+      "lineHeight": 1.9,
+      "highlights": [],
+      "melismas": []
+    },
+    {
+      "id": "hymn-1789338247877-xxz1n",
+      "title": "45:48",
+      "mode": "",
+      "lyrics": "",
+      "videoInput": "https://www.youtube.com/watch?v=2x6wtfULNzQ",
+      "videoId": "2x6wtfULNzQ",
+      "targetSpeed": 1,
+      "repeatMode": "off",
+      "fontSize": 27,
+      "lineHeight": 1.9,
+      "highlights": [],
+      "melismas": []
+    },
+    {
+      "id": "hymn-1789339097962-aoktj",
+      "title": "",
+      "mode": "",
+      "lyrics": "The reading is from Paul’s Second Letter to the Corinthians.\n\n2 Cor. 9:6 – 11",
+      "videoInput": "",
+      "videoId": "",
+      "targetSpeed": 1,
+      "repeatMode": "off",
+      "fontSize": 27,
+      "lineHeight": 1.9,
+      "highlights": [],
+      "melismas": []
+    },
+    {
+      "id": "hymn-1789340589315-m2bx1",
+      "title": "36:09",
+      "mode": "",
+      "lyrics": "",
+      "videoInput": "https://www.youtube.com/watch?v=W5RGt-GQ9lc",
+      "videoId": "W5RGt-GQ9lc",
+      "targetSpeed": 1,
+      "repeatMode": "off",
+      "fontSize": 27,
+      "lineHeight": 1.9,
+      "highlights": [],
+      "melismas": []
+    },
+    {
+      "id": "hymn-1789341441069-bzham",
+      "title": "1:10:40",
+      "mode": "",
+      "lyrics": "",
+      "videoInput": "https://www.youtube.com/watch?v=r4UfP5QTPQc",
+      "videoId": "r4UfP5QTPQc",
+      "targetSpeed": 1,
+      "repeatMode": "off",
+      "fontSize": 27,
+      "lineHeight": 1.9,
+      "highlights": [],
+      "melismas": []
+    }
+  ]
+}
