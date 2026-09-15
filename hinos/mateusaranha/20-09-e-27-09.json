@@ -6,39 +6,152 @@
     "name": "Mateus Aranha Martins",
     "avatarUrl": "https://avatars.githubusercontent.com/u/91752012?v=4"
   },
-  "updatedAt": "2026-09-13T16:50:17.706Z",
+  "updatedAt": "2026-09-15T12:17:16.971Z",
   "listed": true,
   "hymns": [
     {
-      "id": "hymn-1789317538749-5m0px",
+      "id": "shared-hymn-0",
       "title": "Apolytikion: matinas e pequena entrada",
       "mode": "Ἦχος δʹ. Mode 4.",
       "lyrics": "Οἱ Μάρτυρές σου Κύριε, ἐν τῇ ἀθλήσει αὐτῶν, στεφάνους ἐκομίσαντο τῆς ἀφθαρσίας, ἐκ σοῦ τοῦ Θεοῦ ἡμῶν· σχόντες γὰρ τὴν ἰσχύν σου, τοὺς τυράννους καθεῖλον, ἔθραυσαν καὶ δαιμόνων, τὰ ἀνίσχυρα θράση. Αὐτῶν ταῖς ἱκεσίαις, Χριστὲ ὁ Θεός, σῶσον τὰς ψυχὰς ἡμῶν.",
-      "videoInput": "",
-      "videoId": "",
+      "videoInput": "https://www.youtube.com/watch?v=K9VcNo8_O-Q",
+      "videoId": "K9VcNo8_O-Q",
       "targetSpeed": 1,
       "repeatMode": "off",
       "fontSize": 27,
       "lineHeight": 1.9,
-      "highlights": [],
-      "melismas": [],
+      "highlights": [
+        {
+          "start": 0,
+          "end": 21,
+          "color": "sage"
+        },
+        {
+          "start": 23,
+          "end": 42,
+          "color": "sky"
+        },
+        {
+          "start": 44,
+          "end": 78,
+          "color": "rose"
+        },
+        {
+          "start": 80,
+          "end": 101,
+          "color": "sage"
+        },
+        {
+          "start": 102,
+          "end": 127,
+          "color": "sky"
+        },
+        {
+          "start": 129,
+          "end": 152,
+          "color": "rose"
+        },
+        {
+          "start": 154,
+          "end": 175,
+          "color": "sage"
+        },
+        {
+          "start": 177,
+          "end": 194,
+          "color": "sky"
+        },
+        {
+          "start": 196,
+          "end": 230,
+          "color": "rose"
+        },
+        {
+          "start": 232,
+          "end": 253,
+          "color": "sage"
+        }
+      ],
+      "melismas": [
+        {
+          "start": 137,
+          "end": 138,
+          "kind": "complex"
+        },
+        {
+          "start": 191,
+          "end": 192,
+          "kind": "complex"
+        }
+      ],
       "group": {
         "id": "group-1789317844177-lyxd1",
         "name": "20/09"
       }
     },
     {
-      "id": "hymn-1789317770718-s69wq",
+      "id": "shared-hymn-1",
       "title": "Κοντάκιον: pequena entrada",
       "mode": "Ἦχος δʹ. Mode 4.",
       "lyrics": "Ὁ ὑψωθεὶς ἐν τῷ Σταυρῷ ἑκουσίως, τῇ ἐπωνύμῳ σου καινῇ πολιτείᾳ, τοὺς οἰκτιρμούς σου δώρησαι, Χριστὲ ὁ Θεός. Εὔφρανον ἐν τῇ δυνάμει σου, τοὺς πιστοὺς βασιλεῖς ἡμῶν, νίκας χορηγῶν αὐτοῖς, κατὰ τῶν πολεμίων· τὴν συμμαχίαν ἔχοιεν τὴν σήν, ὅπλον εἰρήνης, ἀήττητον τρόπαιον.",
-      "videoInput": "",
-      "videoId": "",
+      "videoInput": "https://www.youtube.com/watch?v=ipeEUuq9cc4",
+      "videoId": "ipeEUuq9cc4",
       "targetSpeed": 1,
       "repeatMode": "off",
       "fontSize": 27,
       "lineHeight": 1.9,
-      "highlights": [],
+      "highlights": [
+        {
+          "start": 0,
+          "end": 31,
+          "color": "sage"
+        },
+        {
+          "start": 33,
+          "end": 62,
+          "color": "sky"
+        },
+        {
+          "start": 64,
+          "end": 106,
+          "color": "rose"
+        },
+        {
+          "start": 108,
+          "end": 134,
+          "color": "sage"
+        },
+        {
+          "start": 136,
+          "end": 162,
+          "color": "sky"
+        },
+        {
+          "start": 163,
+          "end": 184,
+          "color": "rose"
+        },
+        {
+          "start": 186,
+          "end": 203,
+          "color": "sage"
+        },
+        {
+          "start": 205,
+          "end": 233,
+          "color": "sky"
+        },
+        {
+          "start": 235,
+          "end": 248,
+          "color": "rose"
+        },
+        {
+          "start": 250,
+          "end": 268,
+          "color": "sage"
+        }
+      ],
       "melismas": [],
       "group": {
         "id": "group-1789317844177-lyxd1",
@@ -46,7 +159,7 @@
       }
     },
     {
-      "id": "hymn-1789317832418-aqrg8",
+      "id": "shared-hymn-2",
       "title": "Apolytikion: matinas e pequena entrada",
       "mode": "Ἦχος δʹ. Mode 4.",
       "lyrics": "Οἱ Μάρτυρές σου Κύριε, ἐν τῇ ἀθλήσει αὐτῶν, στεφάνους ἐκομίσαντο τῆς ἀφθαρσίας, ἐκ σοῦ τοῦ Θεοῦ ἡμῶν· σχόντες γὰρ τὴν ἰσχύν σου, τοὺς τυράννους καθεῖλον, ἔθραυσαν καὶ δαιμόνων, τὰ ἀνίσχυρα θράση. Αὐτῶν ταῖς ἱκεσίαις, Χριστὲ ὁ Θεός, σῶσον τὰς ψυχὰς ἡμῶν.",
@@ -64,7 +177,7 @@
       }
     },
     {
-      "id": "hymn-1789317993761-mitww",
+      "id": "shared-hymn-3",
       "title": "Theotokion",
       "mode": "Ἦχος δʹ. Mode 4.",
       "lyrics": "Τὸ ἀπʼ αἰῶνος ἀπόκρυφον, καὶ Ἀγγέλοις ἄγνωστον μυστήριον, διὰ σού Θεοτόκε τοῖς ἐπὶ γῆς πεφανέρωται, Θεὸς ἐν ἀσυγχύτῳ ἑνώσει σαρκούμενος, καὶ Σταυρὸν ἑκουσίως ὑπὲρ ἡμῶν καταδεξάμενος· διʼ οὗ ἀναστήσας τὸν πρωτόπλαστον, ἔσωσεν ἐκ θανάτου τὰς ψυχὰς ἡμῶν.",
@@ -82,7 +195,7 @@
       }
     },
     {
-      "id": "hymn-1789318078325-g6rek",
+      "id": "shared-hymn-4",
       "title": "Kondakion",
       "mode": "Ἦχος βʹ. Mode 2.",
       "lyrics": "Προστασία τῶν Χριστιανῶν ἀκαταίσχυντε, μεσιτεία, πρὸς τὸν Ποιητὴν ἀμετάθετε, μὴ παρίδῃς, ἁμαρτωλῶν δεήσεων φωνάς, ἀλλὰ πρόφθασον, ὡς ἀγαθή, εἰς τὴν βοήθειαν ἡμῶν, τῶν πιστῶς κραυγαζόντων σοι· Τάχυνον εἰς πρεσβείαν, καὶ σπεῦσον εἰς ἱκεσίαν, ἡ προστατεύουσα ἀεί, Θεοτόκε, τῶν τιμώντων σε.",
