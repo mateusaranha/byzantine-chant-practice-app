@@ -6,11 +6,11 @@
     "name": "Mateus Aranha Martins",
     "avatarUrl": "https://avatars.githubusercontent.com/u/91752012?v=4"
   },
-  "updatedAt": "2026-09-13T23:40:18.198Z",
+  "updatedAt": "2026-09-15T14:09:28.883Z",
   "listed": true,
   "hymns": [
     {
-      "id": "hymn-1789337267982-1xvcn",
+      "id": "shared-hymn-0",
       "title": "55:40",
       "mode": "",
       "lyrics": "",
@@ -24,7 +24,7 @@
       "melismas": []
     },
     {
-      "id": "hymn-1789337581103-riw2k",
+      "id": "shared-hymn-1",
       "title": "1:02:23",
       "mode": "",
       "lyrics": "",
@@ -38,7 +38,7 @@
       "melismas": []
     },
     {
-      "id": "hymn-1789337668430-xu9hm",
+      "id": "shared-hymn-2",
       "title": "1:02:06",
       "mode": "",
       "lyrics": "",
@@ -52,7 +52,7 @@
       "melismas": []
     },
     {
-      "id": "hymn-1789338247877-xxz1n",
+      "id": "shared-hymn-3",
       "title": "45:48",
       "mode": "",
       "lyrics": "",
@@ -66,7 +66,7 @@
       "melismas": []
     },
     {
-      "id": "hymn-1789339097962-aoktj",
+      "id": "shared-hymn-4",
       "title": "",
       "mode": "",
       "lyrics": "The reading is from Paul’s Second Letter to the Corinthians.\n\n2 Cor. 9:6 – 11",
@@ -80,10 +80,10 @@
       "melismas": []
     },
     {
-      "id": "hymn-1789340589315-m2bx1",
+      "id": "shared-hymn-5",
       "title": "36:09",
       "mode": "",
-      "lyrics": "",
+      "lyrics": "BEM BOM",
       "videoInput": "https://www.youtube.com/watch?v=W5RGt-GQ9lc",
       "videoId": "W5RGt-GQ9lc",
       "targetSpeed": 1,
@@ -94,12 +94,26 @@
       "melismas": []
     },
     {
-      "id": "hymn-1789341441069-bzham",
+      "id": "shared-hymn-6",
       "title": "1:10:40",
       "mode": "",
       "lyrics": "",
       "videoInput": "https://www.youtube.com/watch?v=r4UfP5QTPQc",
       "videoId": "r4UfP5QTPQc",
+      "targetSpeed": 1,
+      "repeatMode": "off",
+      "fontSize": 27,
+      "lineHeight": 1.9,
+      "highlights": [],
+      "melismas": []
+    },
+    {
+      "id": "hymn-1789475578002-1p0oi",
+      "title": "1:11:22",
+      "mode": "",
+      "lyrics": "",
+      "videoInput": "https://www.youtube.com/watch?v=ODA3owrQYl4",
+      "videoId": "ODA3owrQYl4",
       "targetSpeed": 1,
       "repeatMode": "off",
       "fontSize": 27,
