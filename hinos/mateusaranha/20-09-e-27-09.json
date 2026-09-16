@@ -6,7 +6,7 @@
     "name": "Mateus Aranha Martins",
     "avatarUrl": "https://avatars.githubusercontent.com/u/91752012?v=4"
   },
-  "updatedAt": "2026-09-15T12:17:16.971Z",
+  "updatedAt": "2026-09-16T13:29:41.444Z",
   "listed": true,
   "hymns": [
     {
@@ -92,7 +92,7 @@
     {
       "id": "shared-hymn-1",
       "title": "Κοντάκιον: pequena entrada",
-      "mode": "Ἦχος δʹ. Mode 4.",
+      "mode": "Ἦχος δʹ. Mode 4. (1:02)",
       "lyrics": "Ὁ ὑψωθεὶς ἐν τῷ Σταυρῷ ἑκουσίως, τῇ ἐπωνύμῳ σου καινῇ πολιτείᾳ, τοὺς οἰκτιρμούς σου δώρησαι, Χριστὲ ὁ Θεός. Εὔφρανον ἐν τῇ δυνάμει σου, τοὺς πιστοὺς βασιλεῖς ἡμῶν, νίκας χορηγῶν αὐτοῖς, κατὰ τῶν πολεμίων· τὴν συμμαχίαν ἔχοιεν τὴν σήν, ὅπλον εἰρήνης, ἀήττητον τρόπαιον.",
       "videoInput": "https://www.youtube.com/watch?v=ipeEUuq9cc4",
       "videoId": "ipeEUuq9cc4",
@@ -152,7 +152,33 @@
           "color": "sage"
         }
       ],
-      "melismas": [],
+      "melismas": [
+        {
+          "start": 126,
+          "end": 127,
+          "kind": "complex"
+        },
+        {
+          "start": 132,
+          "end": 134,
+          "kind": "complex"
+        },
+        {
+          "start": 175,
+          "end": 176,
+          "kind": "complex"
+        },
+        {
+          "start": 200,
+          "end": 201,
+          "kind": "complex"
+        },
+        {
+          "start": 244,
+          "end": 245,
+          "kind": "complex"
+        }
+      ],
       "group": {
         "id": "group-1789317844177-lyxd1",
         "name": "20/09"
