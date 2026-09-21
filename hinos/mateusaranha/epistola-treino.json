@@ -6,7 +6,7 @@
     "name": "Mateus Aranha Martins",
     "avatarUrl": "https://avatars.githubusercontent.com/u/91752012?v=4"
   },
-  "updatedAt": "2026-09-15T16:19:42.205Z",
+  "updatedAt": "2026-09-21T21:51:54.921Z",
   "listed": true,
   "hymns": [
     {
@@ -80,20 +80,6 @@
       "melismas": []
     },
     {
-      "id": "shared-hymn-5",
-      "title": "36:09",
-      "mode": "",
-      "lyrics": "BEM BOM",
-      "videoInput": "https://www.youtube.com/watch?v=W5RGt-GQ9lc",
-      "videoId": "W5RGt-GQ9lc",
-      "targetSpeed": 1,
-      "repeatMode": "off",
-      "fontSize": 27,
-      "lineHeight": 1.9,
-      "highlights": [],
-      "melismas": []
-    },
-    {
       "id": "shared-hymn-6",
       "title": "1:10:40",
       "mode": "",
@@ -122,12 +108,155 @@
       "melismas": []
     },
     {
-      "id": "hymn-1789488078553-4zuq8",
+      "id": "shared-hymn-8",
       "title": "azar",
       "mode": "",
       "lyrics": "",
       "videoInput": "https://www.youtube.com/watch?v=2diKgTEX6Mo",
       "videoId": "2diKgTEX6Mo",
+      "targetSpeed": 1,
+      "repeatMode": "off",
+      "fontSize": 27,
+      "lineHeight": 1.9,
+      "highlights": [],
+      "melismas": []
+    },
+    {
+      "id": "shared-hymn-5",
+      "title": "36:09",
+      "mode": "",
+      "lyrics": "Irmãos, vós sois o templo de Deus vivo, segundo o que Deus mesmo disse: Habitarei e andarei no meio deles e serei seu Deus e eles serão meu povo. Pelo que, saí de seu meio e afastai-vos, diz o Senhor. Não toqueis coisa imunda e eu vos acolherei, serei vosso pai e vós sereis meus filhos e minha filhas, diz o Senhor Todo-poderoso. Depositários de tais promessas, caríssimos, purifiquemo-nos de toda imundície da carne e do espírito, realizando plenamente nossa santificação no temor de Deus.",
+      "videoInput": "https://www.youtube.com/watch?v=W5RGt-GQ9lc",
+      "videoId": "W5RGt-GQ9lc",
+      "targetSpeed": 1,
+      "repeatMode": "off",
+      "fontSize": 22,
+      "lineHeight": 1.8,
+      "highlights": [
+        {
+          "start": 0,
+          "end": 6,
+          "color": "sage"
+        },
+        {
+          "start": 8,
+          "end": 38,
+          "color": "sky"
+        },
+        {
+          "start": 40,
+          "end": 70,
+          "color": "rose"
+        },
+        {
+          "start": 72,
+          "end": 105,
+          "color": "sage"
+        },
+        {
+          "start": 106,
+          "end": 144,
+          "color": "sky"
+        },
+        {
+          "start": 146,
+          "end": 154,
+          "color": "rose"
+        },
+        {
+          "start": 156,
+          "end": 185,
+          "color": "sage"
+        },
+        {
+          "start": 187,
+          "end": 199,
+          "color": "sky"
+        },
+        {
+          "start": 201,
+          "end": 244,
+          "color": "rose"
+        },
+        {
+          "start": 246,
+          "end": 261,
+          "color": "sage"
+        },
+        {
+          "start": 262,
+          "end": 301,
+          "color": "sky"
+        },
+        {
+          "start": 303,
+          "end": 329,
+          "color": "rose"
+        },
+        {
+          "start": 331,
+          "end": 361,
+          "color": "sage"
+        },
+        {
+          "start": 363,
+          "end": 373,
+          "color": "sky"
+        },
+        {
+          "start": 375,
+          "end": 408,
+          "color": "rose"
+        },
+        {
+          "start": 409,
+          "end": 431,
+          "color": "sage"
+        },
+        {
+          "start": 433,
+          "end": 443,
+          "color": "sky"
+        },
+        {
+          "start": 444,
+          "end": 454,
+          "color": "rose"
+        },
+        {
+          "start": 455,
+          "end": 473,
+          "color": "sage"
+        },
+        {
+          "start": 474,
+          "end": 491,
+          "color": "sky"
+        }
+      ],
+      "melismas": []
+    },
+    {
+      "id": "hymn-1790014162287-va9ii",
+      "title": "",
+      "mode": "",
+      "lyrics": "Τέκνον Τιμόθεε, νῆφε ἐν πᾶσι, κακοπάθησον, ἔργον ποίησον εὐαγγελιστοῦ, τὴν διακονίαν σου πληροφόρησον. Ἐγὼ γὰρ ἤδη σπένδομαι, καὶ ὁ καιρὸς τῆς ἐμῆς ἀναλύσεως ἐφέστηκε. Τὸν ἀγῶνα τὸν καλὸν ἠγώνισμαι, τὸν δρόμον τετέλεκα, τὴν πίστιν τετήρηκα λοιπὸν ἀπόκειταί μοι ὁ τῆς δικαιοσύνης στέφανος, ὃν ἀποδώσει μοι ὁ Κύριος ἐν ἐκείνῃ τῇ ἡμέρᾳ, ὁ δίκαιος κριτής, οὐ μόνον δὲ ἐμοί, ἀλλὰ καὶ πᾶσι τοῖς ἠγαπηκόσι τὴν ἐπιφάνειαν αὐτοῦ.",
+      "videoInput": "",
+      "videoId": "",
+      "targetSpeed": 1,
+      "repeatMode": "off",
+      "fontSize": 27,
+      "lineHeight": 1.9,
+      "highlights": [],
+      "melismas": []
+    },
+    {
+      "id": "hymn-1790014610111-y555q",
+      "title": "",
+      "mode": "",
+      "lyrics": "Filho Timóteo, sê sóbrio em tudo, suporta aflições, obra faze de evangelista, o ministério teu cumpre. Pois eu já sou derramado como libação, e o tempo da minha partida chegou. O combate o bom combati, a corrida completei, a fé guardei; portanto está reservada para mim a da justiça coroa, a qual dará a mim o Senhor naquele dia, o justo juiz, não somente a mim, mas também a todos os que têm amado a manifestação dele.",
+      "videoInput": "",
+      "videoId": "",
       "targetSpeed": 1,
       "repeatMode": "off",
       "fontSize": 27,
