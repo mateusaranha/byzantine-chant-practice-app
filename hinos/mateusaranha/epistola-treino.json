@@ -6,7 +6,7 @@
     "name": "Mateus Aranha Martins",
     "avatarUrl": "https://avatars.githubusercontent.com/u/91752012?v=4"
   },
-  "updatedAt": "2026-09-21T21:51:54.921Z",
+  "updatedAt": "2026-09-22T16:18:57.643Z",
   "listed": true,
   "hymns": [
     {
@@ -256,6 +256,20 @@
       "mode": "",
       "lyrics": "Filho Timóteo, sê sóbrio em tudo, suporta aflições, obra faze de evangelista, o ministério teu cumpre. Pois eu já sou derramado como libação, e o tempo da minha partida chegou. O combate o bom combati, a corrida completei, a fé guardei; portanto está reservada para mim a da justiça coroa, a qual dará a mim o Senhor naquele dia, o justo juiz, não somente a mim, mas também a todos os que têm amado a manifestação dele.",
       "videoInput": "",
+      "videoId": "",
+      "targetSpeed": 1,
+      "repeatMode": "off",
+      "fontSize": 27,
+      "lineHeight": 1.9,
+      "highlights": [],
+      "melismas": []
+    },
+    {
+      "id": "hymn-1790093901899-eaulh",
+      "title": "1:01:10",
+      "mode": "",
+      "lyrics": "",
+      "videoInput": "https://www.youtube.com/watch?v=5lWCOo1ud88",
       "videoId": "",
       "targetSpeed": 1,
       "repeatMode": "off",
