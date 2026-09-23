@@ -6,7 +6,7 @@
     "name": "Mateus Aranha Martins",
     "avatarUrl": "https://avatars.githubusercontent.com/u/91752012?v=4"
   },
-  "updatedAt": "2026-09-16T13:29:41.444Z",
+  "updatedAt": "2026-09-23T19:29:31.215Z",
   "listed": true,
   "hymns": [
     {
@@ -237,6 +237,72 @@
         "id": "group-1789318131121-f7jg0",
         "name": "27/09"
       }
+    },
+    {
+      "id": "hymn-1790189902234-vre0u",
+      "title": "Kondakion paráclisis",
+      "mode": "",
+      "lyrics": "Erguei agora um venerável coro, ó\ndevotos dos mártires, honrando a\nsapientíssima Catarina; pois ela\nproclamou Cristo na arena, pisoteou a\nserpente e confundiu a sabedoria dos\nretóricos.",
+      "videoInput": "https://www.youtube.com/watch?v=nzOaI_Fc3ug",
+      "videoId": "nzOaI_Fc3ug",
+      "targetSpeed": 1,
+      "repeatMode": "off",
+      "fontSize": 28,
+      "lineHeight": 1.9,
+      "highlights": [
+        {
+          "start": 0,
+          "end": 30,
+          "color": "sage"
+        },
+        {
+          "start": 30,
+          "end": 54,
+          "color": "sage"
+        },
+        {
+          "start": 56,
+          "end": 89,
+          "color": "rose"
+        },
+        {
+          "start": 91,
+          "end": 125,
+          "color": "sage"
+        },
+        {
+          "start": 127,
+          "end": 146,
+          "color": "sky"
+        },
+        {
+          "start": 147,
+          "end": 185,
+          "color": "rose"
+        }
+      ],
+      "melismas": [
+        {
+          "start": 47,
+          "end": 48,
+          "kind": "complex"
+        },
+        {
+          "start": 86,
+          "end": 87,
+          "kind": "complex"
+        },
+        {
+          "start": 122,
+          "end": 123,
+          "kind": "complex"
+        },
+        {
+          "start": 178,
+          "end": 179,
+          "kind": "complex"
+        }
+      ]
     }
   ]
 }
