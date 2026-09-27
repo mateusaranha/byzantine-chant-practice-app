@@ -1,0 +1,55 @@
+{
+  "version": 1,
+  "title": "04/10/2026",
+  "owner": {
+    "login": "mateusaranha",
+    "name": "Mateus Aranha Martins",
+    "avatarUrl": "https://avatars.githubusercontent.com/u/91752012?v=4"
+  },
+  "updatedAt": "2026-09-27T20:14:02.109Z",
+  "listed": true,
+  "hymns": [
+    {
+      "id": "hymn-1790539309073-6fzvs",
+      "title": "",
+      "mode": "",
+      "lyrics": "Τοῦ λίθου σφραγισθέντος ὑπὸ τῶν Ἰουδαίων, καὶ στρατιωτῶν φυλασσόντων τὸ ἄχραντόν σου σῶμα, ἀνέστης τριήμερος Σωτήρ, δωρούμενος τῷ κόσμῳ τὴν ζωήν. Διὰ τοῦτο αἱ Δυνάμεις τῶν οὐρανῶν ἐβόων σοι Ζωοδότα· Δόξα τῇ ἀναστάσει σου Χριστέ, δόξα τῇ βασιλείᾳ σου, δόξα τῇ οἰκονομίᾳ σου, μόνε Φιλάνθρωπε.",
+      "videoInput": "",
+      "videoId": "",
+      "targetSpeed": 1,
+      "repeatMode": "off",
+      "fontSize": 27,
+      "lineHeight": 1.9,
+      "highlights": [],
+      "melismas": []
+    },
+    {
+      "id": "hymn-1790539662208-pq2lo",
+      "title": "",
+      "mode": "",
+      "lyrics": "Embora a pedra fosse selada pelos judeus, e\nos soldados guardassem teu imaculado\nCorpo, ressuscitaste ao terceiro dia, ó Salva-\ndor, concedendo vida ao mundo. Por isso, os\npoderes celestes clamavam a Ti, ó Autor da\nVida: Glória à tua Ressurreição, ó Cristo, gló\nria ao teu Reino, glória à tua economia, ó\núnico Filantropo!",
+      "videoInput": "",
+      "videoId": "",
+      "targetSpeed": 1,
+      "repeatMode": "off",
+      "fontSize": 27,
+      "lineHeight": 1.9,
+      "highlights": [],
+      "melismas": []
+    },
+    {
+      "id": "hymn-1790539800892-e0m6r",
+      "title": "",
+      "mode": "",
+      "lyrics": "Τοῦ Γαβριὴλ φθεγξαμένου σοι Παρθένε τὸ Χαῖρε, σὺν τῇ φωνῇ ἐσαρκοῦτο ὁ τῶν ὅλων Δεσπότης, ἐν σοὶ τῇ ἁγίᾳ κιβωτῷ, ὡς ἔφη ὁ δίκαιος Δαυΐδ. Ἐδείχθης πλατυτέρα τῶν οὐρανῶν, βαστάσασα τὸν Κτίστην σου. Δόξα τῷ ἐνοικήσαντι ἐν σοί· δόξα τῷ προελθόντι ἐκ σοῦ· δόξα τῷ ἐλευθερώσαντι ἡμᾶς, διὰ τοῦ τόκου σου.",
+      "videoInput": "",
+      "videoId": "",
+      "targetSpeed": 1,
+      "repeatMode": "off",
+      "fontSize": 27,
+      "lineHeight": 1.9,
+      "highlights": [],
+      "melismas": []
+    }
+  ]
+}
