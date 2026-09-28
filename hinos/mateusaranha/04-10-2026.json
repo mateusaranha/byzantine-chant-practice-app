@@ -6,7 +6,7 @@
     "name": "Mateus Aranha Martins",
     "avatarUrl": "https://avatars.githubusercontent.com/u/91752012?v=4"
   },
-  "updatedAt": "2026-09-27T20:14:02.109Z",
+  "updatedAt": "2026-09-28T19:49:53.020Z",
   "listed": true,
   "hymns": [
     {
@@ -21,7 +21,11 @@
       "fontSize": 27,
       "lineHeight": 1.9,
       "highlights": [],
-      "melismas": []
+      "melismas": [],
+      "group": {
+        "id": "group-1790596258680-o203r",
+        "name": "ressurreição"
+      }
     },
     {
       "id": "hymn-1790539662208-pq2lo",
@@ -35,7 +39,29 @@
       "fontSize": 27,
       "lineHeight": 1.9,
       "highlights": [],
-      "melismas": []
+      "melismas": [],
+      "group": {
+        "id": "group-1790596258680-o203r",
+        "name": "ressurreição"
+      }
+    },
+    {
+      "id": "hymn-1790596216762-ruieb",
+      "title": "",
+      "mode": "",
+      "lyrics": "Τοῦ λίθου σφραγισθέντος ὑπὸ τῶν Ἰουδαίων,\nEmbora a pedra fosse selada pelos judeus,\n\n καὶ στρατιωτῶν φυλασσόντων τὸ ἄχραντόν σου σῶμα, \ne os soldados guardassem teu imaculado\nCorpo,\n\nἀνέστης τριήμερος Σωτήρ, \ne ressuscitaste ao terceiro dia, ó Salva-\ndor,\n\nδωρούμενος τῷ κόσμῳ τὴν ζωήν.\nconcedendo vida ao mundo.\n\n Διὰ τοῦτο αἱ Δυνάμεις τῶν οὐρανῶν ἐβόων σοι Ζωοδότα\nPor isso, os\npoderes celestes clamavam a Ti, ó Autor da\nVida:\n\nΔόξα τῇ ἀναστάσει σου Χριστέ,\n Glória à tua Ressurreição, ó Cristo,\n\n δόξα τῇ βασιλείᾳ σου,\nglória ao teu Reino,\n\n δόξα τῇ οἰκονομίᾳ σου, \nglória à tua economia,\n\nμόνε Φιλάνθρωπε.\nó único Filantropo!",
+      "videoInput": "",
+      "videoId": "",
+      "targetSpeed": 1,
+      "repeatMode": "off",
+      "fontSize": 25,
+      "lineHeight": 1.9,
+      "highlights": [],
+      "melismas": [],
+      "group": {
+        "id": "group-1790596258680-o203r",
+        "name": "ressurreição"
+      }
     },
     {
       "id": "hymn-1790539800892-e0m6r",
