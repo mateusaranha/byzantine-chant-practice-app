@@ -6,7 +6,7 @@
     "name": "Mateus Aranha Martins",
     "avatarUrl": "https://avatars.githubusercontent.com/u/91752012?v=4"
   },
-  "updatedAt": "2026-10-12T12:03:32.827Z",
+  "updatedAt": "2026-10-12T12:33:04.699Z",
   "listed": true,
   "hymns": [
     {
@@ -31,7 +31,7 @@
       "id": "hymn-1791806141400-y9uvk",
       "title": "",
       "mode": "",
-      "lyrics": "",
+      "lyrics": "Ἀπόστολε Ἅγιε καὶ Εὐαγγελιστὰ Λουκᾶ, πρέσβευε τῷ ἐλεήμονι Θεῷ, ἵνα πταισμάτων ἄφεσιν, παράσχῃ ταῖς ψυχαῖς ἡμῶν.",
       "videoInput": "https://www.youtube.com/watch?v=NLiJzA7G4MY",
       "videoId": "NLiJzA7G4MY",
       "targetSpeed": 1,
@@ -50,6 +50,42 @@
       "title": "Θεοτοκίον",
       "mode": "Ἦχος γʹ (3)",
       "lyrics": "Σὲ τὴν μεσιτεύσασαν τὴν σωτηρίαν τοῦ γένους ἡμῶν, ἀνυμνοῦμεν Θεοτόκε Παρθένε· ἐν τῇ σαρκὶ γὰρ τῇ ἐκ σοῦ προσληφθείσῃ, ὁ Υἱός σου καὶ Θεὸς ἡμῶν τὸ διὰ σταυροῦ καταδεξάμενος πάθος, ἐλυτρώσατο ἡμᾶς, ἐκ φθορᾶς ὡς φιλάνθρωπος.",
+      "videoInput": "https://www.youtube.com/watch?v=twqjv1bEb44",
+      "videoId": "twqjv1bEb44",
+      "targetSpeed": 1,
+      "repeatMode": "off",
+      "fontSize": 27,
+      "lineHeight": 1.9,
+      "highlights": [],
+      "melismas": [],
+      "group": {
+        "id": "group-1791808070027-fvu95",
+        "name": "theotokion"
+      }
+    },
+    {
+      "id": "hymn-1791807794563-zlcs7",
+      "title": "",
+      "mode": "",
+      "lyrics": "Σὲ τὴν μεσιτεύσασαν τὴν σωτηρίαν τοῦ γένους ἡμῶν, ἀνυμνοῦμεν Θεοτόκε Παρθένε· ἐν τῇ σαρκὶ γὰρ τῇ ἐκ σοῦ προσληφθείσῃ, ὁ Υἱός σου καὶ Θεὸς ἡμῶν τὸ διὰ σταυροῦ καταδεξάμενος πάθος, ἐλυτρώσατο ἡμᾶς, ἐκ φθορᾶς ὡς φιλάνθρωπος.",
+      "videoInput": "https://www.youtube.com/watch?v=ENIH-VSIhVs",
+      "videoId": "ENIH-VSIhVs",
+      "targetSpeed": 1,
+      "repeatMode": "off",
+      "fontSize": 27,
+      "lineHeight": 1.9,
+      "highlights": [],
+      "melismas": [],
+      "group": {
+        "id": "group-1791808070027-fvu95",
+        "name": "theotokion"
+      }
+    },
+    {
+      "id": "hymn-1791808058751-iw1q7",
+      "title": "",
+      "mode": "",
+      "lyrics": "",
       "videoInput": "",
       "videoId": "",
       "targetSpeed": 1,
