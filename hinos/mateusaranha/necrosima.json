@@ -6,336 +6,91 @@
     "name": "Mateus Aranha Martins",
     "avatarUrl": "https://avatars.githubusercontent.com/u/91752012?v=4"
   },
-  "updatedAt": "2026-08-25T00:45:59.627Z",
+  "updatedAt": "2026-10-15T22:40:34.853Z",
+  "listed": true,
   "hymns": [
     {
-      "id": "primary-hymn",
+      "id": "shared-hymn-0",
       "title": "Τῶν Ἁγίων ὁ χορός",
       "mode": "6:18 (Greek Ieropsaltis) | 12:18 (ByzantineHymns3)",
-      "lyrics": "Τῶν Ἁγίων ὁ χορός, εὗρε πηγὴν τῆς ζωῆς, καὶ θύραν Παραδείσου·\nεὕρω κἀγώ, τὴν ὁδὸν διὰ τῆς μετανοίας·\nτὸ ἀπολωλὸς πρόβατον ἐγώ εἰμι·\nἀνακάλεσαί με, Σωτήρ, καὶ σῶσόν με.",
+      "lyrics": "Τῶν Ἁγίων ὁ χορός, \nO coro dos santos\n\nεὗρε πηγὴν τῆς ζωῆς, καὶ θύραν Παραδείσου·\nencontrou a fonte da vida e porta do Paraíso;\n\nεὕρω κἀγώ, τὴν ὁδὸν διὰ τῆς μετανοίας·\nque eu também encontre pela penitência este caminho\n\nτὸ ἀπολωλὸς πρόβατον ἐγώ εἰμι·\neu sou a ovelha desgarrada;\n\nἀνακάλεσαί με, Σωτήρ, καὶ σῶσόν με.\nchama-me de volta ó Salvador e salva-me!",
       "videoInput": "",
       "videoId": "",
       "targetSpeed": 1,
       "repeatMode": "off",
       "fontSize": 27,
       "lineHeight": 1.9,
-      "highlights": [
-        {
-          "start": 0,
-          "end": 17,
-          "color": "sage"
-        },
-        {
-          "start": 19,
-          "end": 40,
-          "color": "sky"
-        },
-        {
-          "start": 40,
-          "end": 60,
-          "color": "rose"
-        },
-        {
-          "start": 62,
-          "end": 75,
-          "color": "sage"
-        },
-        {
-          "start": 75,
-          "end": 99,
-          "color": "sage"
-        },
-        {
-          "start": 101,
-          "end": 130,
-          "color": "sky"
-        },
-        {
-          "start": 132,
-          "end": 145,
-          "color": "rose"
-        },
-        {
-          "start": 147,
-          "end": 167,
-          "color": "sage"
-        }
-      ],
+      "highlights": [],
       "melismas": []
     },
     {
-      "id": "hymn-1786976189306-hmlg1",
+      "id": "shared-hymn-1",
       "title": "Ὁ πάλαι μέν",
       "mode": "7:34 | 12:59",
-      "lyrics": "Ὁ πάλαι μέν, ἐκ μὴ ὄντων πλάσας με,\nκαὶ εἰκόνι σου θείᾳ τιμήσας,\nπαραβάσει ἐντολῆς δὲ πάλιν με ἐπιστρέψας\nεἰς γῆν ἐξ ἧς ἐλήφθην,\nεἰς τὸ καθ’ ὁμοίωσιν ἐπανάγαγε,\nτὸ ἀρχαῖον κάλλος ἀναμορφώσασθαι.",
+      "lyrics": "Ὁ πάλαι μέν, ἐκ μὴ ὄντων πλάσας με,\nTu, que do nada, no princípio me criaste\n\nκαὶ εἰκόνι σου θείᾳ τιμήσας,\ne com tua divina imagem me honraste,\n\nπαραβάσει ἐντολῆς δὲ πάλιν με ἐπιστρέψας\ne tendo transgredido o teu mandamento\n\nεἰς γῆν ἐξ ἧς ἐλήφθην,\ndevolveste-me à terra da qual me tiraste;\n\nεἰς τὸ καθ’ ὁμοίωσιν ἐπανάγαγε,\nreconduze-me à tua semelhança,\n\nτὸ ἀρχαῖον κάλλος ἀναμορφώσασθαι.\npara que seja renovada em mim a imagem da antiga beleza\n\nrenovando em mim a imagem da antiga beleza",
       "videoInput": "",
       "videoId": "",
       "targetSpeed": 1,
       "repeatMode": "off",
       "fontSize": 27,
       "lineHeight": 1.9,
-      "highlights": [
-        {
-          "start": 0,
-          "end": 11,
-          "color": "sage"
-        },
-        {
-          "start": 13,
-          "end": 34,
-          "color": "sky"
-        },
-        {
-          "start": 36,
-          "end": 63,
-          "color": "rose"
-        },
-        {
-          "start": 65,
-          "end": 104,
-          "color": "sage"
-        },
-        {
-          "start": 104,
-          "end": 127,
-          "color": "sage"
-        },
-        {
-          "start": 129,
-          "end": 160,
-          "color": "sky"
-        },
-        {
-          "start": 161,
-          "end": 193,
-          "color": "rose"
-        }
-      ],
+      "highlights": [],
       "melismas": []
     },
     {
-      "id": "hymn-1786976259410-p5l7y",
+      "id": "shared-hymn-2",
       "title": "Εἰκών εἰμι",
       "mode": "6:53 | 13:43",
-      "lyrics": "Εἰκών εἰμι, τῆς ἀρρήτου δόξης σου,\nεἰ καὶ στίγματα φέρω πταισμάτων·\nοἰκτείρησον τὸ σὸν πλάσμα, Δέσποτα,\nκαὶ καθάρισον σῇ εὐσπλαγχνίᾳ·\nκαὶ τὴν ποθεινὴν πατρίδα παράσχου μοι,\nΠαραδείσου πάλιν ποιῶν πολίτην με.",
+      "lyrics": "Εἰκών εἰμι, τῆς ἀρρήτου δόξης σου,\nEu sou a imagem de tua indescritível glória,\n\nεἰ καὶ στίγματα φέρω πταισμάτων·\napesar de levar os estigmas do pecado;\n\nοἰκτείρησον τὸ σὸν πλάσμα, Δέσποτα,\ntem piedade de tua obra, ó Senhor\n\nκαὶ καθάρισον σῇ εὐσπλαγχνίᾳ·\ne purifica-me pela tua misericórdia:\n\nκαὶ τὴν ποθεινὴν πατρίδα παράσχου μοι,\nconcede-me a pátria querida\n\nΠαραδείσου πάλιν ποιῶν πολίτην με.\ne devolve-me os direitos de cidadão do Paraíso",
       "videoInput": "",
       "videoId": "",
       "targetSpeed": 1,
       "repeatMode": "off",
       "fontSize": 27,
       "lineHeight": 1.9,
-      "highlights": [
-        {
-          "start": 0,
-          "end": 10,
-          "color": "sage"
-        },
-        {
-          "start": 12,
-          "end": 33,
-          "color": "sky"
-        },
-        {
-          "start": 35,
-          "end": 66,
-          "color": "rose"
-        },
-        {
-          "start": 68,
-          "end": 84,
-          "color": "sage"
-        },
-        {
-          "start": 84,
-          "end": 103,
-          "color": "sage"
-        },
-        {
-          "start": 104,
-          "end": 133,
-          "color": "rose"
-        },
-        {
-          "start": 134,
-          "end": 172,
-          "color": "sage"
-        },
-        {
-          "start": 173,
-          "end": 206,
-          "color": "sky"
-        }
-      ],
+      "highlights": [],
       "melismas": []
     },
     {
-      "id": "hymn-1787605608082-12wxx",
+      "id": "shared-hymn-3",
       "title": "Ἀνάπαυσον",
       "mode": "8:16 | 14:27",
-      "lyrics": "Ἀνάπαυσον, ὁ Θεός, τὸν δοῦλόν σου,\nκαὶ κατάταξον αὐτὸν ἐν Παραδείσῳ,\nὅπου χοροὶ τῶν Ἁγίων, Κύριε,\nκαὶ οἱ δίκαιοι ἐκλάμψουσιν ὡς φωστῆρες·\nτὸν κεκοιμημένον δοῦλόν σου ἀνάπαυσον,\nπαρορῶν αὐτοῦ πάντα τὰ ἐγκλήματα.",
+      "lyrics": "Ἀνάπαυσον, ὁ Θεός, τὸν δοῦλόν σου,\nDá repouso ó Deus, a teu servo\n\nκαὶ κατάταξον αὐτὸν ἐν Παραδείσῳ,\ne conduze-o ao Paraíso,\n\nὅπου χοροὶ τῶν Ἁγίων, Κύριε,\nonde os coros dos santos e dos justos \n\nκαὶ οἱ δίκαιοι ἐκλάμψουσιν ὡς φωστῆρες·\nresplandecem como astros\n\nτὸν κεκοιμημένον δοῦλόν σου ἀνάπαυσον,\nSenhor, dá repouso a teu servo adormecido\n\nπαρορῶν αὐτοῦ πάντα τὰ ἐγκλήματα.\ne perdoa-lhe todos os seus pecados",
       "videoInput": "",
       "videoId": "",
       "targetSpeed": 1,
       "repeatMode": "off",
       "fontSize": 27,
       "lineHeight": 1.9,
-      "highlights": [
-        {
-          "start": 0,
-          "end": 9,
-          "color": "sage"
-        },
-        {
-          "start": 11,
-          "end": 33,
-          "color": "sky"
-        },
-        {
-          "start": 35,
-          "end": 68,
-          "color": "rose"
-        },
-        {
-          "start": 69,
-          "end": 78,
-          "color": "sage"
-        },
-        {
-          "start": 78,
-          "end": 80,
-          "color": "sage"
-        },
-        {
-          "start": 80,
-          "end": 97,
-          "color": "sky"
-        },
-        {
-          "start": 98,
-          "end": 136,
-          "color": "rose"
-        },
-        {
-          "start": 136,
-          "end": 137,
-          "color": "sky"
-        },
-        {
-          "start": 138,
-          "end": 176,
-          "color": "sage"
-        },
-        {
-          "start": 177,
-          "end": 190,
-          "color": "sky"
-        },
-        {
-          "start": 190,
-          "end": 191,
-          "color": "sage"
-        },
-        {
-          "start": 191,
-          "end": 210,
-          "color": "rose"
-        }
-      ],
+      "highlights": [],
       "melismas": []
     },
     {
-      "id": "hymn-1787605626074-7v110",
+      "id": "shared-hymn-4",
       "title": "Τὸ τριλαμπὲς",
       "mode": "7:02 | 15:12",
-      "lyrics": "Τὸ τριλαμπὲς τῆς μιᾶς Θεότητος,\nεὐσεβῶς ὑμνήσωμεν βοῶντες·\nἍγιος εἶ, ὁ Πατὴρ ὁ ἄναρχος,\nὁ συνάναρχος Υἱὸς καὶ θεῖον Πνεῦμα·\nφώτισον ἡμᾶς πίστει σοὶ λατρεύοντας,\nκαὶ τοῦ αἰωνίου πυρὸς ἐξάρπασον.",
+      "lyrics": "Τὸ τριλαμπὲς τῆς μιᾶς Θεότητος,\nLouvemos com devoção o tríplice resplendor da única divindade\n\nεὐσεβῶς ὑμνήσωμεν βοῶντες·\nclamando:\n\nἍγιος εἶ, ὁ Πατὴρ ὁ ἄναρχος,\nSanto e o Pai sem princípio\n\nὁ συνάναρχος Υἱὸς καὶ θεῖον Πνεῦμα·\ne o Filho igualmente sem princípio e o Espírito Divino;\n\nφώτισον ἡμᾶς πίστει σοὶ λατρεύοντας,\nilumina-nos, a nós que adoramos com fé,\n\nκαὶ τοῦ αἰωνίου πυρὸς ἐξάρπασον.\ne livra-nos do fogo eterno",
       "videoInput": "",
       "videoId": "",
       "targetSpeed": 1,
       "repeatMode": "off",
       "fontSize": 27,
       "lineHeight": 1.9,
-      "highlights": [
-        {
-          "start": 0,
-          "end": 30,
-          "color": "sage"
-        },
-        {
-          "start": 32,
-          "end": 58,
-          "color": "sky"
-        },
-        {
-          "start": 59,
-          "end": 67,
-          "color": "rose"
-        },
-        {
-          "start": 69,
-          "end": 86,
-          "color": "sage"
-        },
-        {
-          "start": 88,
-          "end": 123,
-          "color": "sky"
-        },
-        {
-          "start": 124,
-          "end": 160,
-          "color": "rose"
-        },
-        {
-          "start": 161,
-          "end": 193,
-          "color": "sage"
-        }
-      ],
+      "highlights": [],
       "melismas": []
     },
     {
-      "id": "hymn-1787605638866-f98ar",
+      "id": "shared-hymn-5",
       "title": "Χαῖρε Σεμνή",
       "mode": "9:45 | 15:57",
-      "lyrics": "Χαῖρε σεμνή, ἡ Θεὸν σαρκὶ τεκοῦσα, εἰς πάντων σωτηρίαν, δι’ ἧς γένος τῶν ἀνθρώπων εὕρατο τὴν σωτηρίαν· διὰ σοῦ εὕροιμεν Παράδεισον, Θεοτόκε, ἁγνὴ εὐλογημένη.",
+      "lyrics": "Χαῖρε σεμνή, ἡ Θεὸν σαρκὶ τεκοῦσα, \nSalve, ó Puríssima que geraste na carne Deus\n\nεἰς πάντων σωτηρίαν, δι’ ἧς γένος τῶν \npara nossa salvação, e por quem o gênero humano\n\nἀνθρώπων εὕρατο τὴν σωτηρίαν· διὰ σοῦ \nencontrou a salvação.\n\nεὕροιμεν Παράδεισον, Θεοτόκε, ἁγνὴ \nPossamos achar o Paraíso, por teu intermédio,\n\nεὐλογημένη.\nó Pura e bendita Theotokos",
       "videoInput": "",
       "videoId": "",
       "targetSpeed": 1,
       "repeatMode": "off",
       "fontSize": 27,
       "lineHeight": 1.9,
-      "highlights": [
-        {
-          "start": 0,
-          "end": 11,
-          "color": "sage"
-        },
-        {
-          "start": 13,
-          "end": 33,
-          "color": "sky"
-        },
-        {
-          "start": 35,
-          "end": 54,
-          "color": "rose"
-        },
-        {
-          "start": 56,
-          "end": 101,
-          "color": "sage"
-        },
-        {
-          "start": 103,
-          "end": 130,
-          "color": "sky"
-        },
-        {
-          "start": 132,
-          "end": 157,
-          "color": "rose"
-        }
-      ],
+      "highlights": [],
       "melismas": []
     }
   ]
