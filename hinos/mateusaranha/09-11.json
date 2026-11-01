@@ -1,0 +1,55 @@
+{
+  "version": 1,
+  "title": "09/11",
+  "owner": {
+    "login": "mateusaranha",
+    "name": "Mateus Aranha Martins",
+    "avatarUrl": "https://avatars.githubusercontent.com/u/91752012?v=4"
+  },
+  "updatedAt": "2026-11-01T19:51:28.892Z",
+  "listed": true,
+  "hymns": [
+    {
+      "id": "hymn-1793557553576-xgtiu",
+      "title": "Τῶν Ἀσωμάτων. For the Angels.",
+      "mode": "Ἦχος δʹ. Mode 4.",
+      "lyrics": "Τῶν οὐρανίων στρατιῶν Ἀρχιστράτηγοι, δυσωποῦμεν ὑμᾶς ἡμεῖς οἱ ἀνάξιοι, ἵνα ταῖς ὑμῶν δεήσεσι, τειχίσητε ἡμᾶς, σκέπῃ τῶν πτερύγων, τῆς ἀΰλου ὑμῶν δόξης, φρουροῦντες ἡμᾶς προσπίπτοντας, ἐκτενῶς καὶ βοῶντας· Ἐκ τῶν κινδύνων λυτρώσασθε ἡμᾶς, ὡς Ταξιάρχαι τῶν ἄνω Δυνάμεων.",
+      "videoInput": "https://www.youtube.com/shorts/s-hZa0AZP-U",
+      "videoId": "s-hZa0AZP-U",
+      "targetSpeed": 1,
+      "repeatMode": "off",
+      "fontSize": 27,
+      "lineHeight": 1.9,
+      "highlights": [],
+      "melismas": []
+    },
+    {
+      "id": "hymn-1793557646365-7l3ab",
+      "title": "Κοντάκιον.",
+      "mode": "Ἦχος δʹ. Mode 4.",
+      "lyrics": "Ὁ καθαρώτατος ναὸς τοῦ Σωτῆρος, ἡ πολυτίμητος παστὰς καὶ Παρθένος, τὸ ἱερὸν θησαύρισμα τῆς δόξης τοῦ Θεοῦ, σήμερον εἰσάγεται, ἐν τῷ οἴκῳ Κυρίου, τὴν χάριν συνεισάγουσα, τὴν ἐν Πνεύματι Θείῳ· ἣν ἀνυμνοῦσιν Ἄγγελοι Θεοῦ· Αὕτη ὑπάρχει σκηνὴ ἐπουράνιος.",
+      "videoInput": "https://www.youtube.com/watch?v=lDkqL2XH1u4",
+      "videoId": "lDkqL2XH1u4",
+      "targetSpeed": 1,
+      "repeatMode": "off",
+      "fontSize": 27,
+      "lineHeight": 1.9,
+      "highlights": [],
+      "melismas": []
+    },
+    {
+      "id": "hymn-1793557686149-nvi8b",
+      "title": "",
+      "mode": "",
+      "lyrics": "Τὸ ἀπ’ αἰῶνος ἀπόκρυφον, καὶ Ἀγγέλοις ἄγνωστον μυστήριον, διὰ σού Θεοτόκε τοῖς ἐπὶ γῆς πεφανέρωται, Θεὸς ἐν ἀσυγχύτῳ ἑνώσει σαρκούμενος, καὶ Σταυρὸν ἑκουσίως ὑπὲρ ἡμῶν καταδεξάμενος· δι’ οὗ ἀναστήσας τὸν πρωτόπλαστον, ἔσωσεν ἐκ θανάτου τὰς ψυχὰς ἡμῶν.",
+      "videoInput": "",
+      "videoId": "",
+      "targetSpeed": 1,
+      "repeatMode": "off",
+      "fontSize": 27,
+      "lineHeight": 1.9,
+      "highlights": [],
+      "melismas": []
+    }
+  ]
+}
