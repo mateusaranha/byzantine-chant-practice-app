@@ -6,7 +6,7 @@
     "name": "Mateus Aranha Martins",
     "avatarUrl": "https://avatars.githubusercontent.com/u/91752012?v=4"
   },
-  "updatedAt": "2026-11-15T21:19:52.453Z",
+  "updatedAt": "2026-11-15T21:30:35.685Z",
   "listed": true,
   "hymns": [
     {
@@ -132,7 +132,38 @@
       "repeatMode": "off",
       "fontSize": 27,
       "lineHeight": 1.9,
-      "highlights": [],
+      "highlights": [
+        {
+          "start": 238,
+          "end": 258,
+          "color": "sage"
+        },
+        {
+          "start": 420,
+          "end": 445,
+          "color": "sky"
+        },
+        {
+          "start": 539,
+          "end": 557,
+          "color": "rose"
+        },
+        {
+          "start": 637,
+          "end": 663,
+          "color": "wheat"
+        },
+        {
+          "start": 663,
+          "end": 665,
+          "color": "wheat"
+        },
+        {
+          "start": 1106,
+          "end": 1128,
+          "color": "lavender"
+        }
+      ],
       "melismas": []
     }
   ]
